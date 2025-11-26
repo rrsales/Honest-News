@@ -232,9 +232,10 @@
 
     }
     function closeEditor(){ editingPageId=null; q('pageEditor').style.display='none'; }
-    function savePageFromEditor(){ const page = data.pages.find(p=>p.id===editingPageId); if(!page) return; // blocks already saved inline
-      // update hero already saved live
-      q('lastSaved').textContent = new Date().toLocaleString(); }
+    function savePageFromEditor(){ const page = data.pages.find(p=>p.id===editingPageId); if(!page) return; // ensure hero slides + media saved
+  page.hero.slides = q('heroSlides').value.split(',').map(s=>s.trim()).filter(Boolean);
+  page.hero.media = q('heroMedia').value.trim();
+  q('lastSaved').textContent = new Date().toLocaleString(); }
 
     // --- Blocks ---
     function renderBlocks(){ const node = q('blocksList'); node.innerHTML=''; const page = data.pages.find(p=>p.id===editingPageId); if(!page) return; if(page.blocks.length===0) node.innerHTML='<div class="small">No rich text blocks yet.</div>';
@@ -283,4 +284,25 @@
   </script>
 </body>
 </html>
+
+<!-- HERO SLIDE SYSTEM (REBUILT) -->
+<script>
+// Slides array UI
+function renderSlidesEditor(slides){
+  const c=document.getElementById('slidesEditor'); if(!c) return;
+  c.innerHTML='';
+  slides.forEach((s,i)=>{
+    const row=document.createElement('div');
+    row.className='slide-row';
+    row.innerHTML=`<input class="slide-input" data-idx="${i}" value="${s}" style="width:70%" />
+    <button data-idx="${i}" class="remove-slide">Remove</button>`;
+    c.appendChild(row);
+  });
+  const add=document.createElement('button'); add.textContent='Add Slide'; add.onclick=()=>{slides.push(''); renderSlidesEditor(slides);} ;
+  c.appendChild(add);
+}
+// Collect slides before saving
+defineCollectSlides=function(){ return [...document.querySelectorAll('.slide-input')].map(e=>e.value.trim()).filter(v=>v); };
+</script>
+
 
