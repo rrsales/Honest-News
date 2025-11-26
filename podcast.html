@@ -6,7 +6,7 @@
 <title>Podcast — Honest News Network</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.6;color:#333;background:#fff}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#fff;color:#333}
 header{background:#111;color:white;padding:1rem 0;position:fixed;width:100%;top:0;z-index:1000}
 .site-inner{max-width:1200px;margin:0 auto;padding:0 1rem;display:flex;justify-content:space-between;align-items:center}
 .logo{font-size:1.8rem;font-weight:bold}
@@ -19,8 +19,21 @@ header{background:#111;color:white;padding:1rem 0;position:fixed;width:100%;top:
   .nav-menu.active{display:flex}
   .mobile-menu-toggle{display:block}
 }
-main{margin-top:80px;padding:4rem 1rem}
-.hero{background:#222;color:white;text-align:center;padding:6rem 1rem}
+.hero-carousel{position:relative;height:80vh;min-height:500px;overflow:hidden;color:white}
+.slide{position:absolute;inset:0;width:100%;height:100%;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;text-align:center;transition:opacity .8s ease}
+.slide::before{content:"";position:absolute;inset:0;background:rgba(0,0,0,0.5)}
+.slide-content{position:relative;z-index:2;max-width:900px;padding:2rem}
+.slide h1{font-size:3.5rem;margin-bottom:1rem}
+.slide p{font-size:1.5rem;margin-bottom:2rem}
+.btn{padding:1rem 2.5rem;background:#0066cc;color:white;border:none;border-radius:6px;font-size:1.2rem;cursor:pointer;transition:.3s}
+.btn:hover{background:#0055aa}
+.dots{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);display:flex;gap:12px;z-index:3}
+.dot{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,0.5);cursor:pointer;transition:.3s}
+.dot.active{background:white}
+.arrow{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.4);color:white;border:none;width:50px;height:50px;font-size:2rem;cursor:pointer;z-index:3}
+.prev{left:20px}
+.next{right:20px}
+main{margin-top:80px;padding:4rem 1rem;text-align:center}
 footer{background:#111;color:white;text-align:center;padding:2rem;margin-top:4rem}
 #backTop{position:fixed;bottom:20px;right:20px;background:#111;color:white;border:none;padding:12px 16px;font-size:1.5rem;cursor:pointer;display:none;border-radius:50%;z-index:999}
 </style>
@@ -35,29 +48,60 @@ footer{background:#111;color:white;text-align:center;padding:2rem;margin-top:4re
     </nav>
   </div>
 </header>
-<main>
-  <div class="hero"><h1>Podcast</h1><p>Honest news and biblical teaching every week.</p></div>
-  <div style="max-width:900px;margin:4rem auto;text-align:center;line-height:2"><p>Episodes coming soon — subscribe on your favorite platform.</p></div>
-</main>
+
+<div class="hero-carousel">
+  <div class="slide active" style="background-image:url('https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=2000&auto=format&fit=crop')">
+    <div class="slide-content">
+      <h1>Latest Episode</h1>
+      <p>“The Coming Storm” – Out Now</p>
+      <a href="#" class="btn">Listen Now →</a>
+    </div>
+  </div>
+  <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1502086223501-7ea6ecd79368?q=80&w=2000&auto=format&fit=crop')">
+    <div class="slide-content">
+      <h1>All Episodes</h1>
+      <p>Over 200 hours of biblical teaching</p>
+      <a href="#" class="btn">Browse Archive →</a>
+    </div>
+  </div>
+  <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1582213782179-81f408a2e3c7?q=80&w=2000&auto=format&fit=crop')">
+    <div class="slide-content">
+      <h1>Subscribe Free</h1>
+      <p>Apple, Spotify, YouTube — never miss an episode</p>
+      <a href="#" class="btn">Subscribe →</a>
+    </div>
+  </div>
+  <button class="arrow prev">‹</button>
+  <button class="arrow next">›</button>
+  <div class="dots"></div>
+</div>
+
+<main><h2>More episodes coming this week…</h2></main>
+
 <footer>© 2025 Honest News Network</footer>
 <button id="backTop">↑</button>
+
 <script>
-const pages=[
-  {name:"Home",url:"index.html"},
-  {name:"Podcast",url:"podcast.html"},
-  {name:"Blog",url:"blog.html"},
-  {name:"Shop",url:"shop.html"},
-  {name:"Events",url:"events.html"},
-  {name:"Support",url:"support.html"},
-  {name:"Contact",url:"contact.html"}
-];
+const pages=[{name:"Home",url:"index.html"},{name:"Podcast",url:"podcast.html"},{name:"Blog",url:"blog.html"},{name:"Shop",url:"shop.html"},{name:"Events",url:"events.html"},{name:"Support",url:"support.html"},{name:"Contact",url:"contact.html"}];
 document.addEventListener("DOMContentLoaded",()=>{
   const menu=document.getElementById("nav-menu");
   menu.innerHTML=pages.map(p=>`<li><a href="${p.url}">${p.name}</a></li>`).join("");
   document.querySelector(".mobile-menu-toggle").addEventListener("click",()=>{menu.classList.toggle("active")});
+  const slides=document.querySelectorAll(".slide");
+  const dotsContainer=document.querySelector(".dots");
+  let current=0;
+  slides.forEach((_,i)=>{dotsContainer.innerHTML+=`<span class="dot${i===0?' active':''}"></span>`});
+  const dots=document.querySelectorAll(".dot");
+  const prev=document.querySelector(".prev");
+  const next=document.querySelector(".next");
+  const showSlide=n=>{slides.forEach(s=>s.classList.remove("active"));dots.forEach(d=>d.classList.remove("active"));slides[n].classList.add("active");dots[n].classList.add("active");current=n;};
+  prev.onclick=()=>showSlide((current-1+slides.length)%slides.length);
+  next.onclick=()=>showSlide((current+1)%slides.length);
+  dots.forEach((d,i)=>d.onclick=()=>showSlide(i));
+  setInterval(()=>next.click(),6000);
   const btn=document.getElementById("backTop");
   window.addEventListener("scroll",()=>{btn.style.display=window.scrollY>300?"block":"none";});
-  btn.addEventListener("click",()=>{window.scrollTo({top:0,behavior:"smooth"});});
+  btn.onclick=()=>window.scrollTo({top:0,behavior:"smooth"});
 });
 </script>
 </body>
