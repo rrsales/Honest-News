@@ -2,127 +2,93 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>HNN Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin – Honest News Network</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <style>
-  body{font-family:system-ui;background:#f4f4f4;padding:2rem;color:#222}
-  .panel{max-width:1000px;margin:auto;background:white;padding:2rem;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.1)}
-  input,select{width:100%;padding:12px;margin:8px 0;border:1px solid #ddd;border-radius:6px}
-  button{padding:12px 24px;background:#0066cc;color:white;border:none;border-radius:6px;cursor:pointer}
-  .tab button{margin-right:8px;padding:10px 20px}
-  .tabcontent{display:none;padding:2rem 0}
-  .tabcontent.active{display:block}
-  .slide{margin:2rem 0;padding:1.5rem;background:#fafafa;border-radius:8px}
-  input[type=color]{height:60px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#111;color:#eee;font-family:system-ui,sans-serif;padding-top:90px}
+header{position:fixed;top:0;left:0;right:0;height:90px;background:#000;z-index:1000;display:flex;align-items:center;justify-content:center}
+.logo{font-size:2rem;font-weight:900;color:white}
+.container{max-width:1000px;margin:2rem auto;padding:2rem;background:#1a1a1a;border-radius:12px}
+h2{margin:2rem 0 1rem;font-size:1.8rem}
+input,textarea,button{padding:12px;margin:8px 0;width:100%;border-radius:8px;border:none;font-size:1rem}
+input,textarea{background:#333;color:#fff}
+button{background:#0066cc;color:white;cursor:pointer;font-weight:bold}
+button:hover{background:#0055aa}
+.slide-preview{margin:1rem 0;padding:1rem;background:#222;border-radius:8px}
+.flex{gap:1rem;display:flex;flex-wrap:wrap}
+.flex > *{flex:1;min-width:280px}
 </style>
 </head>
 <body>
 
-<div style="text-align:center;margin-top:100px">
-  <h1>Honest News Network Admin</h1>
-  <p>Type the secret word:</p>
-  <input type="password" id="secretInput" style="font-size:2rem;padding:12px">
-  <button onclick="check()">Enter</button>
+<header>
+  <div class="logo">Admin – Honest News Network</div>
+</header>
+
+<div class="container" id="login" style="display:block">
+  <h2>Login</h2>
+  <input type="password" id="pass" placeholder="Password">
+  <button onclick="if(document.getElementById('pass').value==='truth')document.getElementById('login').style.display='none',document.getElementById('panel').style.display='block';">Enter</button>
 </div>
 
-<div id="panel" class="panel" style="display:none">
-  <h1>Live Site Editor</h1>
-
-  <div class="tab">
-    <button class="active" onclick="openTab('home')">Home Hero</button>
-    <button onclick="openTab('podcast')">Podcast Hero</button>
-    <button onclick="openTab('blog')">Blog Hero</button>
-    <button onclick="openTab('shop')">Shop Hero</button>
-  </div>
-
-  <div id="home" class="tabcontent active"><h2>Home Page Slides</h2><div id="slides-home"></div></div>
-  <div id="podcast" class="tabcontent"><h2>Podcast Page Slides</h2><div id="slides-podcast"></div></div>
-  <div id="blog" class="tabcontent"><h2>Blog Page Slides</h2><div id="slides-blog"></div></div>
-  <div id="shop" class="tabcontent"><h2>Shop Page Slides</h2><div id="slides-shop"></div></div>
-
- <div style="margin:2rem 0;padding:1rem;background:#f0f0f0;border-radius:8px">
-  <label><strong>Hero Height on this page:</strong></label>
-  <select onchange="setHeight(this.value)">
-    <option value="full">Full Screen (100vh)</option>
-    <option value="medium">Medium (70vh)</option>
-    <option value="short">Short (50vh)</option>
-  </select>
+<div class="container" id="panel" style="display:none">
+  <h2>Hero Carousel Slides</h2>
+  <div id="slides"></div>
+  <button onclick="addSlide()">+ Add New Slide</button>
+  <hr>
+  <h2>Site Colors</h2>
+  <input type="color" id="primary" value="#0066cc"> Primary Blue<br>
+  <input type="color" id="accent" value="#00cc99"> Accent Green<br>
+  <hr>
+  <button onclick="saveAll()">SAVE EVERYTHING TO data.json</button>
+  <p style="margin-top:1rem;color:#0f0">Saved! Refresh site to see changes.</p>
 </div>
 
 <script>
-function setHeight(val){
-  data.heroHeight = data.heroHeight || {};
-  data.heroHeight[currentPage] = val;
-  saveAll();
-}
-</script>
-  <button onclick="saveAll()" style="margin-left:20px;background:#c00">SAVE ALL CHANGES</button>
-  <p id="status" style="margin-top:20px;font-weight:bold"></p>
-</div>
+const defaultData = {
+  heroSlides: [
+    {image:"https://images.unsplash.com/photo-1519389951293-7e3e96864eae?q=80&w=2000&auto=format&fit=crop",title:"Honest News. Biblical Truth.",subtitle:"Serving truth with compassion."},
+    {image:"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=2000&auto=format&fit=crop",title:"Daily Podcast",subtitle:"New episodes every Sunday"}
+  ],
+  colors:{primary:"#0066cc",accent:"#00cc99"}
+};
 
-<script>
-const SECRET = "truth";
-let data = {}, currentPage = "home";
+let data = {...defaultData};
 
-function check(){if(document.getElementById("secretInput").value.trim().toLowerCase()===SECRET){
-  document.querySelector("div[style*='text-align']").style.display="none";
-  document.getElementById("panel").style.display="block";
-  loadData();
-}}
-
-async function loadData(){
-  const r=await fetch("data.json?"+Date.now());
-  data=await r.json();
-  ["home","podcast","blog","shop"].forEach(p=>renderSlides(p));
-}
-
-function renderSlides(page){
-  const container=document.getElementById("slides-"+page);
-  container.innerHTML="";
-  (data.heroSlides?.[page]||[]).forEach((s,i)=>{
-    const div=document.createElement("div");div.className="slide";
+function load(){fetch('data.json').then(r=>r.json()).then(d=>data=d).catch(()=>console.log('no data.json yet')).then(render)}
+function render(){
+  document.getElementById('primary').value=data.colors.primary;
+  document.getElementById('accent').value=data.colors.accent;
+  const container=document.getElementById('slides');
+  container.innerHTML='';
+  data.heroSlides.forEach((s,i)=>{
+    const div=document.createElement('div'); div.className='slide-preview';
     div.innerHTML=`
-      <input placeholder="Title (use <br> for line break)" value="${s.title||''}">
-      <input placeholder="Subtitle" value="${s.subtitle||''}">
-      <input placeholder="Button text" value="${s.buttonText||''}">
-      <input placeholder="Button link" value="${s.buttonLink||''}">
-      <input placeholder="Image URL" value="${s.image||''}" style="width:100%">
-      <button onclick="this.parentElement.remove();saveAll()">Delete</button><hr>`;
+      <div class="flex">
+        <input placeholder="Image URL" value="${s.image}">
+        <input placeholder="Title" value="${s.title}">
+        <input placeholder="Subtitle" value="${s.subtitle}">
+        <button onclick="this.parentElement.parentElement.remove();data.heroSlides.splice(${i},1)">Delete</button>
+      </div>`;
+    div.querySelectorAll('input').forEach((inp,j)=>inp.onchange=e=>data.heroSlides[i][['image','title','subtitle'][j]]=e.target.value);
     container.appendChild(div);
   });
 }
-
-function addSlide(page){
-  const container=document.getElementById("slides-"+page);
-  const div=document.createElement("div");div.className="slide";
-  div.innerHTML=`<input placeholder="Title"><input placeholder="Subtitle"><input placeholder="Button text"><input placeholder="Button link"><input placeholder="Image URL" style="width:100%"><button onclick="this.parentElement.remove();saveAll()">Delete</button><hr>`;
-  container.appendChild(div);
+function addSlide(){
+  data.heroSlides.push({image:"",title:"New Slide",subtitle:"Edit me"});
+  render();
 }
-
-function openTab(page){
-  document.querySelectorAll(".tabcontent").forEach(t=>t.classList.remove("active"));
-  document.getElementById(page).classList.add("active");
-  document.querySelectorAll(".tab button").forEach(b=>b.classList.remove("active"));
-  event.target.classList.add("active");
-  currentPage=page;
-}
-
 function saveAll(){
-  ["home","podcast","blog","shop"].forEach(p=>{
-    data.heroSlides[p]=[];
-    document.querySelectorAll("#slides-"+p+" .slide").forEach(el=>{
-      const inp=el.querySelectorAll("input");
-      data.heroSlides[p].push({
-        title:inp[0].value,
-        subtitle:inp[1].value,
-        buttonText:inp[2].value,
-        buttonLink:inp[3].value,
-        image:inp[4].value
-      });
-    });
-  });
-  document.getElementById("status").textContent="Saved locally – ready for GitHub token whenever you want!";
-  console.log(JSON.stringify(data,null,2));
+  data.colors={primary:document.getElementById('primary').value,accent:document.getElementById('accent').value};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='data.json'; a.click();
+  alert('data.json downloaded – upload/replace it in your repo root and commit!');
 }
+load();
 </script>
 </body>
 </html>
