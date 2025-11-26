@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Honest News Network — Home</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#fff;color:#333}
+header{background:#111;color:white;padding:1rem 0;position:fixed;width:100%;top:0;z-index:1000}
+.site-inner{max-width:1200px;margin:0 auto;padding:0 1rem;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:1.8rem;font-weight:bold}
+.nav-menu{list-style:none;display:flex;gap:2rem}
+.nav-menu a{color:white;text-decoration:none;font-weight:600}
+.nav-menu a:hover{opacity:0.8}
+.mobile-menu-toggle{display:none;background:none;border:none;font-size:2rem;color:white;cursor:pointer}
+@media(max-width:768px){
+  .nav-menu{position:absolute;top:100%;left:0;right:0;background:#111;flex-direction:column;padding:1rem 0;display:none;text-align:center}
+  .nav-menu.active{display:flex}
+  .mobile-menu-toggle{display:block}
+}
+
+/* HERO CAROUSEL */
+.hero-carousel{position:relative;height:80vh;min-height:500px;overflow:hidden;color:white}
+.slide{position:absolute;inset:0;width:100%;height:100%;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;text-align:center;transition:opacity .8s ease}
+.slide::before{content:"";position:absolute;inset:0;background:rgba(0,0,0,0.5)}
+.slide-content{position:relative;z-index:2;max-width:900px;padding:2rem}
+.slide h1{font-size:3.8rem;margin-bottom:1rem;line-height:1.2}
+.slide p{font-size:1.6rem;margin-bottom:2rem}
+.btn{padding:1rem 2.8rem;background:#0066cc;color:white;border:none;border-radius:8px;font-size:1.3rem;cursor:pointer;transition:.3s}
+.btn:hover{background:#0055aa}
+.dots{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);display:flex;gap:12px;z-index:3}
+.dot{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,0.5);cursor:pointer;transition:.3s}
+.dot.active{background:white}
+.arrow{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.4);color:white;border:none;width:50px;height:50px;font-size:2.5rem;cursor:pointer;z-index:3}
+.prev{left:20px}
+.next{right:20px}
+
+main{padding:6rem 1rem;text-align:center}
+footer{background:#111;color:white;text-align:center;padding:2rem;margin-top:4rem}
+#backTop{position:fixed;bottom:20px;right:20px;background:#111;color:white;border:none;padding:12px 16px;font-size:1.5rem;cursor:pointer;display:none;border-radius:50%;z-index:999}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="site-inner">
+    <div class="logo">Honest News Network</div>
+    <nav>
+      <ul id="nav-menu" class="nav-menu"></ul>
+      <button class="mobile-menu-toggle" aria-label="Menu">☰</button>
+    </nav>
+  </div>
+</header>
+
+<div class="hero-carousel">
+  <div class="slide active" style="background-image:url('https://images.unsplash.com/photo-1519389951293-7e3e96864eae?q=80&w=2000&auto=format&fit=crop')">
+    <div class="slide-content">
+      <h1>Honest News.<br>Biblical Truth.</h1>
+      <p>Serving truth with compassion</p>
+      <a href="podcast.html" class="btn">Listen Now →</a>
+    </div>
+  </div>
+  <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1582213782179-81f408a2e3c7?q=80&w=2000&auto=format&fit=crop')">
+    <div class="slide-content">
+      <h1>New Book Out Now</h1>
+      <p>“The Coming Storm”</p>
+      <a href="shop.html" class="btn">Get Your Copy →</a>
+    </div>
+  </div>
+  <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=2000&auto=format&fit=crop')">
+    <div class="slide-content">
+      <h1>Support the Ministry</h1>
+      <p>Partner with us today</p>
+      <a href="support.html" class="btn">Donate →</a>
+    </div>
+  </div>
+
+  <button class="arrow prev">‹</button>
+  <button class="arrow next">›</button>
+  <div class="dots"></div>
+</div>
+
+<main>
+  <h2>Welcome to Honest News Network</h2>
+  <p>Truth without compromise.</p>
+</main>
+
+<footer>© 2025 Honest News Network</footer>
+<button id="backTop">↑</button>
+
+<script>
+const pages=[
+  {name:"Home",url:"index.html"},
+  {name:"Podcast",url:"podcast.html"},
+  {name:"Blog",url:"blog.html"},
+  {name:"Shop",url:"shop.html"},
+  {name:"Events",url:"events.html"},
+  {name:"Support",url:"support.html"},
+  {name:"Contact",url:"contact.html"}
+];
+document.addEventListener("DOMContentLoaded",()=>{
+  const menu=document.getElementById("nav-menu");
+  menu.innerHTML=pages.map(p=>`<li><a href="${p.url}">${p.name}</a></li>`).join("");
+  document.querySelector(".mobile-menu-toggle").addEventListener("click",()=>{menu.classList.toggle("active")});
+
+  // Carousel
+  const slides=document.querySelectorAll(".slide");
+  const dotsContainer=document.querySelector(".dots");
+  let current=0;
+  slides.forEach((_,i)=>{dotsContainer.innerHTML+=`<span class="dot${i===0?' active':''}"></span>`});
+  const dots=document.querySelectorAll(".dot");
+  const prev=document.querySelector(".prev");
+  const next=document.querySelector(".next");
+  const showSlide=n=>{
+    slides.forEach(s=>s.classList.remove("active"));
+    dots.forEach(d=>d.classList.remove("active"));
+    slides[n].classList.add("active");
+    dots[n].classList.add("active");
+    current=n;
+  };
+  prev.onclick=()=>showSlide((current-1+slides.length)%slides.length);
+  next.onclick=()=>showSlide((current+1)%slides.length);
+  dots.forEach((d,i)=>d.onclick=()=>showSlide(i));
+  setInterval(()=>next.click(),6000);
+
+  // Back-to-top
+  const btn=document.getElementById("backTop");
+  window.addEventListener("scroll",()=>{btn.style.display=window.scrollY>300?"block":"none";});
+  btn.onclick=()=>window.scrollTo({top:0,behavior:"smooth"});
+});
+</script>
+</body>
+</html>
