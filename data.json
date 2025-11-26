@@ -1,0 +1,32 @@
+{
+  "siteTitle": "Honest News Network",
+  "primaryColor": "#0066cc",
+  "headerBg": "#111111",
+  "textColor": "#333333",
+  "font": "https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap",
+  "fontName": "Roboto",
+
+  "heroSlides": [
+    {
+      "title": "Honest News.<br>Biblical Truth.",
+      "subtitle": "Serving truth with compassion",
+      "buttonText": "Listen Now →",
+      "buttonLink": "podcast.html",
+      "image": "https://images.unsplash.com/photo-1519389951293-7e3e96864eae?q=80&w=2000&auto=format&fit=crop"
+    },
+    {
+      "title": "New Book Out Now",
+      "subtitle": "“The Coming Storm”",
+      "buttonText": "Get Your Copy →",
+      "buttonLink": "shop.html",
+      "image": "https://images.unsplash.com/photo-1582213782179-81f408a2e3c7?q=80&w=2000&auto=format&fit=crop"
+    },
+    {
+      "title": "Support the Ministry",
+      "subtitle": "Partner with us today",
+      "buttonText": "Donate →",
+      "buttonLink": "support.html",
+      "image": "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=2000&auto=format&fit=crop"
+    }
+  ]
+}
