@@ -232,12 +232,34 @@
 
     }
     function closeEditor(){ editingPageId=null; q('pageEditor').style.display='none'; }
-    function savePageFromEditor(){ const page = data.pages.find(p=>p.id===editingPageId); if(!page) return; // ensure hero slides + media saved
-  page.hero.slides = q('heroSlides').value.split(',').map(s=>s.trim()).filter(Boolean);
-  page.hero.media = q('heroMedia').value.trim();
-  q('lastSaved').textContent = new Date().toLocaleString(); }
+    function savePage(){
+  const slug = currentPageSlug;
+  if(!slug){ alert('No page selected.'); return; }
 
-    // --- Blocks ---
+  fetch('data.json')
+    .then(r=>r.json())
+    .then(data=>{
+      if(!data.pages) data.pages={};
+      if(!data.pages[slug]) data.pages[slug]={};
+      if(!data.pages[slug].hero) data.pages[slug].hero={};
+
+      data.pages[slug].hero.type = document.getElementById('heroType')?.value || '';
+      data.pages[slug].hero.size = document.getElementById('heroSize')?.value || '';
+      data.pages[slug].hero.slides = (typeof defineCollectSlides==='function') ? defineCollectSlides() : [];
+      data.pages[slug].hero.image = document.getElementById('heroImage')?.value || '';
+      data.pages[slug].hero.video = document.getElementById('heroVideo')?.value || '';
+      data.pages[slug].hero.parallax = document.getElementById('heroParallax')?.checked || false;
+
+      return fetch('save.php',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(data)
+      });
+    })
+    .then(()=>alert('Saved!'))
+    .catch(err=>alert('Save failed: '+err));
+}
+// --- Blocks ---
     function renderBlocks(){ const node = q('blocksList'); node.innerHTML=''; const page = data.pages.find(p=>p.id===editingPageId); if(!page) return; if(page.blocks.length===0) node.innerHTML='<div class="small">No rich text blocks yet.</div>';
       for(const b of page.blocks){ const wrap = document.createElement('div'); wrap.className='list-item'; const left = document.createElement('div'); left.style.flex='1'; left.innerHTML = `<strong>${escapeHtml(b.name)}</strong><div class="small">Type: ${b.type||'rich-text'}</div>`; const controls = document.createElement('div'); controls.className='controls'; const edit = document.createElement('button'); edit.className='btn'; edit.textContent='Edit'; edit.addEventListener('click', ()=>openBlockEditor(b.id)); const del = document.createElement('button'); del.className='btn danger'; del.textContent='Del'; del.addEventListener('click', ()=>{ if(confirm('Delete block?')){ page.blocks = page.blocks.filter(x=>x.id!==b.id); save(); renderBlocks(); } }); controls.appendChild(edit); controls.appendChild(del); wrap.appendChild(left); wrap.appendChild(controls); node.appendChild(wrap); }
     }
@@ -304,5 +326,6 @@ function renderSlidesEditor(slides){
 // Collect slides before saving
 defineCollectSlides=function(){ return [...document.querySelectorAll('.slide-input')].map(e=>e.value.trim()).filter(v=>v); };
 </script>
+
 
 
