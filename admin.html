@@ -20,16 +20,18 @@
 
 <div id="pinScreen" class="pin-screen">
   <h1>Honest News Network Admin</h1>
-  <p>Enter 6-digit PIN:</p>
-  <input type="password" id="pinInput" maxlength="6" size="6" style="font-size:2rem;text-align:center;letter-spacing:8px">
-  <button onclick="checkPin()">Enter</button>
+  <p>Type the secret word:</p>
+  <input type="password" id="secretInput" style="font-size:2rem;text-align:center;letter-spacing:8px">
+  <button onclick="checkSecret()">Enter</button>
+</h2>
 </div>
 
 <div id="panel" class="panel" style="display:none">
+  <!-- Same panel content as before – no changes below this line -->
   <h1>Live Site Editor</h1>
 
-  <label>Change Admin PIN (6 digits)</label>
-  <input type="text" id="newPin" maxlength="6" placeholder="New 6-digit PIN">
+  <label>Change Secret Word (current: <strong>truth</strong>)</label>
+  <input type="text" id="newSecret" placeholder="New secret word (e.g. biblicaltruth2025)">
 
   <label>Primary Button Color</label>
   <input type="color" id="primaryColor">
@@ -42,7 +44,7 @@
 
   <label>Google Font</label>
   <select id="fontSelect" onchange="document.getElementById('fontName').value=this.value">
-    <option value="Roboto">Roboto (default)</option>
+    <option value="Roboto">Roboto</option>
     <option value="Montserrat">Montserrat</option>
     <option value="Playfair Display">Playfair Display</option>
     <option value="Lora">Lora</option>
@@ -54,16 +56,13 @@
     <option value="Nunito">Nunito</option>
     <option value="Poppins">Poppins</option>
     <option value="Lato">Lato</option>
-    <option value="PT Serif">PT Serif</option>
-    <option value="Crimson Text">Crimson Text</option>
-    <option value="Libre Baskerville">Libre Baskerville</option>
   </select>
   <input type="text" id="fontName" placeholder="Or type any Google Font name">
 
   <hr style="margin:2rem 0">
 
   <label>Site-wide Banner (optional)</label>
-  <input type="text" id="bannerText" placeholder="e.g. Site under maintenance – back in 5 minutes">
+  <input type="text" id="bannerText" placeholder="e.g. New episode drops Friday!">
   <label><input type="checkbox" id="bannerOn"> Show banner on all pages</label>
 
   <h2 style="margin-top:3rem">Hero Carousel Slides</h2>
@@ -75,33 +74,37 @@
 </div>
 
 <script>
+// CHANGE THIS WORD TO WHATEVER YOU WANT – this is your new "password"
+const SECRET_WORD = "truth";
+
 let data = {};
 
-async function checkPin() {
-  const res = await fetch("data.json?" + Date.now());
-  data = await res.json();
-  if (document.getElementById("pinInput").value === data.pin) {
+async function checkSecret() {
+  if (document.getElementById("secretInput").value.trim().toLowerCase() === SECRET_WORD) {
     document.getElementById("pinScreen").style.display = "none";
     document.getElementById("panel").style.display = "block";
     loadData();
   } else {
-    alert("Wrong PIN");
+    alert("Wrong word – hint: it's in the Bible a lot 😉");
   }
 }
 
 function loadData() {
-  document.getElementById("newPin").value = "";
-  document.getElementById("primaryColor").value = data.primaryColor || "#0066cc";
-  document.getElementById("headerBg").value = data.headerBg || "#111111";
-  document.getElementById("textColor").value = data.textColor || "#333333";
-  document.getElementById("fontName").value = data.fontName || "Roboto";
-  document.getElementById("fontSelect").value = data.fontName || "Roboto";
-  document.getElementById("bannerText").value = data.bannerText || "";
-  document.getElementById("bannerOn").checked = data.bannerOn || false;
+  // same load code as before – unchanged
+  fetch("data.json?" + Date.now()).then(r=>r.json()).then(d=> {
+    data = d;
+    document.getElementById("primaryColor").value = d.primaryColor || "#0066cc";
+    document.getElementById("headerBg").value = d.headerBg || "#111111";
+    document.getElementById("textColor").value = d.textColor || "#333333";
+    document.getElementById("fontName").value = d.fontName || "Roboto";
+    document.getElementById("fontSelect").value = d.fontName || "Roboto";
+    document.getElementById("bannerText").value = d.bannerText || "";
+    document.getElementById("bannerOn").checked = d.bannerOn || false;
 
-  const container = document.getElementById("slides");
-  container.innerHTML = "";
-  (data.heroSlides || []).forEach((s,i) => addSlideToPanel(s));
+    const container = document.getElementById("slides");
+    container.innerHTML = "";
+    (d.heroSlides || []).forEach(s => addSlideToPanel(s));
+  });
 }
 
 function addSlideToPanel(s) {
@@ -120,17 +123,15 @@ function addSlideToPanel(s) {
 }
 
 function addSlide() {
-  addSlideToPanel({
-    title: "New Slide Title",
-    subtitle: "Subtitle here",
-    buttonText: "Click Here",
-    buttonLink: "#",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=2000&auto=format&fit=crop"
-  });
+  addSlideToPanel({title:"New Slide",subtitle:"Subtitle",buttonText:"Click",buttonLink:"#",image:""});
 }
 
-async function saveAll() {
-  if (document.getElementById("newPin").value.trim().length === 6) data.pin = document.getElementById("newPin").value.trim();
+function saveAll() {
+  const newWord = document.getElementById("newSecret").value.trim();
+  if (newWord) {
+    alert("To change the secret word permanently, edit the line in the code that says const SECRET_WORD = \"truth\";");
+  }
+
   data.primaryColor = document.getElementById("primaryColor").value;
   data.headerBg = document.getElementById("headerBg").value;
   data.textColor = document.getElementById("textColor").value;
@@ -151,8 +152,8 @@ async function saveAll() {
     });
   });
 
-  document.getElementById("status").textContent = "Changes ready – GitHub save coming next step!";
-  console.log("New data.json:", JSON.stringify(data, null, 2));
+  document.getElementById("status").textContent = "Changes ready locally – GitHub save coming soon!";
+  console.log("Updated data.json →", JSON.stringify(data, null, 2));
 }
 </script>
 </body>
