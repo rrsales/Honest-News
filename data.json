@@ -3,8 +3,9 @@
   "primaryColor": "#0066cc",
   "headerBg": "#111111",
   "textColor": "#333333",
-  "font": "https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap",
   "fontName": "Roboto",
+  "font": "https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap",
+  "pin": "092567",
 
   "heroSlides": [
     {
