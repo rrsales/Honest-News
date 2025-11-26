@@ -3,95 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Honest News Network — shop</title>
-
+<title>Honest News Network — Podcast</title>   <!-- ← CHANGE THIS -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <script src="https://cdn.jsdelivr.net/gh/rrsales/Honest-News@master/live.js"></script>
-
 <style>
-header {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: 90px;
-  background: transparent;
-  transition: background .4s;
-  z-index: 1000;
-  backdrop-filter: blur(12px);
-}
-header.scrolled { background: rgba(0,0,0,0.94) !important; }
-
-.hero-carousel {
-  position: fixed !important;
-  top: 0; left: 0;
-  width: 100%;
-  height: var(--hero-height, 100vh);
-  z-index: 1;
-}
-
-main, .site-inner {
-  position: relative;
-  z-index: 10;
-  background: #111;           /* change to #fff if you ever want light pages */
-  padding-top: 90px;          /* exactly the header height */
-}  .hero-carousel {
-  position: fixed !important;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: var(--hero-height, 100vh);
-  z-index: 1;
-}
-main, .site-inner {            /* this is the key */
-  position: relative;
-  z-index: 10;
-  background: #fff;           /* or #111 if you want dark pages */
-}  header{
-  background:transparent;           /* fully see-through */
-  padding:1.5rem 0;
-  position:fixed;
-  width:100%;
-  top:0;
-  z-index:1000;
-  transition:background .4s;
-}
-header.scrolled{
-  background:rgba(0,0,0,0.85);      /* darkens when you scroll down */
-}
-.logo, .nav-menu a{
-  color:white;
-  text-shadow:0 2px 10px rgba(0,0,0,0.7);
-}  body{margin:0;background:#111;color:#fff}
-  header{background:#000;padding:1rem 0;position:fixed;width:100%;top:0;z-index:1000}
-  .site-inner{max-width:1200px;margin:auto;padding:0 1rem;display:flex;justify-content:space-between;align-items:center}
-  .logo{font-size:1.8rem;font-weight:bold}
-  .nav-menu{list-style:none;display:flex;gap:2rem}
-  .nav-menu a{color:#fff;text-decoration:none}
-  .mobile-menu-toggle{display:none}
-  @media(max-width:768px){.mobile-menu-toggle{display:block;font-size:2rem}}
-  
-  .hero-carousel{position:relative;height:100vh;overflow:hidden;color:white}
-  .slide{position:absolute;inset:0;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;text-align:center}
-  .slide::before{content:"";position:absolute;inset:0;background:rgba(0,0,0,0.55)}
-  .slide-content{position:relative;max-width:900px;padding:2rem}
-  .slide h1{font-size:4.5rem;line-height:1.2}
-  .slide p{font-size:1.8rem;margin:2rem 0}
-  .btn{padding:1rem 3rem;background:#0066cc;color:white;border:none;border-radius:8px;font-size:1.4rem;cursor:pointer}
-  .dots{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);display:flex;gap:12px}
-  .dot{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,0.5);cursor:pointer}
-  .dot.active{background:white}
-  .arrow{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.5);color:white;border:none;width:60px;height:60px;font-size:3rem;cursor:pointer}
-  .prev{left:20px}.next{right:20px}
-  
-  main{padding:120px 1rem 4rem;text-align:center}
-  .episodes{max-width:900px;margin:auto;display:grid;gap:2rem;margin-top:3rem}
-  .episode{background:#222;padding:2rem;border-radius:12px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#111;color:#eee;font-family:system-ui,-apple-system,sans-serif;overflow-x:hidden}
+header{position:fixed;top:0;left:0;right:0;height:90px;background:transparent;transition:background .4s;z-index:1000;backdrop-filter:blur(12px)}
+header.scrolled{background:rgba(0,0,0,0.94)!important}
+.logo{font-size:2rem;font-weight:900;color:white;text-shadow:0 2px 10px #000}
+.nav-menu{list-style:none;display:flex;gap:2.5rem}
+.nav-menu a{color:white;text-decoration:none;font-weight:600}
+.mobile-menu-toggle{display:none;color:white;font-size:2rem;cursor:pointer}
+@media(max-width:768px){.mobile-menu-toggle{display:block}}
+main{position:relative;z-index:10;background:#111;padding-top:90px;min-height:100vh;text-align:center}
 </style>
 </head>
 <body>
-
 <header>
-  <div class="site-inner">
+  <div style="max-width:1200px;margin:auto;padding:0 1.5rem;display:flex;justify-content:space-between;align-items:center;height:100%">
     <div class="logo">Honest News Network</div>
     <nav>
       <ul id="nav-menu" class="nav-menu"></ul>
@@ -100,27 +31,16 @@ header.scrolled{
   </div>
 </header>
 
-<div class="hero-carousel"></div>
-
 <main>
-  <h1>Latest Episodes</h1>
-  <div class="episodes">
-    <div class="episode"><h2>Coming soon…</h2><p>Episodes will appear here automatically when you add them.</p></div>
-  </div>
+  <h1 style="margin-top:120px">Latest Episodes</h1>   <!-- ← CHANGE THIS -->
+  <p style="margin:2rem;font-size:1.3rem">New episodes every Sunday</p>
 </main>
 
 <script>
-const pages=[
-  {name:"Home",url:"index.html"},
-  {name:"Podcast",url:"podcast.html"},
-  {name:"Blog",url:"blog.html"},
-  {name:"Shop",url:"shop.html"},
-  {name:"Events",url:"events.html"},
-  {name:"Support",url:"support.html"},
-  {name:"Contact",url:"contact.html"}
-];
+const pages=[{name:"Home",url:"index.html"},{name:"Podcast",url:"podcast.html"},{name:"Blog",url:"blog.html"},{name:"Shop",url:"shop.html"},{name:"Events",url:"events.html"},{name:"Support",url:"support.html"},{name:"Contact",url:"contact.html"}];
 document.getElementById("nav-menu").innerHTML=pages.map(p=>`<li><a href="${p.url}">${p.name}</a></li>`).join("");
 document.querySelector(".mobile-menu-toggle").onclick=()=>document.getElementById("nav-menu").classList.toggle("active");
+window.addEventListener("scroll",()=>document.querySelector("header").classList.toggle("scrolled",window.scrollY>60));
 </script>
 </body>
 </html>
