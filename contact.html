@@ -34,6 +34,30 @@ main, .site-inner {
   z-index: 10;
   background: #111;           /* change to #fff if you ever want light pages */
   padding-top: 90px;          /* exactly the header height */
+}header {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 90px;
+  background: transparent;
+  transition: background .4s;
+  z-index: 1000;
+  backdrop-filter: blur(12px);
+}
+header.scrolled { background: rgba(0,0,0,0.94) !important; }
+
+.hero-carousel {
+  position: fixed !important;
+  top: 0; left: 0;
+  width: 100%;
+  height: var(--hero-height, 100vh);
+  z-index: 1;
+}
+
+main, .site-inner {
+  position: relative;
+  z-index: 10;
+  background: #111;           /* change to #fff if you ever want light pages */
+  padding-top: 90px;          /* exactly the header height */
 }  .hero-carousel {
   position: fixed !important;
   top: 0;
