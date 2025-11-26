@@ -1,6 +1,6 @@
 {
   "siteTitle": "Honest News Network",
-  "pin": "092567",
+  "secretWord": "truth",
 
   "primaryColor": "#0066cc",
   "headerBg": "#111111",
@@ -8,59 +8,45 @@
   "fontName": "Roboto",
   "font": "https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap",
 
-  "bannerOn": true,
-  "bannerText": "Site under maintenance – back in 10 minutes",
+  "bannerOn": false,
+  "bannerText": "",
 
-  "heroParallax": true,
-
-  "heroSlides": [
-    {
-      "title": "Honest News.<br>Biblical Truth.",
-      "subtitle": "Serving truth with compassion",
-      "buttonText": "Listen Now →",
-      "buttonLink": "podcast.html",
-      "image": "https://images.unsplash.com/photo-1519389951293-7e3e96864eae?q=80&w=2000&auto=format&fit=crop"
-    },
-    {
-      "title": "New Book Out Now",
-      "subtitle": "“The Coming Storm”",
-      "buttonText": "Get Your Copy →",
-      "buttonLink": "shop.html",
-      "image": "https://images.unsplash.com/photo-1582213782179-81f408a2e3c7?q=80&w=2000&auto=format&fit=crop"
-    },
-    {
-      "title": "Support the Ministry",
-      "subtitle": "Partner with us today",
-      "buttonText": "Donate →",
-      "buttonLink": "support.html",
-      "image": "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=2000&auto=format&fit=crop"
-    }
-  ],
-
-  "cards": [
-    {
-      "title": "Latest Podcast",
-      "text": "New episode every Sunday",
-      "link": "podcast.html",
-      "image": "https://images.unsplash.com/photo-1615735087059-0c9d6f6f7b4f?q=80&w=800"
-    },
-    {
-      "title": "Read the Blog",
-      "text": "Daily truth drops",
-      "link": "blog.html",
-      "image": "https://images.unsplash.com/photo-1499750310107-5fef28a666f8?q=80&w=800"
-    },
-    {
-      "title": "Shop Books",
-      "text": "Amazon affiliate store",
-      "link": "shop.html",
-      "image": "https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=800"
-    }
-  ],
-
-  "amazonAffiliateTag": "yourtag-20",
-  "amazonLinks": [
-    "B0C1234567",
-    "B0D9876543"
-  ]
+  "heroSlides": {
+    "home": [
+      {
+        "title": "Honest News.<br>Biblical Truth.",
+        "subtitle": "Serving truth with compassion",
+        "buttonText": "Listen Now →",
+        "buttonLink": "podcast.html",
+        "image": "https://images.unsplash.com/photo-1519389951293-7e3e96864eae?q=80&w=2000&auto=format&fit=crop"
+      }
+    ],
+    "podcast": [
+      {
+        "title": "Latest Episode",
+        "subtitle": "New episode every Sunday",
+        "buttonText": "Play Now →",
+        "buttonLink": "#",
+        "image": "https://images.unsplash.com/photo-1615735087059-0c9d6f6f7b4f?q=80&w=2000&auto=format&fit=crop"
+      }
+    ],
+    "blog": [
+      {
+        "title": "Daily Truth Drops",
+        "subtitle": "Fresh articles every day",
+        "buttonText": "Read Now →",
+        "buttonLink": "blog.html",
+        "image": "https://images.unsplash.com/photo-1499750310107-5fef28a666f8?q=80&w=2000&auto=format&fit=crop"
+      }
+    ],
+    "shop": [
+      {
+        "title": "New Book Out Now",
+        "subtitle": "“The Coming Storm”",
+        "buttonText": "Buy on Amazon →",
+        "buttonLink": "shop.html",
+        "image": "https://images.unsplash.com/photo-1544947950-fa07a98d237f?q=80&w=2000&auto=format&fit=crop"
+      }
+    ]
+  }
 }
