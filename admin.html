@@ -39,7 +39,22 @@
   <div id="blog" class="tabcontent"><h2>Blog Page Slides</h2><div id="slides-blog"></div></div>
   <div id="shop" class="tabcontent"><h2>Shop Page Slides</h2><div id="slides-shop"></div></div>
 
-  <button onclick="addSlide(currentPage)">+ Add Slide to Current Tab</button>
+ <div style="margin:2rem 0;padding:1rem;background:#f0f0f0;border-radius:8px">
+  <label><strong>Hero Height on this page:</strong></label>
+  <select onchange="setHeight(this.value)">
+    <option value="full">Full Screen (100vh)</option>
+    <option value="medium">Medium (70vh)</option>
+    <option value="short">Short (50vh)</option>
+  </select>
+</div>
+
+<script>
+function setHeight(val){
+  data.heroHeight = data.heroHeight || {};
+  data.heroHeight[currentPage] = val;
+  saveAll();
+}
+</script>
   <button onclick="saveAll()" style="margin-left:20px;background:#c00">SAVE ALL CHANGES</button>
   <p id="status" style="margin-top:20px;font-weight:bold"></p>
 </div>
