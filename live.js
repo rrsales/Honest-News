@@ -51,5 +51,3 @@ fetch('data.json?t='+Date.now())
       setInterval(()=>carousel.querySelector('.next').click(),7000);
     }
   });
-    }
-  });
