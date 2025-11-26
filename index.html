@@ -4,48 +4,188 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Honest News Network — Home</title>
+
+<!-- Dynamic magic (loads fonts + live.js) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <script src="https://cdn.jsdelivr.net/gh/rrsales/Honest-News@master/live.js"></script>
+
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#111;color:#eee;font-family:system-ui,-apple-system,sans-serif}
-header{position:fixed;top:0;left:0;right:0;height:90px;background:transparent;transition:background .4s;z-index:1000;backdrop-filter:blur(12px)}
-header.scrolled{background:rgba(0,0,0,0.94)!important}
-.logo{font-size:1.9rem;font-weight:bold;color:white;text-shadow:0 2px 10px #000}
+  .hero-carousel {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--hero-height, 100vh);
+  z-index: 1;
+}
+main, .site-inner {            /* this is the key */
+  position: relative;
+  z-index: 10;
+  background: #fff;           /* or #111 if you want dark pages */
+}  header{
+  background:transparent;           /* fully see-through */
+  padding:1.5rem 0;
+  position:fixed;
+  width:100%;
+  top:0;
+  z-index:1000;
+  transition:background .4s;
+}
+header.scrolled{
+  background:rgba(0,0,0,0.85);      /* darkens when you scroll down */
+}
+.logo, .nav-menu a{
+  color:white;
+  text-shadow:0 2px 10px rgba(0,0,0,0.7);
+}*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:#fff;color:#333}
+header{background:#111;color:white;padding:1rem 0;position:fixed;width:100%;top:0;z-index:1000}
+.site-inner{max-width:1200px;margin:0 auto;padding:0 1rem;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:1.8rem;font-weight:bold}
 .nav-menu{list-style:none;display:flex;gap:2rem}
 .nav-menu a{color:white;text-decoration:none;font-weight:600}
-.mobile-menu-toggle{display:none;color:white;font-size:2rem;cursor:pointer}
-@media(max-width:768px){.mobile-menu-toggle{display:block}}
-.hero-carousel{position:fixed;top:0;left:0;width:100%;height:var(--hero-height,100vh);z-index:1}
-main{position:relative;z-index:10;background:#111;padding-top:90px;min-height:100vh;text-align:center;padding:120px 2rem}
-.slide{position:absolute;inset:0;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center}
-.slide::before{content:"";position:absolute;inset:0;background:rgba(0,0,0,0.55)}
-.slide-content{position:relative;max-width:900px;padding:2rem}
-.slide h1{font-size:4.8rem;line-height:1.1}
-.slide p{font-size:1.8rem;margin:2rem 0}
-.btn{padding:1.2rem 3rem;background:#0066cc;color:white;border:none;border-radius:8px;font-size:1.4rem;cursor:pointer}
-.dots{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);display:flex;gap:12px}
-.dot{width:14px;height:14px;border-radius:50%;background:rgba(255,255,255,0.5);cursor:pointer}
-.dot.active{background:white}
-.arrow{position:absolute;top:50%;transform:translateY(-50%);background:rgba(0,0,0,0.5);color:white;border:none;width:60px;height:60px;font-size:3rem;cursor:pointer}
-.prev{left:20px}.next{right:20px}
+.nav-menu a:hover{opacity:0.8}
+.mobile-menu-toggle{display:none;background:none;border:none;font-size:2rem;color:white;cursor:pointer}
+@media(max-width:768px){
+  .nav-menu{position:absolute;top:100%;left:0;right:0;background:#111;flex-direction:column;padding:1rem 0;display:none;text-align:center}
+  .nav-menu.active{display:flex}
+  .mobile-menu-toggle{display:block}
+}
+
+/* Hero */
+.hero{position:relative;height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;background:#222;color:white}
+.hero::before{content:"";position:absolute;top:0;left:0;width:100%;height:100%;background:url('https://images.unsplash.com/photo-1519389951293-7e3e96864eae?q=80&w=2000&auto=format&fit=crop') no-repeat center/cover;opacity:0.8;z-index:-1}
+.hero-content{max-width:900px;padding:2rem}
+.hero h1{font-size:4rem;margin-bottom:1rem;line-height:1.2}
+.hero p{font-size:1.6rem;margin-bottom:2rem}
+.btn{padding:1rem 2.8rem;background:#0066cc;color:white;border:none;border-radius:8px;font-size:1.3rem;cursor:pointer;transition:.3s;margin:0 1rem}
+.btn:hover{background:#0055aa}
+
+/* Sections */
+.section{padding:6rem 1rem;text-align:center;max-width:1200px;margin:auto}
+.section h2{font-size:3rem;margin-bottom:2rem}
+.features{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem;margin-top:4rem}
+.feature{padding:2rem;border-radius:12px;background:#f9f9f9;transition:.3s}
+.feature:hover{box-shadow:0 10px 30px rgba(0,0,0,0.1);transform:translateY(-5px)}
+.feature h3{font-size:1.8rem;margin-bottom:1rem}
+.stats{display:flex;justify-content:space-around;flex-wrap:wrap;gap:2rem;margin:4rem 0}
+.stat{text-align:center}
+.stat h3{font-size:3rem;font-weight:bold;color:#0066cc}
+.stat p{font-size:1.2rem}
+
+/* Trust signals */
+.trust{display:flex;justify-content:center;gap:3rem;flex-wrap:wrap;margin:4rem 0}
+.trust img{height:40px}
+
+/* CTA */
+.cta{background:#0066cc;color:white;padding:4rem 1rem;text-align:center}
+.cta h2{font-size:2.5rem;margin-bottom:1rem}
+.cta .btn{background:white;color:#0066cc}
+
+footer{background:#111;color:white;text-align:center;padding:2rem}
+#backTop{position:fixed;bottom:20px;right:20px;background:#0066cc;color:white;border:none;padding:12px 16px;font-size:1.5rem;cursor:pointer;display:none;border-radius:50%;z-index:999}
 </style>
 </head>
 <body>
+
 <header>
-  <div style="max-width:1200px;margin:auto;padding:0 1rem;display:flex;justify-content:space-between;align-items:center;height:100%">
+  <div class="site-inner">
     <div class="logo">Honest News Network</div>
-    <nav><ul id="nav-menu" class="nav-menu"></ul><button class="mobile-menu-toggle">☰</button></nav>
+    <nav>
+      <ul id="nav-menu" class="nav-menu"></ul>
+      <button class="mobile-menu-toggle" aria-label="Menu">☰</button>
+    </nav>
   </div>
 </header>
-<div class="hero-carousel"></div>
-<main><h1 style="margin-top:100px">Welcome to Honest News Network</h1></main>
+
+<section class="hero">
+  <div class="hero-content">
+    <h1>Honest News. Biblical Truth.</h1>
+    <p>News, podcasts, teaching, and featured books — serving truth with compassion.</p>
+    <div>
+      <a href="podcast.html" class="btn">Listen to Podcast</a>
+      <a href="blog.html" class="btn">Read the Blog</a>
+    </div>
+  </div>
+</section>
+
+<main>
+  <section class="section">
+    <h2>Everything You Need for Biblical Truth</h2>
+    <p>From recording to reaching thousands – all in one place.</p>
+    <div class="features">
+      <div class="feature">
+        <h3>Create Podcasts</h3>
+        <p>Record, edit, and publish episodes with AI noise reduction and auto-transcripts.</p>
+      </div>
+      <div class="feature">
+        <h3>Promote & Grow</h3>
+        <p>Distribute to Spotify, Apple Podcasts, YouTube – and social sharing tools.</p>
+      </div>
+      <div class="feature">
+        <h3>Monetize with Amazon</h3>
+        <p>Affiliate links for books, resources – earn from every recommendation.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section stats">
+    <div class="stat">
+      <h3>1,000+</h3>
+      <p>Episodes Hosted</p>
+    </div>
+    <div class="stat">
+      <h3>50K+</h3>
+      <p>Listeners Reached</p>
+    </div>
+    <div class="stat">
+      <h3>100%</h3>
+      <p>Biblical Truth</p>
+    </div>
+  </section>
+
+  <section class="section trust">
+    <img src="https://via.placeholder.com/100x40/0066cc/ffffff?text=Spotify" alt="Spotify">
+    <img src="https://via.placeholder.com/100x40/0066cc/ffffff?text=Apple" alt="Apple Podcasts">
+    <img src="https://via.placeholder.com/100x40/0066cc/ffffff?text=YouTube" alt="YouTube">
+    <p>Trusted by ministries worldwide</p>
+  </section>
+
+  <section class="section">
+    <h2>Start Your Truth Journey</h2>
+    <p>Everything from recording to reaching thousands – all in one place.</p>
+    <a href="podcast.html" class="btn">Get Started Free</a>
+  </section>
+</main>
+
+<section class="cta">
+  <h2>Ready to Share Biblical Truth?</h2>
+  <p>Join thousands who trust us for honest news and teaching.</p>
+  <a href="support.html" class="btn">Support Now</a>
+</section>
+
+<footer>© 2025 Honest News Network | <a href="admin.html">Admin</a></footer>
+<button id="backTop">↑</button>
+
 <script>
-const pages=[{name:"Home",url:"index.html"},{name:"Podcast",url:"podcast.html"},{name:"Blog",url:"blog.html"},{name:"Shop",url:"shop.html"},{name:"Events",url:"events.html"},{name:"Support",url:"support.html"},{name:"Contact",url:"contact.html"}];
-document.getElementById("nav-menu").innerHTML=pages.map(p=>`<li><a href="${p.url}">${p.name}</a></li>`).join("");
-document.querySelector(".mobile-menu-toggle").onclick=()=>document.getElementById("nav-menu").classList.toggle("active");
-window.addEventListener("scroll",()=>document.querySelector("header").classList.toggle("scrolled",window.scrollY>50));
+const pages=[
+  {name:"Home",url:"index.html"},
+  {name:"Podcast",url:"podcast.html"},
+  {name:"Blog",url:"blog.html"},
+  {name:"Shop",url:"shop.html"},
+  {name:"Events",url:"events.html"},
+  {name:"Support",url:"support.html"},
+  {name:"Contact",url:"contact.html"}
+];
+document.addEventListener("DOMContentLoaded",()=>{
+  const menu=document.getElementById("nav-menu");
+  menu.innerHTML=pages.map(p=>`<li><a href="${p.url}">${p.name}</a></li>`).join("");
+  document.querySelector(".mobile-menu-toggle").addEventListener("click",()=>{menu.classList.toggle("active")});
+  const btn=document.getElementById("backTop");
+  window.addEventListener("scroll",()=>{btn.style.display=window.scrollY>300?"block":"none";});
+  btn.onclick=()=>window.scrollTo({top:0,behavior:"smooth"});
+});
 </script>
 </body>
 </html>
