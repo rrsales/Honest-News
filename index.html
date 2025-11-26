@@ -4,33 +4,86 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Honest News Network — Home</title>
-<style>/* SAME FULL STYLE BLOCK AS podcast.html */</style>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.6;color:#333;background:#fff}
+header{background:#111;color:white;padding:1rem 0;position:fixed;width:100%;top:0;z-index:1000}
+.site-inner{max-width:1200px;margin:0 auto;padding:0 1rem;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:1.8rem;font-weight:bold}
+.nav-menu{list-style:none;display:flex;gap:2rem}
+.nav-menu a{color:white;text-decoration:none;font-weight:600}
+.nav-menu a:hover{opacity:0.8}
+.mobile-menu-toggle{display:none;background:none;border:none;font-size:2rem;color:white;cursor:pointer}
+@media(max-width:768px){
+  .nav-menu{position:absolute;top:100%;left:0;right:0;background:#111;flex-direction:column;padding:1rem 0;display:none;text-align:center}
+  .nav-menu.active{display:flex}
+  .mobile-menu-toggle{display:block}
+}
+main{margin-top:80px}
+.hero{background:#222;color:white;text-align:center;padding:6rem 1rem}
+.hero h1{font-size:3rem;margin-bottom:1rem}
+.hero p{font-size:1.3rem;margin-bottom:2rem}
+.btn{padding:.8rem 1.8rem;margin:0 .5rem;text-decoration:none;border-radius:4px}
+.btn-primary{background:#0066cc;color:white}
+.btn-outline{border:2px solid white;color:white}
+.teaser-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2rem;max-width:1200px;margin:4rem auto;padding:0 1rem}
+.teaser{background:#f9f9f9;padding:2rem;border-radius:8px;text-align:center}
+.teaser a{color:#0066cc;font-weight:bold}
+footer{background:#111;color:white;text-align:center;padding:2rem;margin-top:4rem}
+#backTop{position:fixed;bottom:20px;right:20px;background:#111;color:white;border:none;padding:12px 16px;font-size:1.5rem;cursor:pointer;display:none;border-radius:50%;z-index:999}
+</style>
 </head>
 <body>
-<header>…same header…</header>
+<header>
+  <div class="site-inner">
+    <div class="logo">Honest News Network</div>
+    <nav>
+      <ul id="nav-menu" class="nav-menu"></ul>
+      <button class="mobile-menu-toggle" aria-label="Menu">☰</button>
+    </nav>
+  </div>
+</header>
 
-<div class="hero-carousel">
-  <div class="slide active" style="background-image:url('https://images.unsplash.com/photo-1519389951293-7e3e96864eae?q=80&w=2000&auto=format&fit=crop')">
-    <div class="slide-content"><h1>Honest News.<br>Biblical Truth.</h1><p>Serving truth with compassion</p><a href="podcast.html" class="btn">Listen Now →</a></div>
+<section class="hero">
+  <h1>Honest News. Biblical Truth.</h1>
+  <p>News, podcasts, teaching, and featured books — serving truth with compassion.</p>
+  <div>
+    <a class="btn btn-primary" href="podcast.html">Listen to Podcast</a>
+    <a class="btn btn-outline" href="blog.html">Read the Blog</a>
   </div>
-  <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1582213782179-81f408a2e3c7?q=80&w=2000&auto=format&fit=crop')">
-    <div class="slide-content"><h1>New Book Out Now</h1><p>“The Coming Storm”</p><a href="shop.html" class="btn">Get Your Copy →</a></div>
-  </div>
-  <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=2000&auto=format&fit=crop')">
-    <div class="slide-content"><h1>Support the Ministry</h1><p>Partner with us today</p><a href="support.html" class="btn">Donate →</a></div>
-  </div>
-  <button class="arrow prev">‹</button>
-  <button class="arrow next">›</button>
-  <div class="dots"></div>
-</div>
+</section>
 
-<main style="padding:6rem 1rem;text-align:center">
-  <h2>Welcome to Honest News Network</h2>
-  <p>Truth without compromise.</p>
+<main>
+  <div class="teaser-grid">
+    <div class="teaser"><h3>Latest Podcast</h3><p>Catch our newest episode.</p><a href="podcast.html">Listen now →</a></div>
+    <div class="teaser"><h3>From the Blog</h3><p>Insightful articles and updates.</p><a href="blog.html">Read the blog →</a></div>
+    <div class="teaser"><h3>Support the Ministry</h3><p>Partner with us.</p><a href="support.html">Support →</a></div>
+  </div>
 </main>
 
 <footer>© 2025 Honest News Network</footer>
 <button id="backTop">↑</button>
-<script>/* SAME FULL SCRIPT AS podcast.html */</script>
+
+<script>
+const pages=[
+  {name:"Home",url:"index.html"},
+  {name:"Podcast",url:"podcast.html"},
+  {name:"Blog",url:"blog.html"},
+  {name:"Shop",url:"shop.html"},
+  {name:"Events",url:"events.html"},
+  {name:"Support",url:"support.html"},
+  {name:"Contact",url:"contact.html"}
+];
+document.addEventListener("DOMContentLoaded",()=>{
+  const menu=document.getElementById("nav-menu");
+  menu.innerHTML=pages.map(p=>`<li><a href="${p.url}">${p.name}</a></li>`).join("");
+  document.querySelector(".mobile-menu-toggle").addEventListener("click",()=>{
+    menu.classList.toggle("active");
+  });
+  const btn=document.getElementById("backTop");
+  window.addEventListener("scroll",()=>{btn.style.display=window.scrollY>300?"block":"none";});
+  btn.addEventListener("click",()=>{window.scrollTo({top:0,behavior:"smooth"});});
+});
+</script>
 </body>
 </html>
