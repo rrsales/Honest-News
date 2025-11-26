@@ -10,7 +10,19 @@
 <script src="https://cdn.jsdelivr.net/gh/rrsales/Honest-News@master/live.js"></script>
 
 <style>
-  header{
+  .hero-carousel {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--hero-height, 100vh);
+  z-index: 1;
+}
+main, .site-inner {            /* this is the key */
+  position: relative;
+  z-index: 10;
+  background: #fff;           /* or #111 if you want dark pages */
+}  header{
   background:transparent;           /* fully see-through */
   padding:1.5rem 0;
   position:fixed;
