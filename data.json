@@ -50,3 +50,9 @@
     ]
   }
 }
+"heroHeight": {
+  "home": "full",
+  "podcast": "medium",
+  "blog": "short",
+  "shop": "full"
+}
