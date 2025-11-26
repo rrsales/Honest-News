@@ -40,8 +40,31 @@
   <label>Body Text Color</label>
   <input type="color" id="textColor">
 
-  <label>Google Font Name (e.g. Playfair Display)</label>
-  <input type="text" id="fontName" placeholder="Playfair Display">
+  <label>Google Font</label>
+  <select id="fontSelect" onchange="document.getElementById('fontName').value=this.value">
+    <option value="Roboto">Roboto (default)</option>
+    <option value="Montserrat">Montserrat</option>
+    <option value="Playfair Display">Playfair Display</option>
+    <option value="Lora">Lora</option>
+    <option value="Open Sans">Open Sans</option>
+    <option value="Raleway">Raleway</option>
+    <option value="Oswald">Oswald</option>
+    <option value="Merriweather">Merriweather</option>
+    <option value="Source Serif Pro">Source Serif Pro</option>
+    <option value="Nunito">Nunito</option>
+    <option value="Poppins">Poppins</option>
+    <option value="Lato">Lato</option>
+    <option value="PT Serif">PT Serif</option>
+    <option value="Crimson Text">Crimson Text</option>
+    <option value="Libre Baskerville">Libre Baskerville</option>
+  </select>
+  <input type="text" id="fontName" placeholder="Or type any Google Font name">
+
+  <hr style="margin:2rem 0">
+
+  <label>Site-wide Banner (optional)</label>
+  <input type="text" id="bannerText" placeholder="e.g. Site under maintenance – back in 5 minutes">
+  <label><input type="checkbox" id="bannerOn"> Show banner on all pages</label>
 
   <h2 style="margin-top:3rem">Hero Carousel Slides</h2>
   <div id="slides"></div>
@@ -68,25 +91,28 @@ async function checkPin() {
 
 function loadData() {
   document.getElementById("newPin").value = "";
-  document.getElementById("primaryColor").value = data.primaryColor;
-  document.getElementById("headerBg").value = data.headerBg;
-  document.getElementById("textColor").value = data.textColor;
-  document.getElementById("fontName").value = data.fontName;
+  document.getElementById("primaryColor").value = data.primaryColor || "#0066cc";
+  document.getElementById("headerBg").value = data.headerBg || "#111111";
+  document.getElementById("textColor").value = data.textColor || "#333333";
+  document.getElementById("fontName").value = data.fontName || "Roboto";
+  document.getElementById("fontSelect").value = data.fontName || "Roboto";
+  document.getElementById("bannerText").value = data.bannerText || "";
+  document.getElementById("bannerOn").checked = data.bannerOn || false;
 
   const container = document.getElementById("slides");
   container.innerHTML = "";
-  data.heroSlides.forEach((s,i) => addSlideToPanel(s, i));
+  (data.heroSlides || []).forEach((s,i) => addSlideToPanel(s));
 }
 
-function addSlideToPanel(s, i) {
+function addSlideToPanel(s) {
   const div = document.createElement("div");
   div.className = "slide";
   div.innerHTML = `
-    <input placeholder="Title (use <br> for line break)" value="${s.title}">
-    <input placeholder="Subtitle" value="${s.subtitle}">
-    <input placeholder="Button text" value="${s.buttonText}">
-    <input placeholder="Button link" value="${s.buttonLink}">
-    <input placeholder="Image URL" value="${s.image}" style="width:100%">
+    <input placeholder="Title (use <br> for line break)" value="${s.title || ''}">
+    <input placeholder="Subtitle" value="${s.subtitle || ''}">
+    <input placeholder="Button text" value="${s.buttonText || ''}">
+    <input placeholder="Button link" value="${s.buttonLink || ''}">
+    <input placeholder="Image URL" value="${s.image || ''}" style="width:100%">
     <button onclick="this.parentElement.remove();saveAll()">Delete</button>
     <hr>
   `;
@@ -95,7 +121,7 @@ function addSlideToPanel(s, i) {
 
 function addSlide() {
   addSlideToPanel({
-    title: "New Slide",
+    title: "New Slide Title",
     subtitle: "Subtitle here",
     buttonText: "Click Here",
     buttonLink: "#",
@@ -104,17 +130,15 @@ function addSlide() {
 }
 
 async function saveAll() {
-  // Update PIN if changed
-  const newPin = document.getElementById("newPin").value.trim();
-  if (newPin && newPin.length === 6) data.pin = newPin;
-
+  if (document.getElementById("newPin").value.trim().length === 6) data.pin = document.getElementById("newPin").value.trim();
   data.primaryColor = document.getElementById("primaryColor").value;
   data.headerBg = document.getElementById("headerBg").value;
   data.textColor = document.getElementById("textColor").value;
-  data.fontName = document.getElementById("fontName").value;
+  data.fontName = document.getElementById("fontName").value || document.getElementById("fontSelect").value;
   data.font = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(data.fontName.replace(/ /g,'+'))}:wght@400;700&display=swap`;
+  data.bannerText = document.getElementById("bannerText").value;
+  data.bannerOn = document.getElementById("bannerOn").checked;
 
-  // Rebuild slides
   data.heroSlides = [];
   document.querySelectorAll("#slides .slide").forEach(el => {
     const inputs = el.querySelectorAll("input");
@@ -127,9 +151,8 @@ async function saveAll() {
     });
   });
 
-  // In the next step we'll add the real GitHub API save — for now it just shows success
-  document.getElementById("status").textContent = "All changes ready! (GitHub save coming in next message)";
-  console.log("New data.json content:", JSON.stringify(data, null, 2));
+  document.getElementById("status").textContent = "Changes ready – GitHub save coming next step!";
+  console.log("New data.json:", JSON.stringify(data, null, 2));
 }
 </script>
 </body>
