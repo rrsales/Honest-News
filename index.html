@@ -6,7 +6,7 @@
 <title>Honest News Network — Home</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.6;color:#333}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.6;color:#333;background:#fff}
 header{background:#111;color:white;padding:1rem 0;position:fixed;width:100%;top:0;z-index:1000}
 .site-inner{max-width:1200px;margin:0 auto;padding:0 1rem;display:flex;justify-content:space-between;align-items:center}
 .logo{font-size:1.8rem;font-weight:bold}
@@ -14,7 +14,11 @@ header{background:#111;color:white;padding:1rem 0;position:fixed;width:100%;top:
 .nav-menu a{color:white;text-decoration:none;font-weight:600}
 .nav-menu a:hover{opacity:0.8}
 .mobile-menu-toggle{display:none;background:none;border:none;font-size:2rem;color:white;cursor:pointer}
-@media(max-width:768px){.nav-menu{position:absolute;top:100%;left:0;right:0;background:#111;flex-direction:column;padding:1rem 0;display:none;text-align:center}.nav-menu.active{display:flex}.mobile-menu-toggle{display:block}}
+@media(max-width:768px){
+  .nav-menu{position:absolute;top:100%;left:0;right:0;background:#111;flex-direction:column;padding:1rem 0;display:none;text-align:center}
+  .nav-menu.active{display:flex}
+  .mobile-menu-toggle{display:block}
+}
 main{margin-top:80px}
 .hero{background:#222;color:white;text-align:center;padding:6rem 1rem}
 .hero h1{font-size:3rem;margin-bottom:1rem}
@@ -53,7 +57,7 @@ footer{background:#111;color:white;text-align:center;padding:2rem;margin-top:4re
   <div class="teaser-grid">
     <div class="teaser"><h3>Latest Podcast</h3><p>Catch our newest episode.</p><a href="podcast.html">Listen now →</a></div>
     <div class="teaser"><h3>From the Blog</h3><p>Insightful articles and updates.</p><a href="blog.html">Read the blog →</a></div>
-    <div class="teaser"><h3>Support the Ministry</h3><p>Partner with us.</p><a href="contact.html">Support →</a></div>
+    <div class="teaser"><h3>Support the Ministry</h3><p>Partner with us.</p><a href="support.html">Support →</a></div>
   </div>
 </main>
 
@@ -61,11 +65,25 @@ footer{background:#111;color:white;text-align:center;padding:2rem;margin-top:4re
 <button id="backTop">↑</button>
 
 <script>
-const pages=[{name:"Home",url:"index.html"},{name:"Podcast",url:"podcast.html"},{name:"Blog",url:"blog.html"},{name:"Shop",url:"shop.html"},{name:"Events",url:"events.html"},{name:"Support",url:"support.html"},{name:"Contact",url:"contact.html"}];
-document.addEventListener("DOMContentLoaded",()=>{document.getElementById("nav-menu").innerHTML=pages.map(p=>`<li><a href="${p.url}">${p.name}</a></li>`).join("");document.querySelector(".mobile-menu-toggle").addEventListener("click",()=>{document.getElementById("nav-menu").classList.toggle("active")});const b=document.getElementById("backTop");window.addEventListener("scroll",()=>{b.style.display=window.scrollY>300?"block":"none"});b.addEventListener("click",()=>{window.scrollTo({top:0,behavior:"smooth"})})});
+const pages=[
+  {name:"Home",url:"index.html"},
+  {name:"Podcast",url:"podcast.html"},
+  {name:"Blog",url:"blog.html"},
+  {name:"Shop",url:"shop.html"},
+  {name:"Events",url:"events.html"},
+  {name:"Support",url:"support.html"},
+  {name:"Contact",url:"contact.html"}
+];
+document.addEventListener("DOMContentLoaded",()=>{
+  const menu=document.getElementById("nav-menu");
+  menu.innerHTML=pages.map(p=>`<li><a href="${p.url}">${p.name}</a></li>`).join("");
+  document.querySelector(".mobile-menu-toggle").addEventListener("click",()=>{
+    menu.classList.toggle("active");
+  });
+  const btn=document.getElementById("backTop");
+  window.addEventListener("scroll",()=>{btn.style.display=window.scrollY>300?"block":"none";});
+  btn.addEventListener("click",()=>{window.scrollTo({top:0,behavior:"smooth"});});
+});
 </script>
-</body>
-</html>
-
 </body>
 </html>
