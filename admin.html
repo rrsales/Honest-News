@@ -2,95 +2,125 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Admin Panel</title>
+  <title>Admin Panel - Honest News</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- CORRECT paths for your GitHub Pages repo -->
   <link rel="stylesheet" href="/Honest-News/assets/css/admin.css">
-  <link rel="icon" href="/Honest-News/favicon.ico">
+  <link rel="icon" href="/Honest-News/favicon.ico" type="image/x-icon">
 </head>
-<body>
 
+<!-- ... all your body HTML stays 100% the same ... -->
+
+  <!-- CORRECT script path -->
+  <script src="/Honest-News/assets/js/admin.js"></script>
+</body>
+</html>
+
+<!-- LOGIN PANEL -->
 <div id="adminLogin">
   <h2>Admin Login</h2>
-  <input type="password" id="adminPassword" placeholder="Password">
+  <label>Password</label>
+  <input type="password" id="adminPassword">
   <button id="loginBtn">Log In</button>
-  <div id="loginMsg" style="color:red;margin-top:8px;"></div>
+  <div id="loginMsg"></div>
 </div>
 
+<!-- ADMIN PANEL -->
 <div id="adminPanel" style="display:none;">
   <div class="admin-grid">
+
+    <!-- SIDEBAR -->
     <aside class="admin-sidebar">
       <h2>Admin</h2>
-      <div class="sidebar-btn" data-tab="pagesTab">Pages</div>
-      <div class="sidebar-btn" data-tab="heroesTab">Hero Settings</div>
-      <div class="sidebar-btn" data-tab="menuTab">Menu</div>
-      <div class="sidebar-btn" data-tab="colorsTab">Appearance</div>
-      <div class="sidebar-btn" data-tab="imagesTab">Media</div>
-      <div class="sidebar-btn" id="logoutBtn" style="background:#ff4444;color:white;margin-top:20px;">Logout</div>
+      <div class="sidebar-btn" data-section="pages">Pages</div>
+      <div class="sidebar-btn" data-section="editPage">Edit Page</div>
+      <div class="sidebar-btn" data-section="heroes">Hero Settings</div>
+      <div class="sidebar-btn" data-section="appearance">Appearance</div>
+      <div class="sidebar-btn" data-section="media">Media Library</div>
+      <div class="sidebar-btn" id="logoutBtn" style="background:#ff4d4d;">Logout</div>
     </aside>
 
+    <!-- WORKSPACE -->
     <div class="admin-content">
-      <!-- PAGES TAB -->
-      <div id="pagesTab" class="admin-section">
+
+      <!-- PAGES -->
+      <div id="section-pages" class="admin-section">
         <h2>Pages</h2>
-        <div id="pageList"></div>
+        <div id="pagesList"></div>
+
         <hr>
-        <input id="addPageTitle" placeholder="Title">
-        <input id="addPageURL" placeholder="filename.html">
+        <h3>Add Page</h3>
+        <input id="newPageTitle" type="text" placeholder="Page Title">
         <button id="addPageBtn">Add Page</button>
       </div>
 
-      <!-- HERO TAB -->
-      <div id="heroesTab" class="admin-section" style="display:none;">
+      <!-- EDIT PAGE -->
+      <div id="section-editPage" class="admin-section" style="display:none;">
+        <h2>Edit Page</h2>
+
+        <label>Title</label>
+        <input id="editPageTitle">
+
+        <label>Slug</label>
+        <input id="editPageSlug">
+
+        <hr>
+        <h3>Rich Text Editor Coming Next (Block Editor)</h3>
+      </div>
+
+      <!-- HERO -->
+      <div id="section-heroes" class="admin-section" style="display:none;">
         <h2>Hero Settings</h2>
+
+        <label>Select Page</label>
         <select id="heroPageSelect"></select>
-        <label>Behavior</label>
-        <select id="heroBehavior">
+
+        <label>Hero Type</label>
+        <select id="heroType">
           <option value="none">None</option>
-          <option value="still">Still Image</option>
+          <option value="image">Still Image</option>
           <option value="parallax">Parallax</option>
-          <option value="slider">Slideshow (future)</option>
+          <option value="slideshow">Slideshow</option>
           <option value="video">Video</option>
         </select>
-        <div id="heroImageSettings">
-          <input id="heroImageInput" placeholder="Image URL">
-          <img id="heroPreview" style="max-height:200px;margin-top:8px;">
+
+        <div id="heroImageField">
+          <label>Image URL</label>
+          <input id="heroImageURL">
+          <img id="heroImagePreview" class="preview-img">
         </div>
-        <div id="heroVideoSettings" style="display:none;">
-          <input id="heroVideoInput" placeholder="Video URL (mp4 or YouTube)">
+
+        <div id="heroVideoField" style="display:none;">
+          <label>Video URL</label>
+          <input id="heroVideoURL">
         </div>
-        <label><input type="checkbox" id="heroTransparentMenu"> Transparent menu on this page</label>
-        <button id="saveHeroSettings">Save Hero Settings</button>
+
+        <label><input type="checkbox" id="transparentMenu"> Transparent Menu</label>
       </div>
 
-      <!-- MENU TAB -->
-      <div id="menuTab" class="admin-section" style="display:none;">
-        <h2>Menu Order</h2>
-        <div id="menuList"></div>
-        <button id="addMenuItemBtn">Add Custom Menu Item</button>
-      </div>
-
-      <!-- COLORS TAB -->
-      <div id="colorsTab" class="admin-section" style="display:none;">
+      <!-- APPEARANCE -->
+      <div id="section-appearance" class="admin-section" style="display:none;">
         <h2>Appearance</h2>
-        <label>Primary Color <input type="color" id="primaryColorPicker"></label><br><br>
-        <label>Background <input type="color" id="secondaryColorPicker"></label><br><br>
-        <label>Accent <input type="color" id="accentColorPicker"></label><br><br>
-        <label><input type="checkbox" id="enableMenuTransparency"> Transparent menu globally</label>
-        <button id="saveColorSettings">Save Colors</button>
+        <label>Primary Color</label>
+        <input type="color" id="navColor">
+
+        <label>Background Color</label>
+        <input type="color" id="bgColor">
       </div>
 
-      <!-- IMAGES TAB -->
-      <div id="imagesTab" class="admin-section" style="display:none;">
+      <!-- MEDIA -->
+      <div id="section-media" class="admin-section" style="display:none;">
         <h2>Media Library</h2>
-        <input type="file" id="imageUpload" accept="image/*">
-        <button id="uploadImageBtn">Upload Image</button>
-        <div id="imageGrid" style="display:flex;flex-wrap:wrap;gap:12px;margin-top:20px;"></div>
+        <p>Upload system coming next.</p>
+        <div id="imageGrid"></div>
       </div>
+
     </div>
   </div>
 </div>
 
-<script src="/Honest-News/assets/js/admin.js"></script>
+<!-- SCRIPTS -->
+<script src="assets/js/admin.js"></script>
 </body>
 </html>
 
