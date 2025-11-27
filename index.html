@@ -1,111 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Honest News Network – Home</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  :root { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:system-ui,sans-serif; margin:0; background:#fff; color:#333; line-height:1.6; }
+  
+  /* MENU – SOLID DARK, RESPONSIVE */
+  #menu {
+    background:rgba(0,0,0,0.95);
+    position:fixed; top:0; left:0; right:0; z-index:1000;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:15px 30px; backdrop-filter:blur(10px);
+  }
+  #menu .logo { color:#fff; font-weight:700; font-size:1.5rem; text-decoration:none; }
+  #menu ul { list-style:none; display:flex; gap:40px; margin:0; padding:0; }
+  #menu a { color:#fff; text-decoration:none; font-weight:600; font-size:1.1rem; }
+  #menu a:hover, #menu a.active { color:#28a745; border-bottom:3px solid #28a745; padding-bottom:5px; }
+  .hamburger { display:none; color:#fff; font-size:1.8rem; cursor:pointer; }
+
+  main { margin-top:80px; padding:20px; }
+  .hero { height:100vh; background:linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80') center/cover fixed;
+    color:white; display:flex; align-items:center; justify-content:center; text-align:center; }
+  .hero h1 { font-size:3.5rem; margin:0; }
+  .hero p { font-size:1.3rem; margin:15px 0 30px; }
+  .cta { background:#28a745; color:white; padding:16px 40px; border-radius:50px; text-decoration:none; font-weight:600; display:inline-block; }
+  .features { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:40px; max-width:1200px; margin:80px auto; text-align:center; }
+  .feature i { font-size:3.5rem; color:#0066cc; margin-bottom:20px; }
+  .stats { background:#f8f9fa; padding:80px 20px; text-align:center; }
+  .stats h2 { margin-bottom:40px; }
+  .stat-grid { display:flex; flex-wrap:wrap; justify-content:center; gap:60px; }
+  .stat h3 { font-size:3rem; color:#0066cc; margin:0; }
+  footer { background:#111; color:#aaa; text-align:center; padding:30px; }
+
+  @media (max-width:768px) {
+    .hamburger { display:block; }
+    #menu ul { position:fixed; top:70px; left:-100%; width:100%; height:calc(100vh-70px);
+      background:rgba(0,0,0,0.98); flex-direction:column; align-items:center; padding-top:60px;
+      transition:left 0.35s ease; gap:0; }
+    #menu ul.open { left:0; }
+    #menu a { font-size:1.6rem; padding:20px; width:100%; }
+    .hero h1 { font-size:2.5rem; }
+  }
+</style>
+</head>
 <body>
 
-<!-- PODBEAN-STYLE MENU – SOLID DARK, RESPONSIVE, WORKING -->
 <nav id="menu">
-  <div class="logo">
-    <a href="index.html" style="color: white; text-decoration: none; font-weight: bold; font-size: 1.4rem;">Honest News</a>
-  </div>
-  <ul id="menu-list">
-    <li><a href="index.html" class="active">Home</a></li>
-    <li><a href="podcast.html">Podcast</a></li>
-    <li><a href="shop.html">Shop</a></li>
-    <li><a href="about.html">About</a></li>
-    <li><a href="contact.html">Contact</a></li>
-  </ul>
-  <div class="hamburger" onclick="toggleMenu()">
+  <a href="index.html" class="logo">Honest News</a>
+  <ul id="menuList"></ul>
+  <div class="hamburger" onclick="document.getElementById('menuList').classList.toggle('open')">
     <i class="fas fa-bars"></i>
   </div>
 </nav>
 
-<main style="margin-top: 80px;">
+<main>
   <div class="hero">
     <div>
-      <h1>Honest News Network — Home</h1>
+      <h1>Honest News Network</h1>
       <p>Everything You Need for Biblical Truth</p>
       <p>From recording to reaching thousands – all in one place.</p>
+      <a href="podcast.html" class="cta">Get Started Free</a>
     </div>
   </div>
 
-  <section>
-    <h2 style="text-align: center;">Core Features</h2>
-    <div class="features">
-      <div class="feature">
-        <i class="fas fa-microphone"></i>
-        <h3>Create Podcasts</h3>
-        <p>Record, edit, and publish episodes with AI noise reduction and auto-transcripts.</p>
-      </div>
-      <div class="feature">
-        <i class="fas fa-share-alt"></i>
-        <h3>Promote & Grow</h3>
-        <p>Distribute to Spotify, Apple Podcasts, YouTube, and more. Social sharing built-in.</p>
-      </div>
-      <div class="feature">
-        <i class="fas fa-dollar-sign"></i>
-        <h3>Monetize with Amazon</h3>
-        <p>Embed affiliate links for books and resources to earn commissions.</p>
-      </div>
+  <div class="features">
+    <div class="feature">
+      <i class="fas fa-microphone"></i>
+      <h3>Create Podcasts</h3>
+      <p>Record, edit, and publish episodes with AI noise reduction and auto-transcripts.</p>
     </div>
-  </section>
+    <div class="feature">
+      <i class="fas fa-share-alt"></i>
+      <h3>Promote & Grow</h3>
+      <p>Distribute to Spotify, Apple Podcasts, YouTube, and more.</p>
+    </div>
+    <div class="feature">
+      <i class="fas fa-dollar-sign"></i>
+      <h3>Monetize with Amazon</h3>
+      <p>Embed affiliate links for books and resources to earn commissions.</p>
+    </div>
+  </div>
 
-  <section class="stats">
+  <div class="stats">
     <h2>Impact Stats</h2>
-    <div style="display: flex; justify-content: center; gap: 40px; flex-wrap: wrap;">
-      <div class="stat">
-        <h3>1,000+</h3>
-        <p>Episodes Hosted</p>
-      </div>
-      <div class="stat">
-        <h3>50K+</h3>
-        <p>Listens Reached</p>
-      </div>
-      <div class="stat">
-        <h3>100%</h3>
-        <p>Biblical Truth</p>
-      </div>
+    <div class="stat-grid">
+      <div class="stat"><h3>1,000+</h3><p>Episodes Hosted</p></div>
+      <div class="stat"><h3>50K+</h3><p>Listens Reached</p></div>
+      <div class="stat"><h3>100%</h3><p>Biblical Truth</p></div>
     </div>
-  </section>
+  </div>
 
-  <section>
-    <h2 style="text-align: center;">Start Your Truth Journey</h2>
-    <p style="text-align: center; font-size: 1.2rem; margin-bottom: 2rem;">Your platform for biblical teaching and honest news.</p>
-    <div style="text-align: center;">
-      <a href="podcast.html" class="cta">Get Started Free</a>
-    </div>
-  </section>
-
-  <section style="background: #f8f9fa; padding: 60px 20px; text-align: center;">
+  <div style="text-align:center;padding:80px 20px">
     <h2>Ready to Share Biblical Truth?</h2>
     <p>Join thousands who trust us for honest teaching.</p>
-    <div style="text-align: center;">
-      <a href="support.html" class="cta">Support Now</a>
-    </div>
-  </section>
-
-  <footer>
-    <p>&copy; 2025 Honest News Network | All Rights Reserved</p>
-  </footer>
+    <a href="support.html" class="cta">Support Now</a>
+  </div>
 </main>
 
+<footer>
+  <p>© 2025 Honest News Network | All Rights Reserved</p>
+</footer>
+
 <script>
-// Simple, bulletproof menu script — no errors, no white line
-function toggleMenu() {
-  const ul = document.getElementById('menu-list');
-  ul.classList.toggle('open');
-}
-const pages = [
-  {title: "Home", url: "index.html"},
-  {title: "Podcast", url: "podcast.html"},
-  {title: "Shop", url: "shop.html"},
-  {title: "About", url: "about.html"},
-  {title: "Contact", url: "contact.html"}
+// Fill menu + active state
+const items = [
+  {title:"Home", url:"index.html"},
+  {title:"Podcast", url:"podcast.html"},
+  {title:"Shop", url:"shop.html"},
+  {title:"About", url:"about.html"},
+  {title:"Contact", url:"contact.html"}
 ];
-const ul = document.getElementById('menu-list');
-pages.forEach(p => {
-  const li = document.createElement('li');
-  const a = document.createElement('a');
-  a.href = p.url;
-  a.textContent = p.title;
-  if (location.pathname.endsWith(p.url) || (p.url === "index.html" && location.pathname === "/Honest-News/")) a.classList.add('active');
+const ul = document.getElementById("menuList");
+items.forEach(item => {
+  const li = document.createElement("li");
+  const a = document.createElement("a");
+  a.href = item.url;
+  a.textContent = item.title;
+  if (location.pathname.endsWith(item.url) || (item.url==="index.html" && location.pathname==="/Honest-News/")) a.classList.add("active");
   li.appendChild(a);
   ul.appendChild(li);
 });
