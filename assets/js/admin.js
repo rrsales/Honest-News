@@ -1,5 +1,5 @@
 // assets/js/admin.js – Full WordPress-like Admin (2025 version)
-const PASSWORD = "jesus2025"; // CHANGE THIS!
+const PASSWORD = "jesus2025"; // ← put whatever you want here
 const STORE = "honestnews_full_v2";
 
 let db = {
