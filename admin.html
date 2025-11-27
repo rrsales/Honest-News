@@ -2,159 +2,171 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Honest News – Full Admin with All Pages</title>
+<title>Honest News – Full Site Editor</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
-  :root{--bg:#0d1117;--card:#161b22;--text:#c9d1d9;--blue:#58a6ff;--green:#238636;--border:#30363d;--red:#da3633}
-  *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,sans-serif}
-  body{background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden}
-  .header{background:var(--card);padding:16px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);font-size:1.4rem;font-weight:600}
-  .header button{background:var(--green);color:white;border:none;padding:10px 24px;border-radius:8px;cursor:pointer;font-weight:bold}
+  body{margin:0;font-family:system-ui;background:#f8fafc;color:#1e293b;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+  .header{background:#1e293b;color:white;padding:20px;text-align:center;font-size:1.5rem;font-weight:700;position:relative}
+  .header a{position:absolute;right:20px;top:20px;color:#94a3b8;text-decoration:none;font-size:1rem}
   .main{flex:1;display:flex;overflow:hidden}
-  .sidebar{width:280px;background:var(--card);border-right:1px solid var(--border);padding:20px 0;overflow-y:auto}
-  .page-item{padding:16px 28px;cursor:pointer;display:flex;align-items:center;gap:14px;transition:0.2s;position:relative}
-  .page-item:hover{background:#21262d}
-  .page-item.active{background:var(--blue);color:black;font-weight:600}
-  .page-item i{font-size:18px;width:22px;text-align:center}
-  .page-item .delete{position:absolute;right:12px;top:50%;transform:translateY(-50%);opacity:0;transition:0.2s}
-  .page-item:hover .delete{opacity:1}
-  .content{flex:1;padding:32px;overflow-y:auto}
-  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:28px;margin-bottom:24px}
-  input,textarea,select{width:100%;padding:12px;margin:10px 0;border-radius:8px;border:1px solid var(--border);background:#0d1117;color:white;font-size:15px}
-  button.small{padding:8px 16px;border-radius:6px;font-size:14px}
-  .hero-preview{border-radius:12px;overflow:hidden;margin:20px 0;box-shadow:0 20px 50px rgba(0,0,0,0.6);background:center/cover no-repeat;position:relative;height:70vh}
-  .hero-preview::after{content:attr(data-title);position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:white;font-size:3.5rem;font-weight:bold;text-shadow:0 0 30px black}
-  .add-page{background:var(--green);color:white;margin:20px;padding:16px;text-align:center;cursor:pointer;border-radius:8px}
+  .sidebar{width:320px;background:white;border-right:1px solid #e2e8f0;padding:20px;overflow-y:auto}
+  .page{padding:16px 20px;margin:8px 0;background:#f1f5f9;border-radius:12px;cursor:pointer;font-weight:600;transition:0.2s}
+  .page:hover{background:#e0e7ff}
+  .page.active{background:#4338ca;color:white}
+  .content{flex:1;padding:40px;overflow-y:auto;background:#fff}
+  .card{background:white;border:1px solid #e2e8f0;border-radius:16px;padding:30px;margin-bottom:30px;box-shadow:0 4px 20px rgba(0,0,0,0.05)}
+  input,textarea,select{width:100%;padding:14px;margin:10px 0;border-radius:10px;border:1px solid #cbd5e1;background:#fff;font-size:16px}
+  button{background:#4338ca;color:white;border:none;padding:14px 28px;border-radius:10px;cursor:pointer;font-weight:600;margin:10px 10px 10px 0}
+  button:hover{background:#3730a3}
+  .block{margin:20px 0;padding:20px;background:#f8fafc;border:2px dashed #cbd5e1;border-radius:12px;position:relative}
+  .block:hover{border-color:#4338ca}
+  .tools{position:absolute;top:8px;right:8px;opacity:0;transition:0.2s}
+  .block:hover .tools{opacity:1}
+  .tools button{background:none;border:none;cursor:pointer;font-size:18px;margin:0 4px;color:#6366f1}
+  .preview{margin-top:40px;padding:40px;background:#fff;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,0.1);min-height:400px}
 </style>
 </head>
 <body>
 
 <div class="header">
-  <div>Honest News Admin</div>
-  <button onclick="saveAll()">SAVE ALL PAGES</button>
+  Honest News Network – Full Site Editor
+  <a href="/" target="_blank">View Live Site →</a>
 </div>
 
 <div class="main">
-  <div class="sidebar" id="pageList">
-    <!-- Pages will be injected here -->
+  <div class="sidebar">
+    <h3>Pages</h3>
+    <div id="pages"></div>
+    <button onclick="newPage()" style="width:100%;margin-top:20px">+ New Page</button>
   </div>
 
-  <div class="content" id="content">
-    <div class="card"><h2>Select a page from the left menu</h2></div>
+  <div class="content">
+    <div id="editor"></div>
   </div>
 </div>
 
 <script>
 const PASS = "jesus2025";
+if(prompt("Password") !== PASS) { alert("Wrong"); location.reload(); }
 
-// Default pages — these are YOUR current pages
-let data = {
-  pages: [
-    {id:"home",title:"Home",icon:"fas fa-home",hero:{bg:"https://images.unsplash.com/photo-1519389951290-13fcd0ed16c7?w=1920",size:"large",parallax:true}},
-    {id:"podcast",title:"Podcast",icon:"fas fa-podcast",hero:{bg:"https://images.unsplash.com/photo-1508700112060-9d1b2e00a847?w=1920",size:"medium",parallax:true}},
-    {id:"shop",title:"Shop",icon:"fas fa-shopping-cart",hero:{bg:"https://images.unsplash.com/photo-1556742049-0cf82e0d9a8d?w=1920",size:"medium",parallax:false}},
-    {id:"about",title:"About",icon:"fas fa-info-circle",hero:{bg:"https://images.unsplash.com/photo-1495467033336-2c4e83cd7e3b?w=1920",size:"medium",parallax:true}},
-    {id:"contact",title:"Contact",icon:"fas fa-envelope",hero:{bg:"https://images.unsplash.com/photo-1557425955-df376b5903c8?w=1920",size:"small",parallax:false}},
-    {id:"live",title:"Live Stream",icon:"fas fa-broadcast-tower",hero:{bg:"https://images.unsplash.com/photo-1519389951290-13fcd0ed16c7?w=1920",size:"large",parallax:true}}
-  ],
-  site:{title:"Honest News Network",transparentHeader:true}
-};
+let site = {pages:[]};
 
-let currentPage = data.pages[0];
-
-function load(){const s=localStorage.getItem("hn_full_pages");if(s)data=JSON.parse(s)}
-function saveAll(){localStorage.setItem("hn_full_pages",JSON.stringify(data));alert("All pages saved!")}
-
-if(localStorage.getItem("hn_logged")!=="yes"){
-  let p=prompt("Password (jesus2025)");
-  if(p!==PASS){alert("Wrong");location.reload();}
-  localStorage.setItem("hn_logged","yes");
+function load() {
+  fetch("site-data.json?t=" + Date.now())
+    .then(r => r.json())
+    .then(d => { site = d; render(); })
+    .catch(() => { site = {pages:[{title:"Home",hero:{bg:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80",overlay:"Honest News Network",sub:"Biblical Truth • Powerful Podcast Hosting"},blocks:[]}]};
+      render(); });
 }
 load();
-renderMenu();
-renderPage(currentPage);
 
-function renderMenu(){
-  let html = `<div class="add-page" onclick="addPage()">+ Add New Page</div>`;
-  data.pages.forEach((p,i)=>{
-    html += `
-      <div class="page-item ${p===currentPage?"active":""}" onclick="selectPage(${i})" draggable="true" ondragstart="dragStart(${i})">
-        <i class="${p.icon||'fas fa-file'}"></i> ${p.title}
-        <i class="fas fa-times delete" style="color:${p===currentPage?'black':'#da3633'}" onclick="event.stopPropagation();deletePage(${i})"></i>
-      </div>`;
-  });
-  document.getElementById("pageList").innerHTML = html;
+let current = null;
+
+function render() {
+  document.getElementById("pages").innerHTML = site.pages.map((p,i) => `
+    <div class="page ${p===current?'active':''}" onclick="select(${i})">${p.title}</div>
+  `).join("");
+  if(!current && site.pages[0]) select(0);
 }
 
-function renderPage(page){
-  currentPage = page;
-  renderMenu();
-  document.getElementById("content").innerHTML = `
+function select(i) {
+  current = site.pages[i];
+  render();
+  document.getElementById("editor").innerHTML = `
     <div class="card">
-      <h2>Editing: <strong>${page.title}</strong></h2>
-      <input value="${page.title}" onchange="page.title=this.value;renderMenu();saveAll()" placeholder="Page title">
+      <h2>Editing: <strong>${current.title}</strong></h2>
+      <input value="${current.title}" onchange="current.title=this.value;render()">
       
-      <label>Hero Background Image URL</label>
-      <input value="${page.hero.bg}" onchange="page.hero.bg=this.value;saveAll();updatePreview()" placeholder="https://...">
-      
-      <label>Hero Size</label>
-      <select onchange="page.hero.size=this.value;saveAll();updatePreview()">
-        <option value="small" ${page.hero.size==="small"?"selected":""}>Small (50vh) – Mobile fast</option>
-        <option value="medium" ${page.hero.size==="medium"?"selected":""}>Medium (75vh) – Recommended</option>
-        <option value="large" ${page.hero.size==="large"?"selected":""}>Large (100vh) – Dramatic</option>
+      <h3 style="margin-top:30px">Hero Settings</h3>
+      <input value="${current.hero.bg}" placeholder="Hero Image URL" onchange="current.hero.bg=this.value;preview()">
+      <input value="${current.hero.overlay}" placeholder="Main Title (overlay)" onchange="current.hero.overlay=this.value;preview()">
+      <input value="${current.hero.sub||''}" placeholder="Subtitle (optional)" onchange="current.hero.sub=this.value;preview()">
+      <select onchange="current.hero.size=this.value;preview()">
+        <option value="small" ${current.hero.size==="small"?"selected":""}>Small Hero</option>
+        <option value="medium" ${current.hero.size==="medium"?"selected":""}>Medium Hero</option>
+        <option value="large" ${current.hero.size==="large"?"selected":""}>Large Hero (Podbean style)</option>
       </select>
-      
-      <label><input type="checkbox" ${page.hero.parallax?"checked":""} onchange="page.hero.parallax=this.checked;saveAll();updatePreview()"> Enable Parallax Effect</label>
-      
-      <div class="hero-preview" data-title="${page.title}" style="background-image:url(${page.hero.bg||'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920'});background-attachment:${page.hero.parallax?"fixed":"scroll"};height:${page.hero.size==="small"?"50vh":page.hero.size==="large"?"100vh":"75vh"}"></div>
+      <label><input type="checkbox" ${current.hero.parallax?"checked":""} onchange="current.hero.parallax=this.checked;preview()"> Parallax Effect</label>
+
+      <h3 style="margin-top:40px">Content Blocks</h3>
+      <button onclick="addBlock('heading')">+ Heading</button>
+      <button onclick="addBlock('text')">+ Text</button>
+      <button onclick="addBlock('image')">+ Image</button>
+      <button onclick="addBlock('button')">+ Button</button>
+      <div id="blocks"></div>
+
+      <div class="preview">
+        <h3>Live Preview</h3>
+        <div style="background:url(${current.hero.bg}) center/cover ${current.hero.parallax?'fixed':'scroll'};height:${current.hero.size==='large'?'90vh':current.hero.size==='medium'?'70vh':'50vh'};display:flex;align-items:center;justify-content:center;color:white;text-align:center;position:relative">
+          <div style="position:relative;z-index:2;max-width:90%">
+            <h1 style="font-size:4rem;margin:0;text-shadow:0 0 40px black">${current.hero.overlay}</h1>
+            ${current.hero.sub?`<p style="font-size:1.8rem;margin:20px 0;opacity:0.9">${current.hero.sub}</p>`:""}
+          </div>
+          <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5)"></div>
+        </div>
+        <div style="padding:40px;max-width:1100px;margin:0 auto" id="blockPreview"></div>
+      </div>
+
+      <button onclick="publish()" style="background:#16a34a;font-size:1.2rem;padding:16px 40px;margin-top:30px">PUBLISH ENTIRE SITE</button>
     </div>
   `;
+  renderBlocks();
+  preview();
 }
 
-function selectPage(i){renderPage(data.pages[i])}
-function addPage(){
-  const name=prompt("New page name?");
-  if(name){
-    data.pages.push({
-      id:Date.now(),
-      title:name,
-      icon:"fas fa-file-alt",
-      hero:{bg:"",size:"medium",parallax:true}
-    });
-    saveAll();
-    renderMenu();
-  }
+function renderBlocks() {
+  const container = document.createElement("div");
+  current.blocks.forEach((b,i) => {
+    const div = document.createElement("div");
+    div.className = "block";
+    if(b.type==="heading") div.innerHTML = `<input value="${b.text}" onchange="current.blocks[${i}].text=this.value;preview()">`;
+    if(b.type==="text") div.innerHTML = `<textarea onchange="current.blocks[${i}].text=this.value;preview()">${b.text}</textarea>`;
+    if(b.type==="image") div.innerHTML = `<input value="${b.src}" placeholder="Image URL" onchange="current.blocks[${i}].src=this.value;preview()">`;
+    if(b.type==="button") div.innerHTML = `Text: <input value="${b.text}" onchange="current.blocks[${i}].text=this.value"> URL: <input value="${b.url}" onchange="current.blocks[${i}].url=this.value">`;
+    
+    const tools = document.createElement("div");
+    tools.className = "tools";
+    tools.innerHTML = `<button onclick="move(${i},-1)">↑</button><button onclick="move(${i},1)">↓</button><button onclick="remove(${i})">×</button>`;
+    div.appendChild(tools);
+    container.appendChild(div);
+  });
+  document.getElementById("blocks")?.replaceWith(container);
 }
-function deletePage(i){
-  if(confirm("Delete page '"+data.pages[i].title+"'?")){
-    data.pages.splice(i,1);
-    if(currentPage===data.pages[i]) currentPage=data.pages[0]||null;
-    saveAll();
-    renderMenu();
-    if(currentPage) renderPage(currentPage);
+
+function addBlock(type) {
+  current.blocks.push({type, text:type==="heading"?"New Heading":type==="text"?"Your text here":"", src:"", url:"#"});
+  renderBlocks(); preview();
+}
+function move(i,d){ const b=current.blocks.splice(i,1)[0]; current.blocks.splice(i+d,0,b); renderBlocks(); preview(); }
+function remove(i){ if(confirm("Delete?")){ current.blocks.splice(i,1); renderBlocks(); preview(); }}
+
+function preview() {
+  let html = "";
+  current.blocks.forEach(b => {
+    if(b.type==="heading") html += `<h2 style="font-size:2.5rem;margin:40px 0 20px">${b.text}</h2>`;
+    if(b.type==="text") html += `<p style="font-size:1.2rem;line-height:1.8">${b.text.replace(/\n/g,'<br>')}</p>`;
+    if(b.type==="image") html += `<img src="${b.src}" style="max-width:100%;border-radius:16px;margin:30px 0">`;
+    if(b.type==="button") html += `<a href="${b.url}" style="background:#16a34a;color:white;padding:16px 40px;border-radius:50px;display:inline-block;margin:20px 0;font-weight:600">${b.text}</a>`;
+  });
+  document.getElementById("blockPreview").innerHTML = html;
+}
+
+function newPage() {
+  const title = prompt("Page title?");
+  if(title) {
+    site.pages.push({title, hero:{bg:"",overlay:title,sub:"",size:"large",parallax:true}, blocks:[]});
+    select(site.pages.length-1);
   }
 }
 
-function updatePreview(){renderPage(currentPage)}
-
-// Drag to reorder pages
-let dragIdx;
-function dragStart(i){dragIdx=i}
-document.getElementById("pageList").ondrop=e=>{
-  e.preventDefault();
-  const target = e.target.closest(".page-item");
-  if(target && dragIdx!==undefined){
-    const to = Array.from(document.querySelectorAll(".page-item")).indexOf(target);
-    if(to>-1 && to!==dragIdx){
-      const [moved] = data.pages.splice(dragIdx,1);
-      data.pages.splice(to,0,moved);
-      saveAll();
-      renderMenu();
-    }
-  }
-};
-document.getElementById("pageList").ondragover=e=>e.preventDefault();
+function publish() {
+  const blob = new Blob([JSON.stringify(site, null, 2)], {type: "application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "site-data.json"; a.click();
+  alert("site-data.json downloaded!\n\nUpload it to your repo root → your entire site updates perfectly.");
+}
 </script>
 </body>
 </html>
