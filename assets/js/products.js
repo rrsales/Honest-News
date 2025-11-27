@@ -61,5 +61,11 @@ window.SiteProducts = {
   getProductsFromSiteData
 };
 
-
+// products.js - example product data; your products.js can be expanded
+const PRODUCTS = [
+  { id: 'p1', title: 'Battleground Prophetic Handbook', img: 'assets/images/products/product1.jpg', url:'#' },
+  { id: 'p2', title: 'Overcoming Faith Collection', img: 'assets/images/products/product2.jpg', url:'#' },
+  { id: 'p3', title: 'Foundations of Prophecy', img: 'assets/images/products/product3.jpg', url:'#' }
+];
+console.log('Products loaded', PRODUCTS);
 
