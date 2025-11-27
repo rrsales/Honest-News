@@ -1,60 +1,19 @@
 {
-  "settings": {
-    "transparentHeader": false
-  },
-  "images": [
-    {
-      "id": "img-1",
-      "name": "Sample Hero 1",
-      "url": "https://images.unsplash.com/photo-1519389951293-7e3e96864eae?q=80&w=2000&auto=format&fit=crop"
-    },
-    {
-      "id": "img-2",
-      "name": "Sample Hero 2",
-      "url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=2000&auto=format&fit=crop"
-    }
-  ],
   "pages": [
     {
-      "id": "id-home",
       "title": "Home",
-      "slug": "/",
       "hero": {
-        "behavior": "carousel",
-        "size": "full",
-        "media": "",
-        "parallax": false,
-        "slides": [
-          {
-            "image": "https://images.unsplash.com/photo-1519389951293-7e3e96864eae?q=80&w=2000&auto=format&fit=crop",
-            "title": "Honest News. Biblical Truth.",
-            "subtitle": "Serving truth with compassion."
-          },
-          {
-            "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=2000&auto=format&fit=crop",
-            "title": "Daily Podcast",
-            "subtitle": "New episodes every Sunday"
-          }
-        ]
+        "bg": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80",
+        "overlay": "Honest News Network",
+        "sub": "Biblical Truth • Powerful Podcast Hosting • Global Reach",
+        "size": "large",
+        "parallax": true
       },
       "blocks": [
-        {
-          "id": "block-1",
-          "name": "Hero Headline",
-          "type": "rich-text",
-          "content": "<h1>Welcome to Honest News</h1><p>Your source for Biblical truth.</p>"
-        },
-        {
-          "id": "block-2",
-          "name": "Intro Paragraph",
-          "type": "rich-text",
-          "content": "<p>We serve the community with integrity and compassion, reporting only the truth.</p>"
-        }
-      ],
-      "styles": {
-        "background": "#ffffff",
-        "text": "#000000"
-      }
+        { "type": "heading", "text": "Everything Your Ministry Needs" },
+        { "type": "text", "text": "Free hosting • AI tools • Amazon monetization • Apple & Spotify distribution" },
+        { "type": "button", "text": "Start Free Today", "url": "#" }
+      ]
     }
   ]
 }
