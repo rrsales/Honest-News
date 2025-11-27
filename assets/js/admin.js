@@ -1,23 +1,20 @@
+// admin.js — Full Podbean-style admin panel
 (() => {
-  /*********************************
-   CONFIGURATION
-  *********************************/
   const ADMIN_PASSWORD = 'admin123';
-  const STORAGE_KEY = 'honestnews_siteData_v1';
+  const STORAGE_KEY = 'honestnews_siteData_v2';
 
-  /*********************************
-   DEFAULT DATA
-  *********************************/
+  // Default site data model
   const defaultData = {
     pages: [
-      { title: 'Home', url: 'index.html' },
-      { title: 'About', url: 'about.html' },
-      { title: 'Blog', url: 'blog.html' },
-      { title: 'Podcast', url: 'podcast.html' },
-      { title: 'Products', url: 'products.html' },
-      { title: 'Contact', url: 'contact.html' }
+      { title: 'Home', url: 'index.html', content: [] },
+      { title: 'About', url: 'about.html', content: [] },
+      { title: 'Blog', url: 'blog.html', content: [] },
+      { title: 'Podcast', url: 'podcast.html', content: [] },
+      { title: 'Products', url: 'products.html', content: [] },
+      { title: 'Contact', url: 'contact.html', content: [] }
     ],
-    heroes: {}, // per page hero settings
+    menu: [],
+    heroes: {},
     images: [],
     settings: {
       siteName: 'Honest News Network',
@@ -28,11 +25,9 @@
     }
   };
 
-  /*********************************
-   STATE & HELPERS
-  *********************************/
   let siteData = loadSiteData();
 
+  // Load and save
   function loadSiteData() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -41,274 +36,163 @@
         return JSON.parse(JSON.stringify(defaultData));
       }
       return JSON.parse(raw);
-    } catch (err) {
-      console.error('Failed to load site data', err);
-      return JSON.parse(JSON.stringify(defaultData));
-    }
+    } catch { return JSON.parse(JSON.stringify(defaultData)); }
   }
 
   function saveSiteData() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(siteData));
     renderPagesList();
-    renderHeroPageSelect();
+    populateHeroPageSelect();
+    renderMenuList();
     renderImageGrid();
-    console.log('Site data saved.');
   }
 
-  function uid(prefix = '') {
-    return prefix + Math.random().toString(36).slice(2, 9);
-  }
+  function uid(prefix='') { return prefix + Math.random().toString(36).slice(2,9); }
 
-  /*********************************
-   DOM ELEMENTS
-  *********************************/
+  // DOM refs
   const loginPanel = document.getElementById('adminLogin');
   const adminPanel = document.getElementById('adminPanel');
   const loginBtn = document.getElementById('loginBtn');
   const loginMsg = document.getElementById('loginMsg');
   const adminPasswordInput = document.getElementById('adminPassword');
-
   const sidebarBtns = document.querySelectorAll('.sidebar-btn');
   const sections = document.querySelectorAll('.admin-section');
 
+  // Login
+  loginBtn.addEventListener('click',()=>{
+    if(adminPasswordInput.value===ADMIN_PASSWORD){
+      loginPanel.style.display='none';
+      adminPanel.style.display='';
+      initAdmin();
+    } else { loginMsg.textContent='Incorrect password'; }
+  });
+
+  // Sidebar tab switching
+  sidebarBtns.forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const section = btn.getAttribute('data-section');
+      sections.forEach(s=>s.style.display='none');
+      const active = document.getElementById('section-'+section);
+      if(active) active.style.display='block';
+    });
+  });
+
+  // Pages Management
   const pagesListDiv = document.getElementById('pagesList');
   const addPageBtn = document.getElementById('addPageBtn');
-  const newPageTitle = document.getElementById('newPageTitle');
 
-  const heroType = document.getElementById('heroType');
-  const heroImageURL = document.getElementById('heroImageURL');
-  const heroVideoURL = document.getElementById('heroVideoURL');
-  const heroImagePreview = document.getElementById('heroImagePreview');
-  const transparentMenu = document.getElementById('transparentMenu');
-  const heroPageSelect = document.getElementById('heroPageSelect');
-
-  const navColor = document.getElementById('navColor');
-  const bgColor = document.getElementById('bgColor');
-
-  const imageUpload = document.getElementById('imageUpload');
-  const uploadImageBtn = document.getElementById('uploadImageBtn');
-  const imageGridDiv = document.getElementById('imageGrid');
-
-  /*********************************
-   LOGIN
-  *********************************/
-  loginBtn && loginBtn.addEventListener('click', () => {
-    const pwd = adminPasswordInput.value || '';
-    if (pwd === ADMIN_PASSWORD) {
-      loginPanel.style.display = 'none';
-      adminPanel.style.display = 'grid';
-      initAdmin();
-    } else {
-      loginMsg.textContent = 'Incorrect password';
-    }
-  });
-
-  /*********************************
-   SIDEBAR NAVIGATION
-  *********************************/
-  sidebarBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const target = btn.getAttribute('data-section');
-      sections.forEach(sec => {
-        sec.style.display = (sec.id === 'section-' + target) ? 'block' : 'none';
-      });
-    });
-  });
-
-  /*********************************
-   PAGES
-  *********************************/
-  function renderPagesList() {
-    if (!pagesListDiv) return;
-    pagesListDiv.innerHTML = '';
-    siteData.pages.forEach((p, idx) => {
-      const row = document.createElement('div');
-      row.style.display = 'flex';
-      row.style.justifyContent = 'space-between';
-      row.style.marginBottom = '8px';
-      row.innerHTML = `
-        <div>${p.title} (${p.url})</div>
-        <div>
-          <button class="editBtn">Edit</button>
-          <button class="delBtn" style="background:#ff4d4d;color:#fff;">Delete</button>
-        </div>`;
-      const editBtn = row.querySelector('.editBtn');
-      const delBtn = row.querySelector('.delBtn');
-
-      editBtn.addEventListener('click', () => editPage(idx));
-      delBtn.addEventListener('click', () => {
-        if (!confirm(`Delete page "${p.title}"?`)) return;
-        siteData.pages.splice(idx, 1);
-        delete siteData.heroes[p.url];
-        saveSiteData();
-      });
-
+  function renderPagesList(){
+    pagesListDiv.innerHTML='';
+    siteData.pages.forEach((p,i)=>{
+      const row=document.createElement('div');
+      row.style.display='flex'; row.style.justifyContent='space-between'; row.style.padding='6px 0';
+      row.innerHTML=`<strong>${p.title}</strong> (${p.url}) <button data-idx='${i}'>Edit</button> <button data-del='${i}' style='background:#ff4d4d;color:#fff;'>Delete</button>`;
       pagesListDiv.appendChild(row);
     });
-  }
-
-  addPageBtn && addPageBtn.addEventListener('click', () => {
-    if (!newPageTitle.value.trim()) return alert('Enter a page title');
-    const slug = prompt('Page URL (example: about.html)');
-    if (!slug) return;
-    if (siteData.pages.some(p => p.url === slug.trim())) return alert('Page URL exists');
-    siteData.pages.push({ title: newPageTitle.value.trim(), url: slug.trim() });
-    newPageTitle.value = '';
-    saveSiteData();
-  });
-
-  function editPage(idx) {
-    const page = siteData.pages[idx];
-    const newTitle = prompt('Edit title', page.title);
-    if (!newTitle) return;
-    const newUrl = prompt('Edit URL', page.url);
-    if (!newUrl) return;
-    // Update hero settings key if URL changes
-    if (siteData.heroes[page.url]) {
-      siteData.heroes[newUrl] = siteData.heroes[page.url];
-      delete siteData.heroes[page.url];
-    }
-    page.title = newTitle.trim();
-    page.url = newUrl.trim();
-    saveSiteData();
-  }
-
-  /*********************************
-   HERO SETTINGS
-  *********************************/
-  function renderHeroPageSelect() {
-    if (!heroPageSelect) return;
-    heroPageSelect.innerHTML = '';
-    siteData.pages.forEach(p => {
-      const opt = document.createElement('option');
-      opt.value = p.url;
-      opt.textContent = p.title;
-      heroPageSelect.appendChild(opt);
+    pagesListDiv.querySelectorAll('button[data-idx]').forEach(btn=>{
+      btn.addEventListener('click',()=>{ openEditPageDialog(parseInt(btn.getAttribute('data-idx'))) });
     });
-    // Load first page hero settings
-    if (heroPageSelect.value) loadHeroSettings(heroPageSelect.value);
-  }
-
-  function loadHeroSettings(pageUrl) {
-    const hero = siteData.heroes[pageUrl] || { type: 'none', image: '', video: '', transparentMenu: false };
-    heroType.value = hero.type;
-    heroImageURL.value = hero.image;
-    heroVideoURL.value = hero.video;
-    heroImagePreview.src = hero.image;
-    heroImagePreview.style.display = hero.image ? 'block' : 'none';
-    transparentMenu.checked = hero.transparentMenu;
-    toggleHeroFields(heroType.value);
-  }
-
-  function saveHeroSettings(pageUrl) {
-    siteData.heroes[pageUrl] = {
-      type: heroType.value,
-      image: heroImageURL.value,
-      video: heroVideoURL.value,
-      transparentMenu: transparentMenu.checked
-    };
-    saveSiteData();
-  }
-
-  function toggleHeroFields(type) {
-    if (type === 'image' || type === 'parallax' || type === 'slideshow') {
-      document.getElementById('heroImageField').style.display = 'block';
-      document.getElementById('heroVideoField').style.display = 'none';
-    } else if (type === 'video') {
-      document.getElementById('heroImageField').style.display = 'none';
-      document.getElementById('heroVideoField').style.display = 'block';
-    } else {
-      document.getElementById('heroImageField').style.display = 'none';
-      document.getElementById('heroVideoField').style.display = 'none';
-    }
-  }
-
-  heroPageSelect && heroPageSelect.addEventListener('change', () => {
-    loadHeroSettings(heroPageSelect.value);
-  });
-
-  heroType && heroType.addEventListener('change', () => {
-    toggleHeroFields(heroType.value);
-    saveHeroSettings(heroPageSelect.value);
-  });
-
-  heroImageURL && heroImageURL.addEventListener('input', () => {
-    heroImagePreview.src = heroImageURL.value;
-    heroImagePreview.style.display = heroImageURL.value ? 'block' : 'none';
-    saveHeroSettings(heroPageSelect.value);
-  });
-
-  heroVideoURL && heroVideoURL.addEventListener('input', () => {
-    saveHeroSettings(heroPageSelect.value);
-  });
-
-  transparentMenu && transparentMenu.addEventListener('change', () => {
-    saveHeroSettings(heroPageSelect.value);
-  });
-
-  /*********************************
-   APPEARANCE
-  *********************************/
-  if (navColor) navColor.value = siteData.settings.primaryColor || '#0070f3';
-  if (bgColor) bgColor.value = siteData.settings.secondaryColor || '#ffffff';
-  [navColor, bgColor].forEach(input => {
-    input && input.addEventListener('input', () => {
-      siteData.settings.primaryColor = navColor.value;
-      siteData.settings.secondaryColor = bgColor.value;
-      saveSiteData();
+    pagesListDiv.querySelectorAll('button[data-del]').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        if(confirm('Delete page?')){
+          const idx=parseInt(btn.getAttribute('data-del'));
+          siteData.pages.splice(idx,1);
+          saveSiteData();
+        }
+      });
     });
+  }
+
+  addPageBtn.addEventListener('click',()=>{
+    const title=document.getElementById('newPageTitle').value.trim();
+    if(!title) return alert('Enter title');
+    const slug=prompt('Page URL (example: about.html)');
+    if(!slug) return;
+    siteData.pages.push({title, url:slug, content:[]});
+    saveSiteData();
   });
 
-  /*********************************
-   MEDIA LIBRARY
-  *********************************/
-  uploadImageBtn && uploadImageBtn.addEventListener('click', () => {
-    const file = imageUpload.files[0];
-    if (!file) return alert('Select an image');
-    const reader = new FileReader();
-    reader.onload = e => {
-      siteData.images.push({ id: uid('img_'), name: file.name, dataUrl: e.target.result });
+  // Edit Page Dialog
+  const editPageTitle=document.getElementById('editPageTitle');
+  const editPageSlug=document.getElementById('editPageSlug');
+  const heroType=document.getElementById('heroType');
+  const heroImageField=document.getElementById('heroImageField');
+  const heroVideoField=document.getElementById('heroVideoField');
+  const heroImageURL=document.getElementById('heroImageURL');
+  const heroImagePreview=document.getElementById('heroImagePreview');
+  const heroVideoURL=document.getElementById('heroVideoURL');
+  const transparentMenu=document.getElementById('transparentMenu');
+  let currentEditPage=null;
+
+  function openEditPageDialog(idx){
+    const p=siteData.pages[idx];
+    currentEditPage=idx;
+    editPageTitle.value=p.title;
+    editPageSlug.value=p.url;
+    const hero=siteData.heroes[p.url]||{};
+    heroType.value=hero.behavior||'none';
+    heroImageURL.value=(hero.behavior!=='video')?hero.mediaUrl||'':'';
+    heroVideoURL.value=(hero.behavior==='video')?hero.mediaUrl||'':'';
+    transparentMenu.checked=!!hero.transparentMenu;
+    heroImageField.style.display=(heroType.value==='image' || heroType.value==='parallax' || heroType.value==='slideshow')?'block':'none';
+    heroVideoField.style.display=(heroType.value==='video')?'block':'none';
+    if(heroImagePreview && heroImageURL.value) { heroImagePreview.src=heroImageURL.value; heroImagePreview.style.display='block'; }
+  }
+
+  heroType.addEventListener('change',()=>{
+    heroImageField.style.display=(heroType.value==='image' || heroType.value==='parallax' || heroType.value==='slideshow')?'block':'none';
+    heroVideoField.style.display=(heroType.value==='video')?'block':'none';
+  });
+
+  heroImageURL.addEventListener('input',()=>{ if(heroImagePreview) { heroImagePreview.src=heroImageURL.value; heroImagePreview.style.display=heroImageURL.value?'block':'none'; } });
+
+  // Hero Page Select
+  const heroPageSelect=document.getElementById('heroPageSelect');
+  function populateHeroPageSelect(){
+    if(!heroPageSelect) return;
+    heroPageSelect.innerHTML='';
+    siteData.pages.forEach(p=>{ const opt=document.createElement('option'); opt.value=p.url; opt.textContent=p.title; heroPageSelect.appendChild(opt); });
+  }
+
+  // Media Library
+  const imageUploadInput=document.getElementById('imageUpload');
+  const uploadImageBtn=document.getElementById('uploadImageBtn');
+  const imageGridDiv=document.getElementById('imageGrid');
+  function renderImageGrid(){
+    if(!imageGridDiv) return;
+    imageGridDiv.innerHTML='';
+    siteData.images.forEach(img=>{
+      const wrap=document.createElement('div'); wrap.style.margin='6px';
+      const el=document.createElement('img'); el.src=img.dataUrl; el.style.maxWidth='140px'; wrap.appendChild(el);
+      const name=document.createElement('div'); name.textContent=img.name; wrap.appendChild(name);
+      const del=document.createElement('button'); del.textContent='Delete';
+      del.addEventListener('click',()=>{ siteData.images=siteData.images.filter(x=>x.id!==img.id); saveSiteData(); });
+      wrap.appendChild(del);
+      imageGridDiv.appendChild(wrap);
+    });
+  }
+  if(uploadImageBtn) uploadImageBtn.addEventListener('click',()=>{
+    const file=imageUploadInput.files[0];
+    if(!file) return alert('Choose image');
+    const reader=new FileReader();
+    reader.onload=e=>{
+      siteData.images.push({id:uid('img_'), name:file.name, dataUrl:e.target.result});
       saveSiteData();
+      alert('Uploaded');
     };
     reader.readAsDataURL(file);
   });
 
-  function renderImageGrid() {
-    if (!imageGridDiv) return;
-    imageGridDiv.innerHTML = '';
-    siteData.images.forEach(img => {
-      const wrap = document.createElement('div');
-      wrap.style.marginBottom = '10px';
-      wrap.innerHTML = `
-        <img src="${img.dataUrl}" style="max-width:120px;display:block;margin-bottom:5px;">
-        <div>${img.name}</div>
-        <button class="selectBtn">Select</button>
-        <button class="delBtn" style="background:#ff4d4d;color:#fff;">Delete</button>
-      `;
-      wrap.querySelector('.selectBtn').addEventListener('click', () => {
-        heroImageURL.value = img.dataUrl;
-        heroImagePreview.src = img.dataUrl;
-        heroImagePreview.style.display = 'block';
-        saveHeroSettings(heroPageSelect.value);
-      });
-      wrap.querySelector('.delBtn').addEventListener('click', () => {
-        siteData.images = siteData.images.filter(i => i.id !== img.id);
-        saveSiteData();
-      });
-      imageGridDiv.appendChild(wrap);
-    });
-  }
-
-  /*********************************
-   INITIALIZATION
-  *********************************/
-  function initAdmin() {
+  // Init Admin
+  function initAdmin(){
     renderPagesList();
-    renderHeroPageSelect();
+    populateHeroPageSelect();
     renderImageGrid();
   }
 
+  window.__HONESTNEWS_ADMIN={getData:()=>siteData, save:saveSiteData};
 })();
+
 
 
 
