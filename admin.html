@@ -1,122 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>Admin Panel</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="assets/css/admin.css">
 <style>
-/* ------------------------------
-   LOGIN SCREEN
------------------------------- */
+/* LOGIN */
 #adminLogin {
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 15px;
-  font-family: Arial, sans-serif;
+  height: 100vh; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; gap:15px;
+  font-family: Arial;
 }
+#adminLogin input { padding:10px; width:230px; }
+#loginMsg { color:red; }
 
-#adminLogin input {
-  padding: 10px;
-  width: 230px;
-  font-size: 1rem;
-}
+/* ADMIN GRID */
+#adminPanel { display:none; height:100vh; }
+.admin-grid { display:grid; grid-template-columns:260px 1fr; height:100%; }
 
-#adminLogin button {
-  padding: 10px 20px;
-  cursor: pointer;
-}
-
-#loginMsg {
-  color: red;
-  font-weight: bold;
-}
-/* ------------------------------
-   ADMIN LAYOUT
------------------------------- */
-#adminPanel {
-  display: none;
-  height: 100vh;
-  width: 100%;
-  font-family: Arial, sans-serif;
-}
-
-.admin-grid {
-  display: grid;
-  grid-template-columns: 260px 1fr;
-  height: 100%;
-}
-
-/* Sidebar */
 .admin-sidebar {
-  background: #111;
-  color: #fff;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
+  background:#111; color:#fff; padding:20px;
+  display:flex; flex-direction:column; gap:12px;
 }
-
-.admin-sidebar h2 {
-  margin-top: 0;
-}
-
 .sidebar-btn {
-  background: #222;
-  padding: 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  text-align: center;
+  background:#222; padding:12px; border-radius:6px; cursor:pointer;
 }
+.sidebar-btn:hover { background:#444; }
 
-.sidebar-btn:hover {
-  background: #444;
-}
+.admin-content { padding:30px; overflow-y:auto; font-family:Arial; }
 
-/* Workspace */
-.admin-content {
-  padding: 30px;
-  overflow-y: auto;
-}
+label { display:block; margin-top:15px; font-weight:bold; }
+input, select { padding:10px; width:350px; margin-top:5px; }
 
-/* Forms */
-label {
-  display: block;
-  margin-top: 15px;
-  font-weight: bold;
-}
-
-input, select {
-  padding: 10px;
-  width: 350px;
-  margin-top: 5px;
-}
-
-.color-box {
-  width: 60px;
-  height: 30px;
-  border: 1px solid #ccc;
-  margin-top: 5px;
-}
-
-.preview-img {
-  margin-top: 10px;
-  max-width: 300px;
-  border-radius: 8px;
-  display: none;
-}
-
-hr {
-  margin: 30px 0;
-}
+.preview-img { max-width:300px; display:none; margin-top:10px; }
 </style>
 </head>
 <body>
 
-<!-- LOGIN PANEL -->
+<!-- LOGIN -->
 <div id="adminLogin">
   <h2>Admin Login</h2>
   <label>Password</label>
@@ -130,21 +54,19 @@ hr {
   <div class="admin-grid">
 
     <!-- SIDEBAR -->
-    <div class="admin-sidebar">
+    <aside class="admin-sidebar">
       <h2>Admin</h2>
       <div class="sidebar-btn" data-section="pages">Pages</div>
       <div class="sidebar-btn" data-section="appearance">Appearance</div>
       <div class="sidebar-btn" data-section="heroes">Hero Settings</div>
       <div class="sidebar-btn" data-section="media">Media Library</div>
-      <div class="sidebar-btn" data-section="saveChanges" style="background:#0077ff">💾 Save Changes</div>
-    </div>
+      <div class="sidebar-btn" data-section="save" style="background:#0077ff">💾 Save</div>
+    </aside>
 
     <!-- WORKSPACE -->
     <div class="admin-content">
 
-      <!-- =======================
-           PAGES MANAGER
-      ========================== -->
+      <!-- PAGES -->
       <div id="section-pages" class="admin-section">
         <h2>Pages</h2>
 
@@ -155,21 +77,18 @@ hr {
 
         <h3>Add New Page</h3>
         <label>Page Title</label>
-        <input id="newPageTitle" type="text" placeholder="About, Contact, Podcast...">
-
+        <input id="newPageTitle" type="text">
         <button id="addPageBtn" style="margin-top:15px;">Add Page</button>
       </div>
 
-      <!-- =======================
-           PAGE SETTINGS PANEL
-      ========================== -->
+      <!-- EDIT PAGE -->
       <div id="section-editPage" class="admin-section" style="display:none;">
         <h2>Edit Page</h2>
 
         <label>Page Title</label>
         <input id="editPageTitle">
 
-        <label>Slug (URL)</label>
+        <label>Slug</label>
         <input id="editPageSlug">
 
         <hr>
@@ -177,10 +96,10 @@ hr {
         <label>Hero Type</label>
         <select id="heroType">
           <option value="none">None</option>
-          <option value="image">Still Image</option>
-          <option value="parallax">Slow Parallax</option>
-          <option value="slideshow">Image Slideshow</option>
-          <option value="video">Video Background</option>
+          <option value="image">Image</option>
+          <option value="parallax">Parallax</option>
+          <option value="slideshow">Slideshow</option>
+          <option value="video">Video</option>
         </select>
 
         <div id="heroImageField" style="display:none;">
@@ -190,75 +109,39 @@ hr {
         </div>
 
         <div id="heroVideoField" style="display:none;">
-          <label>YouTube/Vimeo URL</label>
+          <label>Video URL (YouTube/Vimeo)</label>
           <input id="heroVideoURL">
         </div>
 
-        <hr>
-
-        <label>
-          <input type="checkbox" id="transparentMenu">
-          Transparent Navigation Menu
-        </label>
-
+        <label><input type="checkbox" id="transparentMenu"> Transparent Menu</label>
       </div>
 
-      <!-- =======================
-           APPEARANCE SETTINGS
-      ========================== -->
+      <!-- APPEARANCE -->
       <div id="section-appearance" class="admin-section" style="display:none;">
-        <h2>Appearance Settings</h2>
-
+        <h2>Appearance</h2>
         <label>Navigation Color</label>
         <input type="color" id="navColor">
 
         <label>Background Color</label>
         <input type="color" id="bgColor">
-
       </div>
 
-      <!-- =======================
-           MEDIA LIBRARY
-      ========================== -->
+      <!-- MEDIA -->
       <div id="section-media" class="admin-section" style="display:none;">
         <h2>Media Library</h2>
-        <p>Coming next: Upload, delete, preview images.</p>
+        <p>Upload/Preview/Delete coming soon.</p>
       </div>
 
-    </div> <!-- admin-content -->
-
+    </div>
   </div>
 </div>
 
-<script src="admin.js"></script>
-
-  <!-- login panel here -->
-  <div id="adminPanel" style="display:none;">
-    <div class="admin-grid">
-      <aside class="admin-sidebar">...</aside>
-
-      <div class="admin-content">
-        <!-- paste your tabs HERE -->
-        <div id="pagesTab" class="tab"> ... </div>
-        <div id="heroTab" class="tab" style="display:none"> ... </div>
-        <div id="menuTab" class="tab" style="display:none"> ... </div>
-        <div id="colorsTab" class="tab" style="display:none"> ... </div>
-        <div id="imagesTab" class="tab" style="display:none"> ... </div>
-        <!-- end tabs -->
-      </div>
-    </div>
-  </div>
-
-  <!-- scripts at end of body -->
-  <script src="assets/js/site-config.js"></script>
-  <script src="assets/js/pages.js"></script>
-  <script src="assets/js/main.js"></script>
-  <script src="assets/js/products.js"></script>
-  <script src="assets/js/nav.js"></script>
-  <script src="assets/js/admin.js"></script>
+<!-- SCRIPTS -->
+<script src="assets/js/admin.js"></script>
 
 </body>
 </html>
+
 
 
 
