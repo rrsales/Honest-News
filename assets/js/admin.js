@@ -17,8 +17,7 @@
       { title: 'Products', url: 'products.html' },
       { title: 'Contact', url: 'contact.html' }
     ],
-    menu: [],
-    heroes: {},
+    heroes: {}, // per page hero settings
     images: [],
     settings: {
       siteName: 'Honest News Network',
@@ -51,8 +50,7 @@
   function saveSiteData() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(siteData));
     renderPagesList();
-    renderHeroSelect();
-    renderMenuList();
+    renderHeroPageSelect();
     renderImageGrid();
     console.log('Site data saved.');
   }
@@ -82,6 +80,7 @@
   const heroVideoURL = document.getElementById('heroVideoURL');
   const heroImagePreview = document.getElementById('heroImagePreview');
   const transparentMenu = document.getElementById('transparentMenu');
+  const heroPageSelect = document.getElementById('heroPageSelect');
 
   const navColor = document.getElementById('navColor');
   const bgColor = document.getElementById('bgColor');
@@ -164,34 +163,87 @@
     if (!newTitle) return;
     const newUrl = prompt('Edit URL', page.url);
     if (!newUrl) return;
+    // Update hero settings key if URL changes
+    if (siteData.heroes[page.url]) {
+      siteData.heroes[newUrl] = siteData.heroes[page.url];
+      delete siteData.heroes[page.url];
+    }
     page.title = newTitle.trim();
     page.url = newUrl.trim();
     saveSiteData();
   }
 
   /*********************************
-   HERO
+   HERO SETTINGS
   *********************************/
-  function renderHeroSelect() {
-    // placeholder: could populate select elements if multiple pages
+  function renderHeroPageSelect() {
+    if (!heroPageSelect) return;
+    heroPageSelect.innerHTML = '';
+    siteData.pages.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.url;
+      opt.textContent = p.title;
+      heroPageSelect.appendChild(opt);
+    });
+    // Load first page hero settings
+    if (heroPageSelect.value) loadHeroSettings(heroPageSelect.value);
   }
 
-  heroType && heroType.addEventListener('change', () => {
-    if (heroType.value === 'image' || heroType.value === 'parallax' || heroType.value === 'slideshow') {
+  function loadHeroSettings(pageUrl) {
+    const hero = siteData.heroes[pageUrl] || { type: 'none', image: '', video: '', transparentMenu: false };
+    heroType.value = hero.type;
+    heroImageURL.value = hero.image;
+    heroVideoURL.value = hero.video;
+    heroImagePreview.src = hero.image;
+    heroImagePreview.style.display = hero.image ? 'block' : 'none';
+    transparentMenu.checked = hero.transparentMenu;
+    toggleHeroFields(heroType.value);
+  }
+
+  function saveHeroSettings(pageUrl) {
+    siteData.heroes[pageUrl] = {
+      type: heroType.value,
+      image: heroImageURL.value,
+      video: heroVideoURL.value,
+      transparentMenu: transparentMenu.checked
+    };
+    saveSiteData();
+  }
+
+  function toggleHeroFields(type) {
+    if (type === 'image' || type === 'parallax' || type === 'slideshow') {
       document.getElementById('heroImageField').style.display = 'block';
       document.getElementById('heroVideoField').style.display = 'none';
-    } else if (heroType.value === 'video') {
+    } else if (type === 'video') {
       document.getElementById('heroImageField').style.display = 'none';
       document.getElementById('heroVideoField').style.display = 'block';
     } else {
       document.getElementById('heroImageField').style.display = 'none';
       document.getElementById('heroVideoField').style.display = 'none';
     }
+  }
+
+  heroPageSelect && heroPageSelect.addEventListener('change', () => {
+    loadHeroSettings(heroPageSelect.value);
+  });
+
+  heroType && heroType.addEventListener('change', () => {
+    toggleHeroFields(heroType.value);
+    saveHeroSettings(heroPageSelect.value);
   });
 
   heroImageURL && heroImageURL.addEventListener('input', () => {
     heroImagePreview.src = heroImageURL.value;
     heroImagePreview.style.display = heroImageURL.value ? 'block' : 'none';
+    saveHeroSettings(heroPageSelect.value);
+  });
+
+  heroVideoURL && heroVideoURL.addEventListener('input', () => {
+    saveHeroSettings(heroPageSelect.value);
+  });
+
+  transparentMenu && transparentMenu.addEventListener('change', () => {
+    saveHeroSettings(heroPageSelect.value);
   });
 
   /*********************************
@@ -237,6 +289,7 @@
         heroImageURL.value = img.dataUrl;
         heroImagePreview.src = img.dataUrl;
         heroImagePreview.style.display = 'block';
+        saveHeroSettings(heroPageSelect.value);
       });
       wrap.querySelector('.delBtn').addEventListener('click', () => {
         siteData.images = siteData.images.filter(i => i.id !== img.id);
@@ -251,10 +304,11 @@
   *********************************/
   function initAdmin() {
     renderPagesList();
-    renderHeroSelect();
+    renderHeroPageSelect();
     renderImageGrid();
   }
 
 })();
+
 
 
