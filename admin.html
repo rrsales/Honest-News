@@ -1,46 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-<!DOCTYPE html>
-<html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>Admin Panel</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="assets/css/admin.css">
-<style>
-/* LOGIN */
-#adminLogin {
-  height: 100vh; display:flex; flex-direction:column;
-  align-items:center; justify-content:center; gap:15px;
-  font-family: Arial;
-}
-#adminLogin input { padding:10px; width:230px; }
-#loginMsg { color:red; }
-
-/* ADMIN GRID */
-#adminPanel { display:none; height:100vh; }
-.admin-grid { display:grid; grid-template-columns:260px 1fr; height:100%; }
-
-.admin-sidebar {
-  background:#111; color:#fff; padding:20px;
-  display:flex; flex-direction:column; gap:12px;
-}
-.sidebar-btn {
-  background:#222; padding:12px; border-radius:6px; cursor:pointer;
-}
-.sidebar-btn:hover { background:#444; }
-
-.admin-content { padding:30px; overflow-y:auto; font-family:Arial; }
-
-label { display:block; margin-top:15px; font-weight:bold; }
-input, select { padding:10px; width:350px; margin-top:5px; }
-
-.preview-img { max-width:300px; display:none; margin-top:10px; }
-</style>
 </head>
 <body>
 
-<!-- LOGIN -->
+<!-- LOGIN PANEL -->
 <div id="adminLogin">
   <h2>Admin Login</h2>
   <label>Password</label>
@@ -56,80 +24,96 @@ input, select { padding:10px; width:350px; margin-top:5px; }
     <!-- SIDEBAR -->
     <aside class="admin-sidebar">
       <h2>Admin</h2>
-      <div class="sidebar-btn" data-section="pages">Pages</div>
-      <div class="sidebar-btn" data-section="appearance">Appearance</div>
-      <div class="sidebar-btn" data-section="heroes">Hero Settings</div>
-      <div class="sidebar-btn" data-section="media">Media Library</div>
-      <div class="sidebar-btn" data-section="save" style="background:#0077ff">💾 Save</div>
+      <div class="sidebar-btn" data-tab="pagesTab">Pages</div>
+      <div class="sidebar-btn" data-tab="heroesTab">Hero Settings</div>
+      <div class="sidebar-btn" data-tab="menuTab">Menu</div>
+      <div class="sidebar-btn" data-tab="colorsTab">Appearance</div>
+      <div class="sidebar-btn" data-tab="imagesTab">Media Library</div>
+      <div class="sidebar-btn" id="saveChangesBtn" style="background:#0077ff;">💾 Save Changes</div>
+      <div class="sidebar-btn" id="logoutBtn" style="background:#ff4d4d;">Logout</div>
     </aside>
 
     <!-- WORKSPACE -->
     <div class="admin-content">
 
-      <!-- PAGES -->
-      <div id="section-pages" class="admin-section">
+      <!-- PAGES TAB -->
+      <div id="pagesTab" class="tab">
         <h2>Pages</h2>
-
         <h3>Existing Pages</h3>
-        <div id="pagesList"></div>
-
+        <div id="pageList"></div>
         <hr>
-
         <h3>Add New Page</h3>
         <label>Page Title</label>
-        <input id="newPageTitle" type="text">
-        <button id="addPageBtn" style="margin-top:15px;">Add Page</button>
+        <input id="addPageTitle" type="text" placeholder="About, Contact, Podcast...">
+        <label>Page URL</label>
+        <input id="addPageURL" type="text" placeholder="about.html">
+        <button id="addPageBtn" style="margin-top:10px;">Add Page</button>
       </div>
 
-      <!-- EDIT PAGE -->
-      <div id="section-editPage" class="admin-section" style="display:none;">
-        <h2>Edit Page</h2>
+      <!-- HERO TAB -->
+      <div id="heroesTab" class="tab" style="display:none;">
+        <h2>Hero Settings</h2>
+        <label>Select Page</label>
+        <select id="heroPageSelect"></select>
 
-        <label>Page Title</label>
-        <input id="editPageTitle">
-
-        <label>Slug</label>
-        <input id="editPageSlug">
-
-        <hr>
-
-        <label>Hero Type</label>
-        <select id="heroType">
+        <label>Hero Behavior</label>
+        <select id="heroBehavior">
           <option value="none">None</option>
-          <option value="image">Image</option>
-          <option value="parallax">Parallax</option>
-          <option value="slideshow">Slideshow</option>
-          <option value="video">Video</option>
+          <option value="still">Still Image</option>
+          <option value="parallax">Parallax Scroll</option>
+          <option value="slider">Auto-Slideshow</option>
+          <option value="video">Video Background</option>
         </select>
 
-        <div id="heroImageField" style="display:none;">
-          <label>Hero Image URL</label>
-          <input id="heroImageURL">
-          <img id="heroImagePreview" class="preview-img">
+        <div id="heroImageSettings">
+          <label>Image URL</label>
+          <input id="heroImageInput" type="text">
+          <img id="heroPreview" class="preview-img">
         </div>
 
-        <div id="heroVideoField" style="display:none;">
+        <div id="heroVideoSettings" style="display:none;">
           <label>Video URL (YouTube/Vimeo)</label>
-          <input id="heroVideoURL">
+          <input id="heroVideoInput" type="text">
         </div>
 
-        <label><input type="checkbox" id="transparentMenu"> Transparent Menu</label>
+        <label>
+          <input type="checkbox" id="heroTransparentMenu">
+          Transparent Menu
+        </label>
+        <label>Hero Height</label>
+        <input id="heroHeight" type="text" placeholder="60vh, 80vh, 100vh...">
+        <button id="saveHeroSettings">Save Hero Settings</button>
       </div>
 
-      <!-- APPEARANCE -->
-      <div id="section-appearance" class="admin-section" style="display:none;">
-        <h2>Appearance</h2>
-        <label>Navigation Color</label>
-        <input type="color" id="navColor">
-
-        <label>Background Color</label>
-        <input type="color" id="bgColor">
+      <!-- MENU TAB -->
+      <div id="menuTab" class="tab" style="display:none;">
+        <h2>Menu Management</h2>
+        <div id="menuList"></div>
+        <button id="addMenuItemBtn" style="margin-top:10px;">Add Menu Item</button>
       </div>
 
-      <!-- MEDIA -->
-      <div id="section-media" class="admin-section" style="display:none;">
+      <!-- COLORS TAB -->
+      <div id="colorsTab" class="tab" style="display:none;">
+        <h2>Appearance Settings</h2>
+        <label>Primary Color</label>
+        <input type="color" id="primaryColorPicker">
+        <label>Secondary Color</label>
+        <input type="color" id="secondaryColorPicker">
+        <label>Accent Color</label>
+        <input type="color" id="accentColorPicker">
+        <label>
+          <input type="checkbox" id="enableMenuTransparency">
+          Transparent Menu
+        </label>
+        <button id="saveColorSettings">Save Colors</button>
+      </div>
+
+      <!-- IMAGES TAB -->
+      <div id="imagesTab" class="tab" style="display:none;">
         <h2>Media Library</h2>
-        <p>Upload/Preview/Delete coming soon.</p>
+        <input type="file" id="imageUpload" accept="image/*">
+        <button id="uploadImageBtn">Upload Image</button>
+        <div id="imageGrid" style="display:flex; flex-wrap:wrap; gap:10px; margin-top:10px;"></div>
       </div>
 
     </div>
@@ -137,10 +121,16 @@ input, select { padding:10px; width:350px; margin-top:5px; }
 </div>
 
 <!-- SCRIPTS -->
+<script src="assets/js/site-config.js"></script>
+<script src="assets/js/pages.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/products.js"></script>
+<script src="assets/js/nav.js"></script>
 <script src="assets/js/admin.js"></script>
 
 </body>
 </html>
+
 
 
 
