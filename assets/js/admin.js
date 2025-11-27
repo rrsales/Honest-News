@@ -1,163 +1,112 @@
-// assets/js/admin.js – Full WordPress-like Admin (2025 version)
-const PASSWORD = "jesus2025"; // ← put whatever you want here
-const STORE = "honestnews_full_v2";
-
-let db = {
-  pages: [{ id:"home", title:"Home", slug:"index", content:[] }],
-  heroes: {},
-  theme: { primary:"#0066cc", bg:"#ffffff" }
-};
+const PASSWORD = "jesus2025"; // ← change this anytime
+let db = { pages: [], heroes: {}, theme: { primary: "#0066cc" } };
+let currentPageId = null;
 
 function load() {
-  const raw = localStorage.getItem(STORE);
-  if (raw) db = JSON.parse(raw);
-  db.pages ??= []; db.heroes ??= {}; db.theme ??= {};
-  renderPagesList();
-  populateHeroSelect();
-  applyTheme();
+  const saved = localStorage.getItem("honestnews_editor_v3");
+  if (saved) db = JSON.parse(saved);
+  if (db.pages.length === 0) {
+    db.pages = [{ id: "home", title: "Home", blocks: [{ type: "heading", content: "Welcome to Honest News" }, { type: "paragraph", content: "Start editing..." }] }];
+  }
+  renderPageList();
 }
-function save() { localStorage.setItem(STORE, JSON.stringify(db)); }
+function save() { localStorage.setItem("honestnews_editor_v3", JSON.stringify(db)); }
 
 document.addEventListener('DOMContentLoaded', () => {
-  const login = document.getElementById('loginBtn');
-  login.onclick = () => {
+  // Login
+  document.getElementById('loginBtn').onclick = () => {
     if (document.getElementById('adminPass').value === PASSWORD) {
-      document.getElementById('loginScreen').classList.add('hidden');
-      document.getElementById('dashboard').classList.remove('hidden');
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('editor').style.display = 'flex';
       load();
-    } else alert("Wrong password");
+    } else document.getElementById('msg').textContent = "Wrong password";
   };
 
-  // Sidebar
-  document.querySelectorAll('.menu-item').forEach(item => {
-    item.onclick = () => {
-      document.querySelectorAll('.menu-item').forEach(i=>i.classList.remove('active'));
-      item.classList.add('active');
-      const view = item.dataset.view + 'View';
-      document.querySelectorAll('.editor-panel, .preview-panel > *').forEach(v=>v.classList.add('hidden'));
-      document.getElementById(view).classList.remove('hidden');
-      if (view === 'pagesView') renderPagesList();
+  // Tabs
+  document.querySelectorAll('.tab').forEach(t => {
+    t.onclick = () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      document.getElementById('canvas').innerHTML = '<h1>' + t.textContent + '</h1>';
+      if (t.dataset.tab === 'pages') showPagesUI();
+      if (t.dataset.tab === 'hero') showHeroUI();
+      if (t.dataset.tab === 'theme') showThemeUI();
     };
   });
-  document.querySelector('.logout').onclick = () => location.reload();
 
-  // === PAGES LIST ===
-  function renderPagesList() {
-    const list = document.getElementById('pagesList');
-    list.innerHTML = '';
+  function showPagesUI() {
+    let html = `<h1>All Pages</h1>`;
     db.pages.forEach(p => {
-      const div = document.createElement('div');
-      div.style = 'padding:12px; background:white; margin:8px 0; border-radius:6px; display:flex; justify-content:space-between;';
-      div.innerHTML = `<strong>${p.title}</strong> <small>/${p.slug}.html</small>`;
-      const edit = document.createElement('button');
-      edit.textContent = 'Edit';
-      edit.onclick = () => openPageEditor(p.id);
-      div.appendChild(edit);
-      list.appendChild(div);
+      html += `<button style="display:block;width:100%;padding:15px;margin:8px 0;background:white;border:1px solid #ddd;" onclick="openPage('${p.id}')">${p.title}</button>`;
     });
+    html += `<br><button id="newPageBtn" style="width:100%;padding:20px;background:var(--blue);color:white;">+ New Page</button>`;
+    document.getElementById('canvas').innerHTML = html;
+    document.getElementById('newPageBtn').onclick = () => {
+      const title = prompt("Page title?");
+      if (title) {
+        const id = Date.now().toString(36);
+        db.pages.push({ id, title, blocks: [] });
+        save(); openPage(id);
+      }
+    };
   }
 
-  document.getElementById('newPageBtn').onclick = () => {
-    const title = prompt("Page title?");
-    if (!title) return;
-    const slug = title.toLowerCase().replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-');
-    const id = Date.now().toString(36);
-    db.pages.push({ id, title, slug, content: [] });
-    save();
-    openPageEditor(id);
+  window.openPage = function(id) {
+    const page = db.pages.find(p => p.id === id);
+    currentPageId = id;
+    document.getElementById('pageTitleDisplay').textContent = page.title + " (editing)";
+    renderBlocks(page.blocks);
+    updatePreview();
   };
 
-  // === BLOCK EDITOR ===
-  const blocks = ['Heading','Paragraph','Image','YouTube','Button'];
-  document.getElementById('addBlockBtn').onclick = () => {
-    const type = prompt("Block type:\n" + blocks.join(', '));
-    if (!blocks.includes(type)) return;
-    const block = { type, id: Math.random().toString(36) };
-    if (type==='Heading') block.text = "New Heading";
-    if (type==='Paragraph') block.text = "Write something...";
-    if (type==='Image') block.src = "";
-    if (type==='YouTube') block.url = "";
-    if (type==='Button') { block.text="Click me"; block.url="#"; }
-    currentPage.content.push(block);
-    renderBlocks();
-    save();
-  };
-
-  let currentPage = null;
-  function openPageEditor(id) {
-    currentPage = db.pages.find(p=>p.id===id);
-    document.getElementById('pageTitle').textContent = currentPage.title;
-    document.getElementById('pageTitleInput').value = currentPage.title;
-    document.getElementById('pageSlugInput').value = currentPage.slug + '.html';
-    renderBlocks();
-    document.getElementById('pageEditor').classList.remove('hidden');
-    generatePreview();
-  }
-
-  function renderBlocks() {
-    const con = document.getElementById('blocksContainer');
-    con.innerHTML = '';
-    currentPage.content.forEach(block => {
+  function renderBlocks(blocks) {
+    const container = document.getElementById('blocks');
+    container.innerHTML = '';
+    blocks.forEach((b, i) => {
       const div = document.createElement('div');
       div.className = 'block';
-      if (block.type === 'Heading') div.innerHTML = `<h2 contenteditable>${block.text}</h2>`;
-      if (block.type === 'Paragraph') div.innerHTML = `<p contenteditable>${block.text}</p>`;
-      if (block.type === 'Image') div.innerHTML = `<img src="${block.src||''}" style="max-width:100%">`;
-      if (block.type === 'YouTube') div.innerHTML = `<iframe src="https://www.youtube.com/embed/${extractYouTubeID(block.url||'')}" style="width:100%;height:315px;"></iframe>`;
-      if (block.type === 'Button') div.innerHTML = `<a href="${block.url}" style="padding:10px 20px; background:var(--primary); color:white; border-radius:4px; display:inline-block;" contenteditable>${block.text}</a>`;
-
-      const tools = document.createElement('div');
-      tools.className = 'block-tools';
-      const up = document.createElement('button'); up.textContent='↑'; up.onclick=()=>moveBlock(block.id,-1);
-      const down = document.createElement('button'); down.textContent='↓'; down.onclick=()=>moveBlock(block.id,1);
-      const del = document.createElement('button'); del.textContent='×'; del.onclick=()=>deleteBlock(block.id);
-      tools.append(up,down,del);
-      div.appendChild(tools);
-      con.appendChild(div);
-
-      div.querySelectorAll('[contenteditable]').forEach(el => {
-        el.onblur = () => { block.text = el.innerText; save(); generatePreview(); };
-      });
-      if (block.type==='Image') {
-        const input = document.createElement('input');
-        input.type='file'; input.accept='image/*';
-        input.onchange = e => {
-          const f = e.target.files[0];
-          const r = new FileReader();
-          r.onload = () => { block.src = r.result; renderBlocks(); save(); generatePreview(); };
-          r.readAsDataURL(f);
-        };
-        div.appendChild(input);
-      }
+      div.dataset.index = i;
+      div.innerHTML = blockHTML(b);
+      div.onclick = () => selectBlock(i);
+      container.appendChild(div);
     });
   }
 
-  // === HERO WITH LIVE PREVIEW ===
-  document.getElementById('heroPageSelect').onchange = () => loadHero();
-  document.getElementById('heroType').onchange = () => {
-    document.getElementById('heroImageBox').classList.toggle('hidden', ['none','video'].includes(this.value));
-    document.getElementById('heroVideoBox').classList.toggle('hidden', this.value !== 'video');
-  };
-  document.getElementById('heroUpload').onchange = e => {
-    const f = e.target.files[0];
-    const r = new FileReader();
-    r.onload = () => {
-      document.getElementById('heroImageURL').value = r.result;
-      document.getElementById('heroPreview').src = r.result;
-      document.getElementById('heroPreview').style.display = 'block';
-    };
-    r.readAsDataURL(f);
-  };
-  document.getElementById('heroImageURL').oninput = e => {
-    document.getElementById('heroPreview').src = e.target.value;
-    document.getElementById('heroPreview').style.display = e.target.value ? 'block' : 'none';
+  function blockHTML(b) {
+    if (b.type === 'heading') return `<h2 contenteditable>${b.content}</h2>`;
+    if (b.type === 'paragraph') return `<p contenteditable>${b.content}</p>`;
+    if (b.type === 'image') return `<img src="${b.src}" style="max-width:100%;">`;
+    return '';
+  }
+
+  document.getElementById('addBlock').onclick = () => {
+    const type = prompt("Block type: heading, paragraph, image");
+    if (!currentPageId) return alert("Open a page first");
+    const page = db.pages.find(p => p.id === currentPageId);
+    page.blocks.push({ type, content: type === 'image' ? '' : 'New ' + type });
+    renderBlocks(page.blocks);
+    save(); updatePreview();
   };
 
-  // === SAVE EVERYTHING BUTTON ===
-  document.getElementById('saveAllBtn').onclick = () => { save(); alert("All changes saved!"); };
+  document.getElementById('saveAll').onclick = () => { save(); alert("Saved!"); };
 
-  // Start on Pages tab
-  document.querySelector('[data-view="pages"]').click();
+  // Live preview (including parallax hero)
+  function updatePreview() {
+    const page = db.pages.find(p => p.id === currentPageId) || db.pages[0];
+    const hero = db.heroes[page.id] || { type:"none" };
+    let html = `<!DOCTYPE html><html><head><style>body{margin:0;background:#fff;font-family:sans-serif;}</style></head><body>`;
+    if (hero.type === 'image') html += `<div style="height:100vh;background:url(${hero.src}) center/cover no-repeat fixed; display:flex;align-items:center;justify-content:center;color:white;text-align:center;"><h1 style="font-size:4rem;text-shadow:0 0 20px #000;">${page.title}</h1></div>`;
+    page.blocks.forEach(b => {
+      if (b.type === 'heading') html += `<h1 style="text-align:center;padding:40px;">${b.content}</h1>`;
+      if (b.type === 'paragraph') html += `<p style="max-width:800px;margin:40px auto;line-height:1.8;font-size:1.2rem;">${b.content}</p>`;
+    });
+    html += `</body></html>`;
+    const blob = new Blob([html], {type: 'text/html'});
+    document.getElementById('previewFrame').src = URL.createObjectURL(blob);
+  }
+
+  // Start
+  showPagesUI();
 });
 
 
