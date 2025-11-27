@@ -49,19 +49,8 @@
           "name": "Intro Paragraph",
           "type": "rich-text",
           "content": "<p>We serve the community with integrity and compassion, reporting only the truth.</p>"
-        },
-        {
-  "pages": [
-    {
-      "title": "Home",
-      "blocks": [
-        {"type": "heading", "content": "Honest News Network"},
-        {"type": "paragraph", "content": "Biblical truth. Powerful podcast hosting for ministries."},
-        {"type": "button", "text": "Start Free", "url": "#"}
-      ]
-    }
-  ]
-}      ],
+        }
+      ],
       "styles": {
         "background": "#ffffff",
         "text": "#000000"
