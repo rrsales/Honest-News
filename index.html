@@ -35,7 +35,16 @@
 <body>
 
 <!-- Dynamic Podbean-Style Menu -->
-<nav id="menu">
+<script>
+  // Check if this page should have transparent menu
+  fetch('site-data.json').then(r=>r.json()).then(data=>{
+    const page = data.pages.find(p=>p.title==="Home"); // change "Home" to match this page later
+    if(page?.hero?.transparentMenu){
+      document.body.dataset.transparent = "true";
+      document.getElementById("menu").style.background = "rgba(0,0,0,0.4)";
+    }
+  }).catch(()=>{});
+</script>
   <ul></ul>
 </nav>
 
