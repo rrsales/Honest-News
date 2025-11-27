@@ -63,16 +63,26 @@
     document.getElementById('adminPassword').value = '';
   });
 
-  // ────────────────────────────────
-  // Sidebar (data-section)
+    // ────────────────────────────────
+  // Sidebar navigation – works with your data-section buttons
   // ────────────────────────────────
   document.querySelectorAll('.sidebar-btn[data-section]').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('.admin-section').forEach(s => s.style.display = 'none');
-      const target = btn.getAttribute('data-section');
-      document.getElementById('section-' + target).style.display = 'block';
+      // Hide all sections
+      document.querySelectorAll('.admin-section').forEach(sec => {
+        sec.style.display = 'none';
+      });
+      // Show the clicked one
+      const sectionId = 'section-' + btn.getAttribute('data-section');
+      const targetSection = document.getElementById(sectionId);
+      if (targetSection) {
+        targetSection.style.display = 'block';
+      }
     });
   });
+
+  // Auto-open the first tab (Pages) when panel loads
+  document.querySelector('.sidebar-btn[data-section="pages"]')?.click();
 
   // ────────────────────────────────
   // Pages section
