@@ -1,46 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Honest News Network – Home</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <style>
-    :root { --blue: #0066cc; --green: #28a745; --dark: rgba(0,0,0,0.9); }
-    body { font-family: system-ui, sans-serif; margin: 0; line-height: 1.6; color: #333; }
-    nav { background: var(--dark); backdrop-filter: blur(10px); position: fixed; top: 0; width: 100%; z-index: 1000; padding: 15px 0; }
-    nav ul { list-style: none; display: flex; justify-content: center; gap: 40px; margin: 0; padding: 0; }
-    nav a { color: white; text-decoration: none; font-weight: 600; font-size: 1.1rem; padding: 10px 0; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
-    nav a:hover, nav a.active { color: var(--green); border-bottom: 3px solid var(--green); padding-bottom: 7px; }
-    main { margin-top: 80px; }
-    .hero { height: 100vh; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80') center/cover fixed; color: white; display: flex; align-items: center; justify-content: center; text-align: center; }
-    .hero h1 { font-size: 3.5rem; margin-bottom: 1rem; }
-    .hero p { font-size: 1.2rem; margin-bottom: 2rem; }
-    .cta { background: var(--green); color: white; padding: 15px 30px; border: none; border-radius: 6px; font-size: 1.1rem; cursor: pointer; text-decoration: none; display: inline-block; }
-    .cta:hover { background: #218838; }
-    section { padding: 60px 20px; max-width: 1200px; margin: 0 auto; }
-    .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
-    .feature { text-align: center; }
-    .feature i { font-size: 3rem; color: var(--blue); margin-bottom: 1rem; }
-    .stats { background: #f8f9fa; text-align: center; }
-    .stat { display: inline-block; margin: 0 2rem; }
-    .stat h3 { font-size: 2.5rem; color: var(--blue); }
-    footer { background: #333; color: white; text-align: center; padding: 20px; }
-    form { max-width: 400px; margin: 2rem auto; }
-    input, textarea { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
-    button[type="submit"] { background: var(--green); color: white; padding: 12px; border: none; border-radius: 4px; cursor: pointer; }
-    @media (max-width: 768px) { nav ul { flex-direction: column; gap: 10px; } .hero h1 { font-size: 2.5rem; } }
-  </style>
-</head>
 <body>
 
-<!-- Dynamic Podbean-Style Menu -->
-<script>
-  // Temporary safe fix — menu always shows solid until we finish the full system
-  document.getElementById("menu") && (document.getElementById("menu").style.background = "rgba(0,0,0,0.9)");
-</script>
-</script>
-  <ul></ul>
+<!-- SOLID + RESPONSIVE PODBEAN-STYLE MENU -->
+<nav id="menu">
+  <ul id="menuList"></ul>
 </nav>
 
 <main>
@@ -75,68 +37,43 @@
 
   <section class="stats">
     <h2>Impact Stats</h2>
-    <div style="display: flex; justify-content: center; gap: 40px; flex-wrap: wrap;">
-      <div class="stat">
-        <h3>1,000+</h3>
-        <p>Episodes Hosted</p>
-      </div>
-      <div class="stat">
-        <h3>50K+</h3>
-        <p>Listens Reached</p>
-      </div>
-      <div class="stat">
-        <h3>100%</h3>
-        <p>Biblical Truth</p>
-      </div>
+    <div style="display:flex;justify-content:center;gap:40px;flex-wrap:wrap">
+      <div class="stat"><h3>1,000+</h3><p>Episodes Hosted</p></div>
+      <div class="stat"><h3>50K+</h3><p>Listens Reached</p></div>
+      <div class="stat"><h3>100%</h3><p>Biblical Truth</p></div>
     </div>
   </section>
 
   <section>
-    <h2 style="text-align: center;">Start Your Truth Journey</h2>
-    <p style="text-align: center; font-size: 1.2rem; margin-bottom: 2rem;">Your platform for biblical teaching and honest news.</p>
-    <div style="text-align: center;">
-      <a href="podcast.html" class="cta">Get Started Free</a>
-    </div>
+    <h2 style="text-align:center">Start Your Truth Journey</h2>
+    <p style="text-align:center;font-size:1.2rem;margin-bottom:2rem">Your platform for biblical teaching and honest news.</p>
+    <div style="text-align:center"><a href="podcast.html" class="cta">Get Started Free</a></div>
   </section>
 
-  <section style="background: #f8f9fa; padding: 60px 20px; text-align: center;">
+  <section style="background:#f8f9fa;padding:60px 20px;text-align:center">
     <h2>Ready to Share Biblical Truth?</h2>
     <p>Join thousands who trust us for honest teaching.</p>
-    <div style="text-align: center;">
-      <a href="support.html" class="cta">Support Now</a>
-    </div>
+    <div style="text-align:center"><a href="support.html" class="cta">Support Now</a></div>
   </section>
 
   <footer>
-    <p>&copy; 2025 Honest News Network | All Rights Reserved</p>
+    <p>© 2025 Honest News Network | All Rights Reserved</p>
   </footer>
 </main>
 
 <script>
-// Dynamic Menu from Admin Data (Podbean-Style)
-const saved = localStorage.getItem("hn_full_pages");
-let menuPages = [
-  {title:"Home",url:"index.html"},
-  {title:"Podcast",url:"podcast.html"},
-  {title:"Shop",url:"shop.html"},
-  {title:"About",url:"about.html"},
-  {title:"Contact",url:"contact.html"}
-];
-if(saved){
-  const data = JSON.parse(saved);
-  menuPages = data.pages.map(p=>({title:p.title,url:p.id+".html"}));
-}
-const ul = document.querySelector("#menu ul");
-menuPages.forEach(p=>{
+// Solid dark menu — works instantly, no errors
+const menu = document.getElementById("menuList");
+const pages = ["Home","Podcast","Shop","About","Contact"];
+pages.forEach(p => {
   const li = document.createElement("li");
   const a = document.createElement("a");
-  a.href = p.url;
-  a.textContent = p.title;
+  a.href = p==="Home" ? "index.html" : p.toLowerCase() + ".html";
+  a.textContent = p;
+  if (location.pathname.includes(p==="Home"?"index":p.toLowerCase())) a.classList.add("active");
   li.appendChild(a);
-  ul.appendChild(li);
+  menu.appendChild(li);
 });
 </script>
 
 </body>
-</html>
-
