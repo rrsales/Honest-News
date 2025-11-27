@@ -4,16 +4,10 @@
       "title": "Home",
       "hero": {
         "bg": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80",
-        "overlay": "Honest News Network",
-        "sub": "Biblical Truth • Powerful Podcast Hosting • Global Reach",
-        "size": "large",
-        "parallax": true
-      },
-      "blocks": [
-        { "type": "heading", "text": "Everything Your Ministry Needs" },
-        { "type": "text", "text": "Free hosting • AI tools • Amazon monetization • Apple & Spotify distribution" },
-        { "type": "button", "text": "Start Free Today", "url": "#" }
-      ]
+        "text": "Honest News Network",
+        "size": "medium"
+      }
     }
-  ]
+  ],
+  "menu": ["Home", "Podcast", "Shop", "About", "Contact"]
 }
