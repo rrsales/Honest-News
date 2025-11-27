@@ -33,7 +33,15 @@ window.SitePages = {
   getPages
 };
 
-
+// pages.js - default pages list (used by nav/admin if no saved pages)
+const DEFAULT_PAGES = [
+  { title: "Home", url: "index.html" },
+  { title: "About", url: "about.html" },
+  { title: "Blog", url: "blog.html" },
+  { title: "Podcast", url: "podcast.html" },
+  { title: "Shop", url: "shop.html" },
+  { title: "Contact", url: "contact.html" }
+];
 
 
 
