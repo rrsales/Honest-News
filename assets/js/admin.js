@@ -642,5 +642,11 @@
     save: saveSiteData,
     reset: resetToDefaults
   };
-
+  <script src="assets/js/site-config.js"></script>
+<script src="assets/js/pages.js"></script>
+<script src="assets/js/main.js"></script>
+<script src="assets/js/products.js"></script>
+<script src="assets/js/nav.js"></script>
+<script src="assets/js/admin.js"></script>
 })();
+
