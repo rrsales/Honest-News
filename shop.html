@@ -35,7 +35,7 @@ main{position:relative;z-index:10;background:#111;padding-top:90px;min-height:10
   <h1 style="margin-top:120px">Latest Episodes</h1>   <!-- ← CHANGE THIS -->
   <p style="margin:2rem;font-size:1.3rem">New episodes every Sunday</p>
 </main>
-
+<section id="page-blocks"></section>
 <script>
 const pages=[{name:"Home",url:"index.html"},{name:"Podcast",url:"podcast.html"},{name:"Blog",url:"blog.html"},{name:"Shop",url:"shop.html"},{name:"Events",url:"events.html"},{name:"Support",url:"support.html"},{name:"Contact",url:"contact.html"}];
 document.getElementById("nav-menu").innerHTML=pages.map(p=>`<li><a href="${p.url}">${p.name}</a></li>`).join("");
