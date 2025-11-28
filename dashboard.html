@@ -715,13 +715,23 @@ async function backupAll(){
   a.click();
   alert("Full backup downloaded. Store this .zip somewhere safe.");
 }
+<!-- Add this inside your admin dashboard body where you have other controls -->
+<button id="saveButton" style="background:#007bff;color:white;padding:12px 20px;border-radius:8px;border:none;cursor:pointer;margin-top:20px;">
+  Save Changes
+</button>
 
+<script>
+document.getElementById("saveButton").addEventListener("click", () => {
+  // Here you can define what happens when you click save.
+  // For instance, save the current form data or trigger your existing publishing logic.
+  alert("Changes saved!"); // Placeholder action
+});
+</script>
 // ---------------------------
 // INIT
 // ---------------------------
 renderPages();
 </script>
-</body>
-</html>
+
 
 
