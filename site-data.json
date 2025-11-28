@@ -1,0 +1,71 @@
+{
+  "menu": [
+    {
+      "title": "Home",
+      "url": "index.html"
+    },
+    {
+      "title": "Podcast",
+      "url": "podcast.html"
+    },
+    {
+      "title": "Shop",
+      "url": "shop.html"
+    },
+    {
+      "title": "Support",
+      "url": "support.html"
+    },
+    {
+      "title": "Contact",
+      "url": "contact.html"
+    }
+  ],
+  "pages": [
+    {
+      "title": "Home",
+      "slug": "home",
+      "theme": "light",
+      "hero": {
+        "bg": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80",
+        "overlay": "Honest News Network",
+        "sub": "Everything You Need for Biblical Truth",
+        "transparentMenu": true,
+        "behavior": "parallax-medium",
+        "size": "custom",
+        "customHeight": ""
+      },
+      "blocks": []
+    },
+    {
+      "title": "Podcast",
+      "slug": "podcast",
+      "theme": "dark",
+      "hero": {
+        "bg": "",
+        "overlay": "Latest Episodes",
+        "sub": "New episodes every Sunday",
+        "transparentMenu": true,
+        "behavior": "parallax-slow",
+        "size": "full",
+        "customHeight": ""
+      },
+      "blocks": []
+    },
+    {
+      "title": "Shop",
+      "slug": "shop",
+      "theme": "dark",
+      "hero": {
+        "bg": "",
+        "overlay": "Recommended Resources",
+        "sub": "Support your walk and support the ministry",
+        "transparentMenu": true,
+        "behavior": "still",
+        "size": "medium",
+        "customHeight": ""
+      },
+      "blocks": []
+    }
+  ]
+}
