@@ -17,16 +17,49 @@
   .page.active{background:#4338ca;color:#fff}
   .content{flex:1;padding:40px;overflow-y:auto}
   .card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:30px;margin-bottom:30px;box-shadow:0 4px 20px rgba(0,0,0,0.05)}
-  input,textarea,select{width:100%;padding:14px;margin:10px 0;border-radius:10px;border:1px solid #cbd5e1;font-size:16px}
-  button{background:#28a745;color:#fff;border:none;padding:14px 28px;border-radius:10px;cursor:pointer;font-weight:600}
+  input,textarea,select{width:100%;padding:12px;margin:8px 0;border-radius:10px;border:1px solid #cbd5e1;font-size:15px}
+  button{background:#28a745;color:#fff;border:none;padding:12px 22px;border-radius:10px;cursor:pointer;font-weight:600}
   button:hover{background:#218838}
-  .block{margin:20px 0;padding:20px;background:#f8fafc;border:2px dashed #cbd5e1;border-radius:12px;position:relative}
+  .block{margin:16px 0;padding:16px;background:#f8fafc;border:2px dashed #cbd5e1;border-radius:12px;position:relative}
   .block:hover{border-color:#28a745}
   .tools{position:absolute;top:8px;right:8px;opacity:0;transition:0.2s}
   .block:hover .tools{opacity:1}
-  .tools button{background:none;border:none;cursor:pointer;font-size:18px;margin:0 4px;color:#6366f1}
-  .preview{margin-top:40px;padding:40px;background:#fff;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.1)}
+  .tools button{background:none;border:none;cursor:pointer;font-size:16px;margin:0 4px;color:#6366f1}
+  .preview{margin-top:30px;padding:30px;background:#fff;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.1)}
   label.inline{display:inline-flex;align-items:center;gap:.4rem;margin-right:1.2rem;font-size:.9rem}
+  small{color:#64748b}
+
+  /* Accordion sections */
+  .section{border-top:1px solid #e5e7eb;margin-top:10px;padding-top:10px}
+  .section-header{
+    width:100%;background:none;border:none;display:flex;align-items:center;
+    justify-content:space-between;font-size:0.98rem;padding:10px 0;cursor:pointer;
+    color:#0f172a;
+  }
+  .section-header .left{display:flex;align-items:center;gap:.5rem}
+  .section-header .arrow{
+    display:inline-block;transition:transform .25s ease,opacity .25s ease;
+    font-size:0.85rem;color:#6b7280;
+  }
+  .section-header.open .arrow{transform:rotate(90deg);color:#111827}
+  .section-title{font-weight:600}
+  .section-body{
+    max-height:0;opacity:0;overflow:hidden;
+    transform:translateY(-4px);
+    transition:max-height .35s ease,opacity .25s ease,transform .35s ease;
+  }
+  .section-body.open{
+    max-height:1200px;opacity:1;transform:translateY(0);
+  }
+
+  /* Small Apple-like elegance */
+  .section-body-inner{padding:4px 0 14px 0}
+  .field-group{margin:6px 0}
+  .field-label{font-size:0.85rem;font-weight:600;color:#4b5563;margin-bottom:2px}
+
+  .block-type-label{font-size:.8rem;color:#64748b;margin-bottom:4px}
+
+  textarea{resize:vertical;min-height:80px}
 </style>
 </head>
 <body>
@@ -42,7 +75,7 @@
     <div id="pages"></div>
     <button onclick="newPage()" style="width:100%;margin-top:20px">+ New Page</button>
 
-    <h3 style="margin-top:30px">Navigation (basic)</h3>
+    <h3 style="margin-top:30px">Navigation</h3>
     <small>Menu items (one per line): Title | URL</small>
     <textarea id="menuRaw" rows="6" oninput="menuFromRaw(this.value)"></textarea>
   </div>
@@ -56,7 +89,7 @@
 
 <script>
 // ---------------------------
-// BASIC SITE DATA MODEL
+// DATA MODEL
 // ---------------------------
 let site = {
   menu: [
@@ -76,7 +109,9 @@ let site = {
         overlay:"Honest News Network",
         sub:"Everything You Need for Biblical Truth",
         transparentMenu:false,
-        behavior:"parallax-medium"
+        behavior:"parallax-medium",
+        size:"full",
+        customHeight:""
       },
       blocks:[]
     },
@@ -89,7 +124,9 @@ let site = {
         overlay:"Latest Episodes",
         sub:"New episodes every Sunday",
         transparentMenu:true,
-        behavior:"parallax-slow"
+        behavior:"parallax-slow",
+        size:"full",
+        customHeight:""
       },
       blocks:[]
     },
@@ -102,7 +139,9 @@ let site = {
         overlay:"Recommended Resources",
         sub:"Support your walk and support the ministry",
         transparentMenu:true,
-        behavior:"still"
+        behavior:"still",
+        size:"medium",
+        customHeight:""
       },
       blocks:[]
     }
@@ -112,7 +151,7 @@ let site = {
 let current = null;
 
 // ---------------------------
-// MENU EDIT HELPERS
+// MENU
 // ---------------------------
 function rawFromMenu(){
   const t = site.menu.map(m=>`${m.title} | ${m.url}`).join("\n");
@@ -123,12 +162,12 @@ function menuFromRaw(text){
   const lines = text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
   site.menu = lines.map(l=>{
     const [title,url] = l.split("|").map(s=>(s||"").trim());
-    return {title,title: title||"Item",url:url||"#"};
+    return {title:title||"Item",url:url||"#"};
   });
 }
 
 // ---------------------------
-// PAGE LIST
+// PAGES
 // ---------------------------
 function renderPages(){
   const pagesDiv = document.getElementById("pages");
@@ -139,88 +178,251 @@ function renderPages(){
   rawFromMenu();
 }
 
+function toggleSection(id){
+  const body = document.getElementById("section-"+id);
+  const header = document.querySelector(`.section-header[data-section="${id}"]`);
+  if(!body || !header) return;
+  const isOpen = body.classList.contains("open");
+  // close all siblings of same card
+  document.querySelectorAll(".section-body").forEach(b=>b.classList.remove("open"));
+  document.querySelectorAll(".section-header").forEach(h=>h.classList.remove("open"));
+  if(!isOpen){
+    body.classList.add("open");
+    header.classList.add("open");
+  }
+}
+
 function select(i){
   current = site.pages[i];
   renderPages();
   const c = current;
+
+  // Ensure new hero fields exist
+  if(!c.hero) c.hero = {};
+  if(!c.hero.behavior) c.hero.behavior = "still";
+  if(!c.hero.size) c.hero.size = "full";
+  if(typeof c.hero.customHeight === "undefined") c.hero.customHeight = "";
+
   const transparentChecked = c.hero.transparentMenu ? "checked" : "";
   const themeLight = c.theme === "light" ? "checked" : "";
   const themeDark = !themeLight ? "checked" : "";
+
   const behavior = c.hero.behavior || "still";
+  const size = c.hero.size || "full";
+  const ch = c.hero.customHeight || "";
 
   document.getElementById("editor").innerHTML = `
     <div class="card">
-      <h2>Editing: ${c.title}</h2>
+      <h2 style="margin-top:0;">Editing: ${c.title}</h2>
 
-      <h3>Hero Settings</h3>
-      <input value="${c.hero.bg||''}" placeholder="Hero image URL" onchange="current.hero.bg=this.value;preview()">
-      <input value="${c.hero.overlay||''}" placeholder="Main title" onchange="current.hero.overlay=this.value;preview()">
-      <input value="${c.hero.sub||''}" placeholder="Subtitle (optional)" onchange="current.hero.sub=this.value;preview()">
-
-      <label class="inline">
-        <input type="checkbox" ${transparentChecked}
-          onchange="current.hero.transparentMenu=this.checked;preview()">
-        Transparent menu on this page
-      </label>
-
-      <div style="margin-top:10px">
-        <strong>Hero Behavior:</strong>
-        <select onchange="current.hero.behavior=this.value;preview()">
-          <option value="still" ${behavior==='still'?'selected':''}>Still Image</option>
-          <option value="parallax-slow" ${behavior==='parallax-slow'?'selected':''}>Slow Parallax</option>
-          <option value="parallax-medium" ${behavior==='parallax-medium'?'selected':''}>Medium Parallax</option>
-          <option value="float-up" ${behavior==='float-up'?'selected':''}>Float Up</option>
-        </select>
+      <!-- PAGE SETTINGS -->
+      <div class="section">
+        <button class="section-header open" data-section="page" onclick="toggleSection('page')">
+          <div class="left">
+            <span class="arrow">▶</span>
+            <span class="section-title">Page Settings</span>
+          </div>
+        </button>
+        <div class="section-body open" id="section-page">
+          <div class="section-body-inner">
+            <div class="field-group">
+              <div class="field-label">Page Title</div>
+              <input value="${c.title||''}" onchange="current.title=this.value;renderPages();">
+            </div>
+            <div class="field-group">
+              <div class="field-label">Slug (used in data-page)</div>
+              <input value="${c.slug||''}" placeholder="home, podcast, shop..."
+                     onchange="current.slug=this.value;">
+              <small>Make sure your HTML &lt;body&gt; has data-page="${c.slug||''}".</small>
+            </div>
+            <div class="field-group">
+              <div class="field-label">Page Theme</div>
+              <label class="inline">
+                <input type="radio" name="theme-${i}" value="light" ${themeLight?'checked':''}
+                  onchange="current.theme='light';preview()"> Light
+              </label>
+              <label class="inline">
+                <input type="radio" name="theme-${i}" value="dark" ${themeDark?'checked':''}
+                  onchange="current.theme='dark';preview()"> Dark
+              </label>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div style="margin-top:16px">
-        <strong>Page Theme:</strong><br>
-        <label class="inline">
-          <input type="radio" name="theme-${i}" value="light" ${themeLight?'checked':''}
-            onchange="current.theme='light';preview()"> Light
-        </label>
-        <label class="inline">
-          <input type="radio" name="theme-${i}" value="dark" ${themeDark?'checked':''}
-            onchange="current.theme='dark';preview()"> Dark
-        </label>
+      <!-- HERO SETTINGS -->
+      <div class="section">
+        <button class="section-header" data-section="hero" onclick="toggleSection('hero')">
+          <div class="left">
+            <span class="arrow">▶</span>
+            <span class="section-title">Hero Settings</span>
+          </div>
+        </button>
+        <div class="section-body" id="section-hero">
+          <div class="section-body-inner">
+
+            <div class="field-group">
+              <div class="field-label">Hero Image URL</div>
+              <input value="${c.hero.bg||''}" placeholder="Hero image URL"
+                     onchange="current.hero.bg=this.value;preview()">
+            </div>
+
+            <div class="field-group">
+              <div class="field-label">Main Title</div>
+              <input value="${c.hero.overlay||''}" placeholder="Main title"
+                     onchange="current.hero.overlay=this.value;preview()">
+            </div>
+
+            <div class="field-group">
+              <div class="field-label">Subtitle</div>
+              <input value="${c.hero.sub||''}" placeholder="Subtitle (optional)"
+                     onchange="current.hero.sub=this.value;preview()">
+            </div>
+
+            <div class="field-group">
+              <label class="inline">
+                <input type="checkbox" ${transparentChecked}
+                  onchange="current.hero.transparentMenu=this.checked;preview()">
+                Transparent menu on this page
+              </label>
+            </div>
+
+            <div class="field-group">
+              <div class="field-label">Hero Behavior</div>
+              <select onchange="current.hero.behavior=this.value;preview()">
+                <option value="still" ${behavior==='still'?'selected':''}>Still Image</option>
+                <option value="parallax-slow" ${behavior==='parallax-slow'?'selected':''}>Slow Parallax</option>
+                <option value="parallax-medium" ${behavior==='parallax-medium'?'selected':''}>Medium Parallax</option>
+                <option value="float-up" ${behavior==='float-up'?'selected':''}>Float Up</option>
+              </select>
+            </div>
+
+            <div class="field-group">
+              <div class="field-label">Hero Size</div>
+              <label class="inline">
+                <input type="radio" name="hero-size-${i}" value="small" ${size==='small'?'checked':''}
+                  onchange="setHeroSize('small')"> Small (≈40vh)
+              </label><br>
+              <label class="inline">
+                <input type="radio" name="hero-size-${i}" value="medium" ${size==='medium'?'checked':''}
+                  onchange="setHeroSize('medium')"> Medium (≈60vh)
+              </label><br>
+              <label class="inline">
+                <input type="radio" name="hero-size-${i}" value="large" ${size==='large'?'checked':''}
+                  onchange="setHeroSize('large')"> Large (≈80vh)
+              </label><br>
+              <label class="inline">
+                <input type="radio" name="hero-size-${i}" value="full" ${size==='full'?'checked':''}
+                  onchange="setHeroSize('full')"> Fullscreen (100vh)
+              </label><br>
+              <label class="inline" style="margin-top:4px;">
+                <input type="radio" name="hero-size-${i}" value="custom" ${size==='custom'?'checked':''}
+                  onchange="setHeroSize('custom')"> Custom
+              </label>
+              <input id="heroCustomHeight" value="${ch}"
+                     placeholder="e.g. 520px or 80vh"
+                     onchange="setHeroCustom(this.value)">
+              <small>Custom accepts values like 520px or 80vh.</small>
+            </div>
+
+          </div>
+        </div>
       </div>
 
-      <h3 style="margin-top:40px">Content Blocks</h3>
-      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
-        <button onclick="addBlock('heading')">+ Heading</button>
-        <button onclick="addBlock('paragraph')">+ Paragraph</button>
-        <button onclick="addBlock('image')">+ Image</button>
-        <button onclick="addBlock('button')">+ Button</button>
-        <button onclick="addBlock('product')">+ Product (Amazon)</button>
-        <button onclick="addBlock('podcast')">+ Podcast Episode</button>
-        <button onclick="addBlock('youtube')">+ YouTube Video</button>
+      <!-- CONTENT BLOCKS -->
+      <div class="section">
+        <button class="section-header" data-section="blocks" onclick="toggleSection('blocks')">
+          <div class="left">
+            <span class="arrow">▶</span>
+            <span class="section-title">Content Blocks</span>
+          </div>
+        </button>
+        <div class="section-body" id="section-blocks">
+          <div class="section-body-inner">
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px">
+              <button onclick="addBlock('heading')">+ Heading</button>
+              <button onclick="addBlock('paragraph')">+ Paragraph</button>
+              <button onclick="addBlock('image')">+ Image</button>
+              <button onclick="addBlock('button')">+ Button</button>
+              <button onclick="addBlock('product')">+ Product (Amazon)</button>
+              <button onclick="addBlock('podcast')">+ Podcast Episode</button>
+              <button onclick="addBlock('youtube')">+ YouTube Video</button>
+            </div>
+            <div id="blocks"></div>
+          </div>
+        </div>
       </div>
 
-      <div id="blocks"></div>
+      <!-- BACKUP / PUBLISH -->
+      <div class="section">
+        <button class="section-header" data-section="publish" onclick="toggleSection('publish')">
+          <div class="left">
+            <span class="arrow">▶</span>
+            <span class="section-title">Publish & Backup</span>
+          </div>
+        </button>
+        <div class="section-body" id="section-publish">
+          <div class="section-body-inner">
+            <p style="font-size:.9rem;color:#64748b;margin-top:0">
+              Publishing downloads updated <code>site-data.json</code>. Upload it to your repo root to update the live site.
+            </p>
+            <button onclick="publish()" style="background:#16a34a;font-size:1.0rem;">Download site-data.json</button>
+            <button onclick="backupAll()" style="margin-left:10px;background:#0f172a;font-size:.95rem;">
+              Download Full Backup (.zip)
+            </button>
+          </div>
+        </div>
+      </div>
 
+      <!-- PREVIEW -->
       <div class="preview">
         <h3>Live Preview</h3>
-        <div style="background:url(${c.hero.bg||'none'}) center/cover;height:320px;position:relative;border-radius:14px;overflow:hidden;">
+        <div id="heroPreview" style="background:url(${c.hero.bg||'none'}) center/cover;height:320px;position:relative;border-radius:14px;overflow:hidden;">
           <div style="position:absolute;inset:0;background:rgba(0,0,0,${c.hero.transparentMenu?0.4:0.7})"></div>
           <div style="position:relative;color:#fff;text-align:center;padding-top:100px">
             <h1 style="font-size:2.4rem;margin:0">${c.hero.overlay||''}</h1>
             <p style="font-size:1.2rem;margin-top:.7rem">${c.hero.sub||''}</p>
           </div>
         </div>
-        <div id="blockPreview" style="padding:30px"></div>
+        <div id="blockPreview" style="padding:24px"></div>
       </div>
 
-      <div style="margin-top:30px">
-        <button onclick="publish()" style="background:#16a34a;font-size:1.1rem;padding:16px 30px">PUBLISH (download site-data.json)</button>
-        <button onclick="backupAll()" style="margin-left:10px;background:#0f172a">Download Full Backup (.zip)</button>
-      </div>
     </div>
   `;
-  renderBlocks(); preview();
+
+  renderBlocks();
+  preview();
+
+  // make first section open+arrow rotated
+  document.querySelectorAll(".section-header").forEach(h=>{
+    const sec = h.dataset.section;
+    const body = document.getElementById("section-"+sec);
+    if(body && body.classList.contains("open")){
+      h.classList.add("open");
+    }
+  });
 }
 
 // ---------------------------
-// BLOCK EDITING
+// HERO SIZE HELPERS
+// ---------------------------
+function setHeroSize(size){
+  if(!current.hero) current.hero = {};
+  current.hero.size = size;
+  if(size!=="custom"){
+    current.hero.customHeight = current.hero.customHeight || "";
+  }
+  preview();
+}
+function setHeroCustom(val){
+  if(!current.hero) current.hero = {};
+  current.hero.size = "custom";
+  current.hero.customHeight = val.trim();
+  preview();
+}
+
+// ---------------------------
+// BLOCKS
 // ---------------------------
 function addBlock(type){
   if(!current.blocks) current.blocks = [];
@@ -244,7 +446,8 @@ function addBlock(type){
     b.videoId="";
   }
   current.blocks.push(b);
-  renderBlocks(); preview();
+  renderBlocks();
+  preview();
 }
 
 function move(i,d){
@@ -275,7 +478,7 @@ function renderBlocks(){
     const motion = b.motion || "fade";
     return `
     <div class="block">
-      <div style="font-size:.8rem;color:#64748b;margin-bottom:6px">
+      <div class="block-type-label">
         Type: ${b.type.toUpperCase()} &nbsp;
         <select onchange="current.blocks[${i}].motion=this.value;preview()" style="width:auto;padding:4px 8px;font-size:.8rem">
           <option value="none" ${motion==='none'?'selected':''}>No animation</option>
@@ -298,12 +501,11 @@ function renderBlocks(){
       ${
         b.type==="image"
         ? `
-          <label>Image source:
-            <select onchange="(current.blocks[${i}].mode=this.value);renderBlocks();preview()">
-              <option value="url" ${b.mode!=="upload"?'selected':''}>URL</option>
-              <option value="upload" ${b.mode==="upload"?'selected':''}>Upload</option>
-            </select>
-          </label>
+          <label class="field-label">Image source</label>
+          <select onchange="(current.blocks[${i}].mode=this.value);renderBlocks();preview()">
+            <option value="url" ${b.mode!=="upload"?'selected':''}>URL</option>
+            <option value="upload" ${b.mode==="upload"?'selected':''}>Upload</option>
+          </select>
           ${
             b.mode==="upload"
             ? `<input type="file" accept="image/*" onchange="handleImageUpload(event,${i})">`
@@ -315,9 +517,9 @@ function renderBlocks(){
       ${
         b.type==="button"
         ? `
-          Text:
+          <div class="field-label">Button text</div>
           <input value="${b.text||''}" onchange="current.blocks[${i}].text=this.value;preview()">
-          URL:
+          <div class="field-label">Button URL</div>
           <input value="${b.url||''}" onchange="current.blocks[${i}].url=this.value;preview()">
         `
         : ""
@@ -325,34 +527,34 @@ function renderBlocks(){
       ${
         b.type==="product"
         ? `
-          <input value="${b.title||''}" placeholder="Product title"
-                 onchange="current.blocks[${i}].title=this.value;preview()">
-          <textarea rows="3" placeholder="Short description"
-                 onchange="current.blocks[${i}].text=this.value;preview()">${b.text||''}</textarea>
-          <input value="${b.image||''}" placeholder="Image URL"
-                 onchange="current.blocks[${i}].image=this.value;preview()">
-          <input value="${b.url||''}" placeholder="Amazon affiliate URL"
-                 onchange="current.blocks[${i}].url=this.value;preview()">
+          <div class="field-label">Product title</div>
+          <input value="${b.title||''}" onchange="current.blocks[${i}].title=this.value;preview()">
+          <div class="field-label">Description</div>
+          <textarea rows="3" onchange="current.blocks[${i}].text=this.value;preview()">${b.text||''}</textarea>
+          <div class="field-label">Image URL</div>
+          <input value="${b.image||''}" onchange="current.blocks[${i}].image=this.value;preview()">
+          <div class="field-label">Amazon affiliate URL</div>
+          <input value="${b.url||''}" onchange="current.blocks[${i}].url=this.value;preview()">
         `
         : ""
       }
       ${
         b.type==="podcast"
         ? `
-          <input value="${b.title||''}" placeholder="Episode title"
-                 onchange="current.blocks[${i}].title=this.value;preview()">
-          <textarea rows="3" placeholder="Podbean embed URL or iframe src"
-                 onchange="current.blocks[${i}].embed=this.value;preview()">${b.embed||''}</textarea>
+          <div class="field-label">Episode title</div>
+          <input value="${b.title||''}" onchange="current.blocks[${i}].title=this.value;preview()">
+          <div class="field-label">Podbean embed URL or iframe src</div>
+          <textarea rows="3" onchange="current.blocks[${i}].embed=this.value;preview()">${b.embed||''}</textarea>
         `
         : ""
       }
       ${
         b.type==="youtube"
         ? `
-          <input value="${b.title||''}" placeholder="Video title"
-                 onchange="current.blocks[${i}].title=this.value;preview()">
-          <input value="${b.videoId||''}" placeholder="YouTube URL or ID"
-                 onchange="current.blocks[${i}].videoId=this.value;preview()">
+          <div class="field-label">Video title</div>
+          <input value="${b.title||''}" onchange="current.blocks[${i}].title=this.value;preview()">
+          <div class="field-label">YouTube URL or ID</div>
+          <input value="${b.videoId||''}" onchange="current.blocks[${i}].videoId=this.value;preview()">
         `
         : ""
       }
@@ -368,7 +570,7 @@ function renderBlocks(){
 }
 
 // ---------------------------
-// PREVIEW RENDER
+// PREVIEW
 // ---------------------------
 function escapeHtml(str){
   return String(str||"")
@@ -378,8 +580,25 @@ function escapeHtml(str){
 }
 
 function preview(){
+  if(!current) return;
   const c = current;
-  if(!c) return;
+
+  // hero preview height based on size
+  const heroDiv = document.getElementById("heroPreview");
+  if(heroDiv){
+    let h = "320px";
+    const s = (c.hero.size||"full");
+    if(s==="small") h = "40vh";
+    else if(s==="medium") h="60vh";
+    else if(s==="large") h="80vh";
+    else if(s==="full") h="100vh";
+    else if(s==="custom" && c.hero.customHeight) h = c.hero.customHeight;
+    heroDiv.style.height = h;
+    if(c.hero.bg){
+      heroDiv.style.backgroundImage = `url('${c.hero.bg}')`;
+    }
+  }
+
   let html = "";
   (c.blocks||[]).forEach(b=>{
     if(b.type==="heading"){
@@ -443,7 +662,7 @@ function newPage(){
     title:t,
     slug,
     theme:"dark",
-    hero:{bg:"",overlay:t,sub:"",transparentMenu:false,behavior:"still"},
+    hero:{bg:"",overlay:t,sub:"",transparentMenu:false,behavior:"still",size:"full",customHeight:""},
     blocks:[]
   });
   renderPages();
@@ -496,8 +715,8 @@ async function backupAll(){
 // INIT
 // ---------------------------
 renderPages();
-
 </script>
 </body>
 </html>
+
 
