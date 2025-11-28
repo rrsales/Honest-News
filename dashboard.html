@@ -39,14 +39,15 @@
   <!-- JOSEPH WELCOME + SAVE BUTTON -->
 <div style="background:#0066cc;color:white;padding:20px 40px;text-align:center;font-size:1.4rem;font-weight:bold;position:relative;">
   Welcome back, Joseph
-  <button onclick="localStorage.removeItem('hn_logged');location.href='admin.html'" 
+  <button onclick="localStorage.removeItem('hn_logged');location.href='admin.html'"
           style="position:absolute;right:20px;top:15px;background:#c33;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;">
     Log Out
   </button>
-  <button onclick="pushToGithub()" 
-          style="position:absolute;left:20px;top:15px;background:#16a34a;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;">
+  <button onclick="saveToGithub()"
+          style="position:absolute;left:20px;top:15px;background:#16a34a;color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-weight:bold;">
     SAVE TO GITHUB
-  </button>  
+  </button>
+</div>
   {
     margin:0;
     font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
