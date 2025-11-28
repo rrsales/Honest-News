@@ -1,357 +1,251 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-page="home">
 <head>
 <meta charset="UTF-8">
 <title>Honest News Network – Home</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<link rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-<!-- LIVE ENGINE (reads site-data.json / controls hero + menu + blocks) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="assets/js/live.js" defer></script>
 
 <style>
-  :root { margin:0; padding:0; box-sizing:border-box; }
-  *, *::before, *::after { box-sizing:inherit; }
-
   body {
-    font-family:system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     margin:0;
+    font-family:system-ui, sans-serif;
+    color:#111;
     background:#fff;
-    color:#333;
-    line-height:1.6;
   }
 
-  /* light / dark theme hooks (optional) */
-  body.theme-dark {
-    background:#050816;
-    color:#e5e7eb;
-  }
-  body.theme-dark main {
-    background:#050816;
-    color:#e5e7eb;
-  }
-
-  /* HEADER / MENU */
-  header#menu {
-    background:rgba(0,0,0,0.95);
+  /* -------------------------------------------------------
+     PODBEAN HEADER (Transparent over hero)
+  ------------------------------------------------------- */
+  header {
     position:fixed;
     top:0; left:0; right:0;
-    z-index:1000;
+    padding:20px 40px;
     display:flex;
     justify-content:space-between;
     align-items:center;
-    padding:15px 30px;
-    backdrop-filter:blur(10px);
     transition:background .35s ease;
+    z-index:999;
+    background:transparent; /* live.js will override if needed */
   }
-  /* when hero wants transparent */
-  header#menu.header--transparent {
-    background:transparent;
-  }
-
-  header#menu .logo {
-    color:#fff;
+  header .logo {
+    color:white;
     font-weight:700;
-    font-size:1.5rem;
+    font-size:1.6rem;
     text-decoration:none;
   }
-  header#menu ul {
+  #menuList {
     list-style:none;
     display:flex;
-    gap:40px;
+    gap:35px;
     margin:0;
-    padding:0;
   }
-  header#menu a {
-    color:#fff;
-    text-decoration:none;
+  #menuList a {
+    color:white;
     font-weight:600;
-    font-size:1.1rem;
-    padding-bottom:4px;
-    border-bottom:3px solid transparent;
-    transition:color .2s, border-color .2s;
+    text-decoration:none;
+    font-size:1.05rem;
   }
-  header#menu a:hover,
-  header#menu a.active {
-    color:#22c55e;
-    border-color:#22c55e;
+  #menuList a:hover {
+    color:#28a745;
   }
 
+  /* Mobile */
   .hamburger {
     display:none;
-    color:#fff;
-    font-size:1.8rem;
+    color:white;
+    font-size:1.9rem;
     cursor:pointer;
   }
-
-  main {
-    margin-top:80px;
-    padding:0 20px 60px;
+  @media(max-width:768px){
+    .hamburger { display:block; }
+    #menuList {
+      position:fixed;
+      left:-100%;
+      top:80px;
+      width:100%;
+      height:100vh;
+      flex-direction:column;
+      background:rgba(0,0,0,0.95);
+      padding-top:60px;
+      transition:left .35s ease;
+    }
+    #menuList.open { left:0; }
   }
 
-  /* HERO */
+  /* -------------------------------------------------------
+     PODBEAN HERO
+  ------------------------------------------------------- */
   .hero {
-    height:100vh; /* will be overridden by live.js based on hero.size */
-    background:
-      linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)),
-      url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80')
-      center/cover fixed;
-    color:white;
+    height:100vh; /* live.js will override with admin height */
+    width:100%;
     display:flex;
     align-items:center;
     justify-content:center;
     text-align:center;
-    padding:0 20px;
-  }
-  .hero h1 {
-    font-size:3.5rem;
-    margin:0;
-  }
-  .hero p {
-    font-size:1.3rem;
-    margin:15px 0 30px;
-  }
-  .cta {
-    background:#22c55e;
-    color:white;
-    padding:16px 40px;
-    border-radius:50px;
-    text-decoration:none;
-    font-weight:600;
-    display:inline-block;
-    font-size:1.05rem;
+    padding:20px;
+    background-size:cover;
+    background-position:center;
+    position:relative;
   }
 
-  /* FEATURE STRIP */
+  .hero::after {
+    content:"";
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,0.55);
+  }
+
+  .hero-inner {
+    position:relative;
+    z-index:2;
+    color:white;
+    max-width:900px;
+  }
+
+  .hero-inner h1 {
+    font-size:3.4rem;
+    font-weight:800;
+    margin-bottom:15px;
+  }
+
+  .hero-inner p {
+    font-size:1.3rem;
+    opacity:0.95;
+    margin-bottom:30px;
+  }
+
+  .cta {
+    padding:15px 40px;
+    font-size:1.1rem;
+    color:white;
+    text-decoration:none;
+    background:#28a745;
+    border-radius:999px;
+    font-weight:600;
+  }
+
+  /* -------------------------------------------------------
+     PODBEAN FEATURES (3 columns)
+  ------------------------------------------------------- */
   .features {
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
     gap:40px;
+    padding:80px 40px;
     max-width:1200px;
-    margin:80px auto;
+    margin:auto;
     text-align:center;
   }
-  .feature {
-    padding:20px;
-  }
   .feature i {
-    font-size:3.5rem;
+    font-size:3.4rem;
     color:#0066cc;
     margin-bottom:20px;
   }
   .feature h3 {
+    font-size:1.4rem;
     margin-bottom:10px;
   }
-
-  /* STATS */
-  .stats {
-    background:#f8f9fa;
-    padding:80px 20px;
-    text-align:center;
-  }
-  body.theme-dark .stats {
-    background:#020617;
-  }
-  .stats h2 {
-    margin-bottom:40px;
-  }
-  .stat-grid {
-    display:flex;
-    flex-wrap:wrap;
-    justify-content:center;
-    gap:60px;
-  }
-  .stat h3 {
-    font-size:3rem;
-    color:#0066cc;
-    margin:0;
-  }
-  body.theme-dark .stat h3 {
-    color:#38bdf8;
-  }
-
-  /* DYNAMIC CMS BLOCKS AREA */
-  #dynamicBlocks {
-    max-width:1000px;
-    margin:60px auto 0;
-  }
-  #dynamicBlocks .block {
-    margin-bottom:32px;
-  }
-  #dynamicBlocks .block-heading h2 {
-    font-size:2rem;
-    margin:0 0 10px;
-  }
-  #dynamicBlocks .block-paragraph p {
-    margin:0;
+  .feature p {
     font-size:1rem;
-  }
-  #dynamicBlocks .block-image img {
-    max-width:100%;
-    border-radius:16px;
-    display:block;
-    margin:0 auto;
-  }
-  #dynamicBlocks .btn-block {
-    background:#22c55e;
-    color:#022c22;
-    padding:12px 30px;
-    border-radius:999px;
-    text-decoration:none;
-    font-weight:600;
-    display:inline-block;
-  }
-  #dynamicBlocks .product-card {
-    background:#020617;
-    color:#e5e7eb;
-    border-radius:16px;
-    padding:16px;
-    display:flex;
-    gap:16px;
-    align-items:flex-start;
-  }
-  #dynamicBlocks .product-image {
-    width:130px;
-    border-radius:12px;
-    object-fit:cover;
-    flex-shrink:0;
-  }
-  #dynamicBlocks .product-btn {
-    display:inline-block;
-    margin-top:8px;
-    padding:8px 20px;
-    border-radius:999px;
-    background:#22c55e;
-    color:#022c22;
-    text-decoration:none;
-    font-size:.9rem;
-    font-weight:600;
-  }
-  #dynamicBlocks .block-podcast iframe {
-    width:100%;
-    height:160px;
-    border:none;
-    border-radius:10px;
-    background:#0f172a;
-  }
-  #dynamicBlocks .block-youtube .video-wrap {
-    position:relative;
-    padding-bottom:56.25%;
-    height:0;
-    border-radius:12px;
-    overflow:hidden;
-  }
-  #dynamicBlocks .block-youtube iframe {
-    position:absolute;
-    top:0; left:0;
-    width:100%; height:100%;
-    border:none;
+    color:#555;
+    line-height:1.5;
   }
 
+  /* -------------------------------------------------------
+     FOOTER
+  ------------------------------------------------------- */
   footer {
     background:#111;
     color:#aaa;
-    text-align:center;
     padding:30px;
-    margin-top:60px;
-  }
-
-  /* MOBILE */
-  @media (max-width:768px) {
-    .hamburger { display:block; }
-    header#menu ul {
-      position:fixed;
-      top:70px;
-      left:-100%;
-      width:100%;
-      height:calc(100vh - 70px);
-      background:rgba(0,0,0,0.98);
-      flex-direction:column;
-      align-items:center;
-      padding-top:60px;
-      transition:left 0.35s ease;
-      gap:0;
-    }
-    header#menu ul.open { left:0; }
-    header#menu a {
-      font-size:1.4rem;
-      padding:16px;
-      width:100%;
-      text-align:center;
-      border-bottom:none;
-    }
-    .hero h1 { font-size:2.4rem; }
+    text-align:center;
+    margin-top:80px;
   }
 </style>
 </head>
 
-<body data-page="home">
-<header id="menu">
+<body>
+
+<!-- PODBEAN HEADER -->
+<header>
   <a href="index.html" class="logo">Honest News</a>
+
   <ul id="menuList"></ul>
-  <div class="hamburger" onclick="document.getElementById('menuList').classList.toggle('open')">
+
+  <div class="hamburger"
+       onclick="document.getElementById('menuList').classList.toggle('open')">
     <i class="fas fa-bars"></i>
   </div>
 </header>
 
-<main>
-  <!-- HERO – image / size / text are controlled by site-data.json via live.js -->
-  <section class="hero" data-hero>
-    <div>
-      <h1>Honest News Network</h1>
-      <p>Everything You Need for Biblical Truth</p>
-      <p>From recording to reaching thousands – all in one place.</p>
-      <a href="podcast.html" class="cta">Get Started Free</a>
-    </div>
-  </section>
 
-  <!-- STATIC FEATURE STRIP (can stay even when CMS blocks exist) -->
-  <section class="features">
-    <div class="feature">
-      <i class="fas fa-microphone"></i>
-      <h3>Create Podcasts</h3>
-      <p>Record, edit, and publish episodes with AI noise reduction and auto-transcripts.</p>
-    </div>
-    <div class="feature">
-      <i class="fas fa-share-alt"></i>
-      <h3>Promote &amp; Grow</h3>
-      <p>Distribute to Spotify, Apple Podcasts, YouTube, and more.</p>
-    </div>
-    <div class="feature">
-      <i class="fas fa-dollar-sign"></i>
-      <h3>Monetize with Amazon</h3>
-      <p>Embed affiliate links for books and resources to earn commissions.</p>
-    </div>
-  </section>
+<!-- PODBEAN HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <h1>Honest News Network</h1>
+    <p>Biblical Truth • Unfiltered Reporting • Built for the Remnant</p>
+    <a class="cta" href="podcast.html">Explore Podcasts</a>
+  </div>
+</div>
 
-  <!-- DYNAMIC CMS BLOCKS (populated from site-data.json -> pages[0].blocks) -->
-  <section id="dynamicBlocks" data-blocks-target></section>
 
-  <!-- STATS + CTA -->
-  <section class="stats">
-    <h2>Impact Stats</h2>
-    <div class="stat-grid">
-      <div class="stat"><h3>1,000+</h3><p>Episodes Hosted</p></div>
-      <div class="stat"><h3>50K+</h3><p>Listens Reached</p></div>
-      <div class="stat"><h3>100%</h3><p>Biblical Truth</p></div>
-    </div>
-  </section>
+<!-- PODBEAN FEATURE BOXES -->
+<section class="features">
 
-  <section style="text-align:center;padding:80px 20px;">
-    <h2>Ready to Share Biblical Truth?</h2>
-    <p>Join those who trust Honest News to carry the message.</p>
-    <a href="support.html" class="cta">Support Now</a>
-  </section>
-</main>
+  <div class="feature">
+    <i class="fas fa-microphone"></i>
+    <h3>Publish Your Message</h3>
+    <p>Share biblical truth with a powerful, reliable publishing platform.</p>
+  </div>
 
+  <div class="feature">
+    <i class="fas fa-broadcast-tower"></i>
+    <h3>Reach the Nations</h3>
+    <p>Distribute across Spotify, Apple Podcasts, and every major platform.</p>
+  </div>
+
+  <div class="feature">
+    <i class="fas fa-dollar-sign"></i>
+    <h3>Monetize Your Ministry</h3>
+    <p>Easily integrate Amazon affiliate links and recommended resources.</p>
+  </div>
+
+</section>
+
+
+<!-- FOOTER -->
 <footer>
-  <p>© 2025 Honest News Network | All Rights Reserved</p>
+  © 2025 Honest News Network. All Rights Reserved.
 </footer>
+
+
+<!-- Fill the menu automatically -->
+<script>
+const items = [
+  { title:"Home", url:"index.html" },
+  { title:"Podcast", url:"podcast.html" },
+  { title:"Shop", url:"shop.html" },
+  { title:"Support", url:"support.html" },
+  { title:"Contact", url:"contact.html" }
+];
+
+const ul = document.getElementById("menuList");
+items.forEach(item=>{
+  const li=document.createElement("li");
+  const a=document.createElement("a");
+  a.href=item.url;
+  a.textContent=item.title;
+  li.appendChild(a);
+  ul.appendChild(li);
+});
+</script>
 
 </body>
 </html>
+
 
 
 
