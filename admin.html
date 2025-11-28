@@ -4,75 +4,6 @@
 <meta charset="UTF-8">
 <title>Honest News – Admin Login</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Honest News – Dashboard</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<!-- LOGIN PROTECTION: only allow access if logged in -->
-<script>
-  if (localStorage.getItem("hn_logged") !== "yes") {
-    location.href = "admin.html";
-  }
-</script>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
-<style>
-  /* keep all your existing CSS here exactly as you posted */
-  body{margin:0;font-family:system-ui,sans-serif;background:#f4f6f9;color:#1e293b;height:100vh;display:flex;flex-direction:column}
-  .header{background:#1e293b;color:#fff;padding:20px;display:flex;justify-content:space-between;align-items:center}
-  .header h1{font-size:1.4rem;margin:0}
-  .header a{color:#94a3b8;text-decoration:none}
-  .main{flex:1;display:flex;overflow:hidden}
-  .sidebar{width:300px;background:#fff;border-right:1px solid #e2e8f0;padding:20px;overflow-y:auto}
-  .page{padding:15px;margin:10px 0;background:#f8fafc;border-radius:10px;cursor:pointer;font-weight:600}
-  .page.active{background:#4338ca;color:#fff}
-  .content{flex:1;padding:40px;overflow-y:auto}
-  .card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:30px;margin-bottom:30px;box-shadow:0 4px 20px rgba(0,0,0,0.05)}
-  input,textarea,select{width:100%;padding:12px;margin:8px 0;border-radius:10px;border:1px solid #cbd5e1;font-size:15px}
-  button{background:#28a745;color:#fff;border:none;padding:12px 22px;border-radius:10px;cursor:pointer;font-weight:600}
-  button:hover{background:#218838}
-  .block{margin:16px 0;padding:16px;background:#f8fafc;border:2px dashed #cbd5e1;border-radius:12px;position:relative}
-  .block:hover{border-color:#28a745}
-  .tools{position:absolute;top:8px;right:8px;opacity:0;transition:0.2s}
-  .block:hover .tools{opacity:1}
-  .tools button{background:none;border:none;cursor:pointer;font-size:16px;margin:0 4px;color:#6366f1}
-  .preview{margin-top:30px;padding:30px;background:#fff;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.1)}
-  label.inline{display:inline-flex;align-items:center;gap:.4rem;margin-right:1.2rem;font-size:.9rem}
-  small{color:#64748b}
-  .section{border-top:1px solid #e5e7eb;margin-top:10px;padding-top:10px}
-  .section-header{
-    width:100%;background:none;border:none;display:flex;align-items:center;
-    justify-content:space-between;font-size:0.98rem;padding:10px 0;cursor:pointer;
-    color:#0f172a;
-  }
-  .section-header .left{display:flex;align-items:center;gap:.5rem}
-  .section-header .arrow{
-    display:inline-block;transition:transform .25s ease,opacity .25s ease;
-    font-size:0.85rem;color:#6b7280;
-  }
-  .section-header.open .arrow{transform:rotate(90deg);color:#111827}
-  .section-title{font-weight:600}
-  .section-body{
-    max-height:0;opacity:0;overflow:hidden;
-    transform:translateY(-4px);
-    transition:max-height .35s ease,opacity .25s ease,transform .35s ease;
-  }
-  .section-body.open{
-    max-height:1200px;opacity:1;transform:translateY(0);
-  }
-  .section-body-inner{padding:4px 0 14px 0}
-  .field-group{margin:6px 0}
-  .field-label{font-size:0.85rem;font-weight:600;color:#4b5563;margin-bottom:2px}
-  .block-type-label{font-size:.8rem;color:#64748b;margin-bottom:4px}
-  textarea{resize:vertical;min-height:80px}
-</style>
-</head>
-<body>
-<!-- ... and then keep the rest of your dashboard.html exactly as you pasted -->
 
 <style>
   body{
@@ -122,12 +53,13 @@
   #msg{color:#c33;margin-top:15px;font-size:.9rem}
 </style>
 </head>
+
 <body>
 
 <div class="login-box">
   <h1>Honest News Admin</h1>
   <p>Enter your password to edit the site</p>
-  <input type="password" id="pass" placeholder="" autofocus>
+  <input type="password" id="pass" autofocus>
   <button id="login">Login</button>
   <div id="msg"></div>
 </div>
@@ -141,7 +73,7 @@ if (localStorage.getItem("hn_logged") === "yes") {
 function doLogin(){
   const pass = document.getElementById("pass").value.trim();
   if (pass === "jesus2025") {
-    localStorage.setItem("hn_logged","yes");   // remember you're logged in
+    localStorage.setItem("hn_logged","yes");
     location.href = "dashboard.html";
   } else {
     document.getElementById("msg").innerText = "Wrong password";
@@ -153,6 +85,8 @@ document.getElementById("pass").addEventListener("keypress", e => {
   if(e.key === "Enter") doLogin();
 });
 </script>
+
 </body>
 </html>
+
 
