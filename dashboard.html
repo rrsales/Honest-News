@@ -1198,9 +1198,9 @@ async function saveToGithub() {
   if (!confirm("Push changes LIVE to site-data.json on GitHub?")) return;
 
   // ⚠️ PASTE YOUR REAL CLASSIC TOKEN HERE (40 chars, no spaces)
-  const token = "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";
+  const token = "";
 
-  if (!token || token === "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") {
+  if (!token || token === "") {
     alert("You must open dashboard.html and paste your real GitHub token in saveToGithub().");
     return;
   }
