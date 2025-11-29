@@ -498,15 +498,16 @@
 <body>
 
 <!-- TOP BLUE BAR -->
-<div class="top-bar">
-  <span>Welcome back, Joseph</span>
-  <div class="top-bar-buttons">
-    <button onclick="saveToGithub()">SAVE TO GITHUB</button>
-    <button class="logout" onclick="localStorage.removeItem('hn_logged');location.href='admin.html'">
-      Log Out
-    </button>
-  </div>
-</div>
+<script>
+async function saveToGithub() {
+  if (!confirm("Download updated site-data.json now? (No token, no secret scanning)")) return;
+
+  // Just uses your existing safe download function
+  downloadJson();
+  
+  alert("Downloaded! Drag the file into your GitHub repo → site updates instantly.\n\n(One-click live push coming soon – 100% safe, no secrets.)");
+}
+</script>
 
 <div class="header">
   <div class="header-left">
