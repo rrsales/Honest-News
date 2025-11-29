@@ -498,15 +498,40 @@
 <body>
 
 <!-- TOP BLUE BAR -->
-<div class="top-bar">
-  <span>Welcome back, Joseph</span>
-  <div class="top-bar-buttons">
-    <button onclick="saveToGithub()">SAVE TO GITHUB</button>
-    <button class="logout" onclick="localStorage.removeItem('hn_logged');location.href='admin.html'">
-      Log Out
-    </button>
-  </div>
-</div>
+<script>
+async function saveToGithub() {
+  if (!confirm("Push all changes LIVE right now?")) return;
+
+  const token = "ghp_YOUR_REAL_TOKEN_HERE"; // ← paste your 40-char token here (one time only)
+  const data = JSON.stringify(site, null, 2);
+  const encoded = btoa(unescape(encodeURIComponent(data)));
+
+  try {
+    const response = await fetch("https://api.github.com/repos/rrsales/Honest-News/contents/site-data.json", {
+      method: "PUT",
+      headers: {
+        "Authorization": `token ${token}`,
+        "Content-Type": "application/json",
+        "Accept": "application/vnd.github.v3+json"
+      },
+      body: JSON.stringify({
+        message: "Live update from Joseph’s dashboard",
+        content: encoded,
+        branch: "main"
+      })
+    });
+
+    if (response.ok) {
+      alert("LIVE! Your site updated instantly — check any page in 5 seconds");
+    } else {
+      const err = await response.json();
+      alert("Failed: " + (err.message || "Check token"));
+    }
+  } catch (e) {
+    alert("Network error — check internet");
+  }
+}
+</script>
 
 <div class="header">
   <div class="header-left">
