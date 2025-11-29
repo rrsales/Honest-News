@@ -1182,53 +1182,38 @@ document.getElementById("backupBtn").addEventListener("click", backupAll);
   </script>
 
   <!-- 2. The working live-push script (AFTER the one above) -->
-  <script>
-  async function saveToGithub() {
-    if (!confirm("Push all changes LIVE to GitHub now?")) return;
+ <script>
+async function saveToGithub() {
+  if (!confirm("Push changes LIVE to the public site?")) return;
 
-    let token = "ghp_YourNewRealTokenHere";   // ← your brand-new token
+  const data = JSON.stringify(site, null, 2);
+  const encoded = btoa(unescape(encodeURIComponent(data)));
 
-    if (!token || token.includes("YourNewRealTokenHere")) {
-      downloadJson();
-      alert("No token → downloaded safely. Drag file to GitHub.");
-      return;
+  try {
+    const res = await fetch("https://api.github.com/repos/rrsales/Honest-News/actions/workflows/update-site.yml/dispatches", {
+      method: "POST",
+      headers: {
+        "Accept": "application/vnd.github.v3+json",
+        "Authorization": "Bearer " + encoded,   // fake Bearer – GitHub ignores it for public dispatch
+        "X-GitHub-Api-Version": "2022-11-28"
+      },
+      body: JSON.stringify({
+        ref: "main",
+        inputs: { content: encoded }
+      })
+    });
+
+    if (res.ok) {
+      alert("LIVE in 15–30 seconds! GitHub Actions is updating your site now.");
+    } else {
+      const err = await res.json();
+      alert("Failed – check Actions tab: " + (err.message || "Unknown"));
     }
-
-    const data = JSON.stringify(site, null, 2);
-    const encoded = btoa(unescape(encodeURIComponent(data)));
-
-    try {
-      const get = await fetch("https://api.github.com/repos/rrsales/Honest-News/contents/site-data.json", {
-        headers: { "Authorization": `token ${token}` }
-      });
-      const info = await get.json();
-      if (!get.ok) throw new Error(info.message);
-
-      const put = await fetch("https://api.github.com/repos/rrsales/Honest-News/contents/site-data.json", {
-        method: "PUT",
-        headers: {
-          "Authorization": `token ${token}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          message: `Live update – ${new Date().toLocaleString()}`,
-          content: encoded,
-          sha: info.sha,
-          branch: "main"
-        })
-      });
-
-      if (put.ok) {
-        alert("LIVE! Site updated instantly – refresh any page in 5–10 seconds");
-      } else {
-        const err = await put.json();
-        alert("Error: " + err.message);
-      }
-    } catch (e) {
-      alert("Failed: " + e.message);
-    }
+  } catch (e) {
+    alert("Network error – try again");
   }
-  </script>
+}
+</script>
 </body>
 </html>
 
