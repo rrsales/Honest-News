@@ -1181,7 +1181,6 @@ document.getElementById("backupBtn").addEventListener("click", backupAll);
     // … all your existing code (fetch, renderPages, addBlock, etc.) …
   </script>
 
-  <!-- 2. The working live-push script (AFTER the one above) -->
  <script>
 async function saveToGithub() {
   if (!confirm("Push changes LIVE to the public site?")) return;
@@ -1194,8 +1193,7 @@ async function saveToGithub() {
       method: "POST",
       headers: {
         "Accept": "application/vnd.github.v3+json",
-        "Authorization": "Bearer " + encoded,   // fake Bearer – GitHub ignores it for public dispatch
-        "X-GitHub-Api-Version": "2022-11-28"
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
         ref: "main",
@@ -1204,10 +1202,10 @@ async function saveToGithub() {
     });
 
     if (res.ok) {
-      alert("LIVE in 15–30 seconds! GitHub Actions is updating your site now.");
+      alert("LIVE in 15–30 seconds! GitHub Actions is updating your site.");
     } else {
       const err = await res.json();
-      alert("Failed – check Actions tab: " + (err.message || "Unknown"));
+      alert("Error: " + (err.message || res.status));
     }
   } catch (e) {
     alert("Network error – try again");
