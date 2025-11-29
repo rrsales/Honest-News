@@ -1,0 +1,132 @@
+{
+  "menu": [
+    {
+      "title": "Home",
+      "url": "index.html"
+    },
+    {
+      "title": "Podcast",
+      "url": "podcast.html"
+    },
+    {
+      "title": "Shop",
+      "url": "shop.html"
+    },
+    {
+      "title": "Support",
+      "url": "support.html"
+    },
+    {
+      "title": "Contact",
+      "url": "contact.html"
+    }
+  ],
+  "pages": [
+    {
+      "title": "Home",
+      "slug": "home",
+      "theme": "light",
+      "hero": {
+        "bg": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80",
+        "overlay": "Honest News Network",
+        "sub": "Everything You Need for Biblical Truth",
+        "transparentMenu": true,
+        "behavior": "parallax-medium",
+        "size": "small",
+        "customHeight": ""
+      },
+      "blocks": [
+        {
+          "type": "youtube",
+          "motion": "fade",
+          "title": "",
+          "videoId": ""
+        },
+        {
+          "type": "heading",
+          "motion": "float",
+          "content": "About Us"
+        },
+        {
+          "type": "paragraph",
+          "motion": "fade",
+          "content": "Honest News Network exists to cut through the noise and tell the truth—plain, unapologetic, and rooted in God’s Word. In a world of spin, censorship, and confusion, we examine world events, culture, and headlines through a biblical lens so believers can understand the times and stand firm in their faith. We are not here to entertain; we are here to warn, inform, and call God’s people back to truth.\n\nWe expose the stories the mainstream ignores, the agendas they hide, and the spiritual battle behind the headlines. From politics and global crises to attacks on faith and family, Honest News Network connects the dots and shows how it all aligns with Scripture and end-time prophecy. Our goal is to help you see clearly so you are not deceived by the systems of this world.\n\nThis is more than a news outlet—it’s a watchman on the wall. Honest News Network exists to equip the body of Christ with discernment, courage, and hope as darkness grows and persecution increases. We invite you to stand with us, stay informed, and stay grounded in the only source of unshakable truth: the Word of God."
+        }
+      ]
+    },
+    {
+      "title": "Podcast",
+      "slug": "podcast",
+      "theme": "light",
+      "hero": {
+        "bg": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80",
+        "overlay": "Latest Episodes",
+        "sub": "New episodes every Sunday",
+        "transparentMenu": true,
+        "behavior": "float-up",
+        "size": "medium",
+        "customHeight": ""
+      },
+      "blocks": []
+    },
+    {
+      "title": "Shop",
+      "slug": "shop",
+      "theme": "dark",
+      "hero": {
+        "bg": "",
+        "overlay": "Recommended Resources",
+        "sub": "Support your walk and support the ministry",
+        "transparentMenu": true,
+        "behavior": "still",
+        "size": "medium",
+        "customHeight": ""
+      },
+      "blocks": []
+    },
+    {
+      "title": "Test",
+      "slug": "test",
+      "theme": "dark",
+      "hero": {
+        "bg": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80",
+        "overlay": "Test",
+        "sub": "",
+        "transparentMenu": true,
+        "behavior": "parallax-medium",
+        "size": "large",
+        "customHeight": ""
+      },
+      "blocks": [
+        {
+          "type": "heading",
+          "motion": "fade",
+          "content": "test"
+        },
+        {
+          "type": "paragraph",
+          "motion": "fade",
+          "content": ""
+        },
+        {
+          "type": "image",
+          "motion": "fade",
+          "mode": "url",
+          "content": ""
+        },
+        {
+          "type": "image",
+          "motion": "fade",
+          "mode": "url",
+          "content": ""
+        },
+        {
+          "type": "youtube",
+          "motion": "float",
+          "title": "test",
+          "videoId": "https://www.youtube.com/watch?v=AQ-BzAWXutU&list=RDAQ-BzAWXutU&start_radio=1"
+        }
+      ]
+    }
+  ]
+}
