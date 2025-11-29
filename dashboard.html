@@ -5,8 +5,10 @@
 <title>Honest News – Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
+<!-- PROTECT DASHBOARD: only enter if logged in -->
 <script>
   if (localStorage.getItem("hn_logged") !== "yes") {
+    // Only sends people to admin.html if not logged in.
     location.href = "admin.html";
   }
 </script>
@@ -15,8 +17,6 @@
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 
 <style>
-    /* ←←← ALL YOUR ORIGINAL STYLES GO HERE EXACTLY AS THEY WERE ←←← */
-
   :root{
     --bg: #f3f4f6;
     --card-bg: #ffffff;
@@ -41,6 +41,41 @@
     height:100vh;
     display:flex;
     flex-direction:column;
+  }
+
+  /* TOP BAR (WELCOME + SAVE TO GITHUB + LOGOUT) */
+  .top-bar{
+    background:#0066cc;
+    color:white;
+    padding:12px 40px;
+    font-size:1.05rem;
+    font-weight:600;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+  }
+  .top-bar-buttons{
+    position:absolute;
+    right:20px;
+    display:flex;
+    gap:10px;
+  }
+  .top-bar-buttons button{
+    background:#16a34a;
+    color:white;
+    border:none;
+    padding:8px 18px;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:.85rem;
+    font-weight:600;
+  }
+  .top-bar-buttons button.logout{
+    background:#c33;
+  }
+  .top-bar-buttons button:hover{
+    opacity:0.9;
   }
 
   /* HEADER */
@@ -93,7 +128,6 @@
     gap:6px;
     background:#0f172a;
     color:#e5e7eb;
-    text-decoration:none;
   }
   .btn.secondary{background:#e5e7eb;color:#111827;}
   .btn.secondary:hover{background:#d1d5db;}
@@ -155,9 +189,15 @@
     border-color:#1d4ed8;
   }
 
-  .field-hint{
-    font-size:.72rem;
-    color:#9ca3af;
+  .textarea-small{
+    width:100%;
+    border-radius:12px;
+    border:1px solid var(--border);
+    padding:8px;
+    font-size:.78rem;
+    font-family:inherit;
+    resize:vertical;
+    min-height:70px;
   }
 
   /* MENU DESIGNER */
@@ -286,6 +326,10 @@
     color:#4b5563;
     margin-bottom:2px;
   }
+  .field-hint{
+    font-size:.72rem;
+    color:#9ca3af;
+  }
 
   input,select,textarea{
     font-family:inherit;
@@ -311,6 +355,49 @@
     font-size:.78rem;
     color:#4b5563;
   }
+
+  /* ACCORDION */
+  .section{
+    border-top:1px solid #e5e7eb;
+    margin-top:10px;
+    padding-top:10px;
+  }
+  .section-header{
+    width:100%;
+    background:none;
+    border:none;
+    padding:6px 0;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    cursor:pointer;
+    font-size:.86rem;
+    color:#111827;
+  }
+  .section-header .left{display:flex;align-items:center;gap:6px;}
+  .section-header .arrow{
+    font-size:.75rem;
+    color:#9ca3af;
+    transition:transform .25s ease,color .25s ease;
+  }
+  .section-header.open .arrow{
+    transform:rotate(90deg);
+    color:#4b5563;
+  }
+  .section-title{font-weight:600;}
+  .section-body{
+    max-height:0;
+    opacity:0;
+    overflow:hidden;
+    transform:translateY(-4px);
+    transition:max-height .3s ease,opacity .2s ease,transform .3s ease;
+  }
+  .section-body.open{
+    max-height:1400px;
+    opacity:1;
+    transform:translateY(0);
+  }
+  .section-body-inner{padding:4px 0 8px;}
 
   /* BLOCKS */
   .block{
@@ -410,6 +497,17 @@
 </head>
 <body>
 
+<!-- TOP BLUE BAR -->
+<div class="top-bar">
+  <span>Welcome back, Joseph</span>
+  <div class="top-bar-buttons">
+    <button onclick="saveToGithub()">SAVE TO GITHUB</button>
+    <button class="logout" onclick="localStorage.removeItem('hn_logged');location.href='admin.html'">
+      Log Out
+    </button>
+  </div>
+</div>
+
 <div class="header">
   <div class="header-left">
     <h1>Honest News Editor</h1>
@@ -417,13 +515,13 @@
   </div>
   <div class="header-right">
     <span id="saveStatus" class="pill">Clean</span>
-    <button id="saveDraftBtn" class="btn secondary" type="button">
+    <button id="saveDraftBtn" class="btn secondary">
       <i class="fa-regular fa-floppy-disk"></i> Save
     </button>
-    <button id="downloadBtn" class="btn ghost" type="button">
+    <button id="downloadBtn" class="btn ghost">
       Download JSON
     </button>
-    <button id="backupBtn" class="btn ghost" type="button">
+    <button id="backupBtn" class="btn ghost">
       Full backup (.zip)
     </button>
     <a href="index.html" target="_blank" class="btn ghost">
@@ -438,7 +536,7 @@
     <div>
       <h3>Pages</h3>
       <div class="sidebar-inner" id="pages"></div>
-      <button class="btn secondary" style="width:100%;margin-top:8px;" type="button" onclick="newPage()">
+      <button class="btn secondary" style="width:100%;margin-top:8px;" onclick="newPage()">
         + New Page
       </button>
     </div>
@@ -592,6 +690,7 @@ function newPage(){
 
 /* =======================
    MENU DESIGNER
+   - Simple now, future-ready for mega menus & mobile rules
 ======================= */
 function renderMenuEditor(){
   const el = document.getElementById("menuDesigner");
@@ -913,7 +1012,7 @@ function renderTabBlocks(){
     </div>
 
     <div id="blocks" style="margin-top:10px;"></div>
- `;
+  `;
 
   const blocksEl = document.getElementById("blocks");
   blocksEl.innerHTML = blocks.map((b,i)=>{
@@ -1284,6 +1383,74 @@ renderPages();
 document.getElementById("saveDraftBtn").addEventListener("click", saveDraft);
 document.getElementById("downloadBtn").addEventListener("click", downloadJson);
 document.getElementById("backupBtn").addEventListener("click", backupAll);
+
+/* =======================
+   SAVE TO GITHUB BUTTON
+   (current behavior: download site-data.json;
+    your git / Grok flow still pushes it)
+======================= */
+async function saveToGithub() {
+  if (!confirm("Download updated site-data.json now?")) return;
+  const data = JSON.stringify(site, null, 2);
+  const blob = new Blob([data], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'site-data.json';
+  a.click();
+  alert("Downloaded! Commit / push this file in Git and the site will update.");
+}
+</script>
+<script>
+  async function saveToGitHub() {
+    // Confirm before pushing changes
+    if (!confirm("Push all changes to GitHub now?")) {
+      return;
+    }
+
+    // Ensure the CMS config is loaded
+    if (!window.CMS_CONFIG || !window.CMS_CONFIG.token) {
+      alert("Error: Missing GitHub token in configuration.");
+      return;
+    }
+
+    // Prepare the data to be pushed
+    const data = JSON.stringify(siteData, null, 2);
+
+    // GitHub API endpoint for the file
+    const endpoint = `https://api.github.com/repos/${CMS_CONFIG.repoUser}/${CMS_CONFIG.repoName}/contents/${CMS_CONFIG.dataFile}`;
+
+    // Fetch the current file's SHA to update it properly
+    const existingFile = await fetch(endpoint, {
+      headers: { Authorization: `token ${CMS_CONFIG.token}` }
+    }).then(response => response.json());
+
+    // If the file exists, get its SHA
+    const sha = existingFile.sha;
+
+    // Push the new content to GitHub
+    const response = await fetch(endpoint, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `token ${CMS_CONFIG.token}`
+      },
+      body: JSON.stringify({
+        message: "Update site-data.json from dashboard",
+        content: btoa(unescape(encodeURIComponent(data))),
+        sha: sha
+      })
+    });
+
+    // Notify the user of the result
+    if (response.ok) {
+      alert("Saved! Site updates in about 5 seconds.");
+    } else {
+      alert("Error saving. Check your token or repository configuration.");
+    }
+  }
 </script>
 </body>
 </html>
+
+
