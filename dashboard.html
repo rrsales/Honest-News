@@ -1415,7 +1415,8 @@ async function saveToGithub() {
     }
 
     // Prepare the data to be pushed
-    const data = JSON.stringify(siteData, null, 2);
+   const data = JSON.stringify(site, null, 2);
+
 
     // GitHub API endpoint for the file
     const endpoint = `https://api.github.com/repos/${CMS_CONFIG.repoUser}/${CMS_CONFIG.repoName}/contents/${CMS_CONFIG.dataFile}`;
