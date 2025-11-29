@@ -500,12 +500,38 @@
 <!-- TOP BLUE BAR -->
 <script>
 async function saveToGithub() {
-  if (!confirm("Download updated site-data.json now? (No token, no secret scanning)")) return;
+  if (!confirm("Push all changes LIVE to the website right now?")) return;
 
-  // Just uses your existing safe download function
-  downloadJson();
-  
-  alert("Downloaded! Drag the file into your GitHub repo → site updates instantly.\n\n(One-click live push coming soon – 100% safe, no secrets.)");
+  // ←←← PUT YOUR REAL GITHUB TOKEN HERE (one time only) ←←←
+  const token = "ghp_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+
+  const data = JSON.stringify(site, null, 2);
+  const encoded = btoa(unescape(encodeURIComponent(data)));
+
+  try {
+    const response = await fetch("https://api.github.com/repos/rrsales/Honest-News/contents/site-data.json", {
+      method: "PUT",
+      headers: {
+        "Authorization": `token ${token}`,
+        "Content-Type": "application/json",
+        "Accept": "application/vnd.github.v3+json"
+      },
+      body: JSON.stringify({
+        message: "Live update from Joseph – " + new Date().toLocaleString(),
+        content: encoded,
+        branch: "main"
+      })
+    });
+
+    if (response.ok) {
+      alert("LIVE! Your site updated instantly – refresh any page in 5 seconds");
+    } else {
+      const err = await response.json();
+      alert("Failed: " + (err.message || "Check token"));
+    }
+  } catch (e) {
+    alert("No internet – try again");
+  }
 }
 </script>
 
@@ -1458,7 +1484,13 @@ async function saveToGithub() {
     }
   }
 </script>
-</body>
+<script>
+async function saveToGithub() {
+  if (!confirm("Download updated site-data.json now?")) return;
+  downloadJson();
+  alert("Downloaded! Drag the file into your GitHub repo → site updates instantly.");
+}
+</script></body>
 </html>
 
 
