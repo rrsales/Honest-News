@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Honest News – Dashboard</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <title>Honest News – Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<!-- PROTECT DASHBOARD: only enter if logged in -->
-<script>
-  if (localStorage.getItem("hn_logged") !== "yes") {
-    // Only sends people to admin.html if not logged in.
-    location.href = "admin.html";
-  }
-</script>
+  <!-- PROTECT DASHBOARD -->
+  <script>
+    if (localStorage.getItem("hn_logged") !== "yes") {
+      location.href = "admin.html";
+    }
+  </script>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+
+  <style>
+    /* ←←← ALL YOUR ORIGINAL STYLES GO HERE EXACTLY AS THEY WERE ←←← */
 
 <style>
   :root{
