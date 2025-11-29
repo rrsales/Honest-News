@@ -1,45 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Honest News Network — Podcast</title>   <!-- ← CHANGE THIS -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<script src="https://cdn.jsdelivr.net/gh/rrsales/Honest-News@master/live.js"></script>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#111;color:#eee;font-family:system-ui,-apple-system,sans-serif;overflow-x:hidden}
-header{position:fixed;top:0;left:0;right:0;height:90px;background:transparent;transition:background .4s;z-index:1000;backdrop-filter:blur(12px)}
-header.scrolled{background:rgba(0,0,0,0.94)!important}
-.logo{font-size:2rem;font-weight:900;color:white;text-shadow:0 2px 10px #000}
-.nav-menu{list-style:none;display:flex;gap:2.5rem}
-.nav-menu a{color:white;text-decoration:none;font-weight:600}
-.mobile-menu-toggle{display:none;color:white;font-size:2rem;cursor:pointer}
-@media(max-width:768px){.mobile-menu-toggle{display:block}}
-main{position:relative;z-index:10;background:#111;padding-top:90px;min-height:100vh;text-align:center}
-</style>
-</head>
-<body>
-<header>
-  <div style="max-width:1200px;margin:auto;padding:0 1.5rem;display:flex;justify-content:space-between;align-items:center;height:100%">
-    <div class="logo">Honest News Network</div>
-    <nav>
-      <ul id="nav-menu" class="nav-menu"></ul>
-      <button class="mobile-menu-toggle">☰</button>
-    </nav>
-  </div>
-</header>
-<main>
-  <h1 style="margin-top:120px">Latest Episodes</h1>   <!-- ← CHANGE THIS -->
-  <p style="margin:2rem;font-size:1.3rem">New episodes every Sunday</p>
-</main>
-<section id="page-blocks"></section>
-<script>
-const pages=[{name:"Home",url:"index.html"},{name:"Podcast",url:"podcast.html"},{name:"Blog",url:"blog.html"},{name:"Shop",url:"shop.html"},{name:"Events",url:"events.html"},{name:"Support",url:"support.html"},{name:"Contact",url:"contact.html"}];
-document.getElementById("nav-menu").innerHTML=pages.map(p=>`<li><a href="${p.url}">${p.name}</a></li>`).join("");
-document.querySelector(".mobile-menu-toggle").onclick=()=>document.getElementById("nav-menu").classList.toggle("active");
-window.addEventListener("scroll",()=>document.querySelector("header").classList.toggle("scrolled",window.scrollY>60));
-</script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Honest News – Shop</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="stylesheet" href="assets/css/site.css" />
+  </head>
+  <body data-page="shop">
+    <header class="site-header">
+      <div class="site-header-inner">
+        <div class="site-logo">Honest News</div>
+        <nav>
+          <ul id="menuList"></ul>
+        </nav>
+      </div>
+    </header>
+
+    <section class="hero" data-hero>
+      <div class="hero-overlay-soft"></div>
+      <div class="hero-inner">
+        <h1>Recommended Resources</h1>
+        <p>Books and tools that build strong believers and support the work.</p>
+      </div>
+    </section>
+
+    <main>
+      <!-- Dashboard "shop" product blocks go here -->
+      <div data-blocks-target></div>
+    </main>
+
+    <footer class="site-footer">
+      &copy; <span id="year"></span> Honest News Network.
+    </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const y = document.getElementById("year");
+        if (y) y.textContent = new Date().getFullYear();
+      });
+    </script>
+
+    <script src="assets/js/live.js"></script>
+  </body>
 </html>
+
