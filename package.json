@@ -1,0 +1,11 @@
+{
+  "name": "honest-news-save-server",
+  "version": "1.0.0",
+  "main": "save_server.js",
+  "scripts": {
+    "start": "node save_server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
