@@ -44,50 +44,56 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* TOP HEADER – GLOSSY APPLE DARK */
-  .top-welcome{
-    background: radial-gradient(circle at top, #111827 0, #020617 45%, #000 100%);
-    color:#f9fafb;
-    padding:14px 28px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    border-bottom:1px solid rgba(148,163,184,0.35);
-    box-shadow:0 18px 40px rgba(0,0,0,0.7);
-    position:relative;
-    z-index:20;
-  }
-  .top-welcome-left{
-    display:flex;
-    flex-direction:column;
-    gap:3px;
-  }
-  .top-welcome-left span.label{
-    letter-spacing:.16em;
-    text-transform:uppercase;
-    font-size:.7rem;
-    color:#6b7280;
-  }
-  .top-welcome-left span.name{
-    font-size:.95rem;
-  }
+  /* TOP BLUE BAR */
+.top-welcome{
+  background:#0066cc;
+  color:white;
+  padding:20px 40px;
+  text-align:center;
+  font-size:1.4rem;
+  font-weight:bold;
+  position:relative;
+}
+.top-welcome button{
+  position:absolute;
+  top:15px;
+  padding:10px 20px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
+  color:white;
+}
+.top-welcome .logout-btn{
+    right:20px;
+    background:#c33;
+}
+.top-welcome .save-btn{
+    left:20px;
+    background:#16a34a;
+}
 
+  }
+  .top-welcome span{
+    letter-spacing:.03em;
+    text-transform:uppercase;
+    font-size:.8rem;
+  }
   .logout-btn{
     border:none;
     border-radius:var(--radius-pill);
     padding:7px 16px;
     cursor:pointer;
     font-weight:600;
-    background:rgba(15,23,42,.6);
+    background:rgba(15,23,42,.25);
     color:#e5e7eb;
-    border:1px solid rgba(148,163,184,.4);
+    border:1px solid rgba(15,23,42,.4);
     display:inline-flex;
     align-items:center;
     gap:6px;
-    font-size:.8rem;
   }
   .logout-btn:hover{
-    background:rgba(15,23,42,.9);
+    background:rgba(15,23,42,.5);
   }
 
   .main{
@@ -164,11 +170,6 @@
   .btn.ghost:hover{color:#e5e7eb;border-color:#e5e7eb;}
   .btn.primary{background:#22c55e;color:#022c22;border:1px solid #16a34a;}
   .btn.primary:hover{background:#16a34a;}
-  .btn.xs{
-    padding:4px 8px;
-    font-size:.72rem;
-    border-radius:999px;
-  }
 
   .textarea-small{
     width:100%;
@@ -333,10 +334,10 @@
 
   #inspectorPanel{
     position:fixed;
-    top:56px; /* just under header */
+    top:54px; /* just under blue bar */
     right:-360px;
     width:360px;
-    height:calc(100vh - 56px);
+    height:calc(100vh - 54px);
     background:#020617;
     color:#e5e7eb;
     border-left:1px solid rgba(148,163,184,.55);
@@ -538,64 +539,17 @@
     color:#e5e7eb;
   }
 
-  /* FLOATING POP-OUT TOOL PANEL */
-  .floating-tool{
-    position:fixed;
-    top:80px;
-    left:50%;
-    transform:translateX(-50%);
-    width:min(460px,96vw);
-    max-height:calc(100vh - 140px);
-    background:rgba(3,7,18,0.96);
-    border-radius:20px;
-    border:1px solid rgba(148,163,184,.6);
-    box-shadow:0 28px 70px rgba(0,0,0,0.9);
-    backdrop-filter:blur(18px);
-    z-index:11000;
-    display:flex;
-    flex-direction:column;
-    overflow:hidden;
-  }
-  .floating-tool.hidden{
-    display:none;
-  }
-  .floating-tool-header{
-    padding:8px 12px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    border-bottom:1px solid rgba(31,41,55,.9);
-    background:linear-gradient(to right,#020617,#030712);
-  }
-  .floating-tool-header span{
-    font-size:.8rem;
-    color:#e5e7eb;
-  }
-  #floatingToolBody{
-    padding:10px 12px;
-    overflow-y:auto;
-  }
-
   @media (max-width:900px){
     .main{flex-direction:column;}
     .sidebar{width:100%;}
     #panelHandle{top:auto;bottom:90px;}
-    .floating-tool{
-      top:70px;
-      left:50%;
-      transform:translateX(-50%);
-      width:96vw;
-    }
   }
 </style>
 </head>
 <body>
 
 <div class="top-welcome">
-  <div class="top-welcome-left">
-    <span class="label">Honest News Editor</span>
-    <span class="name">Welcome back, Joseph</span>
-  </div>
+  <span>Welcome back, Joseph</span>
   <button class="logout-btn"
           onclick="localStorage.removeItem('hn_logged');location.href='admin.html'">
     <i class="fa-solid fa-right-from-bracket"></i> Log Out
@@ -666,9 +620,6 @@
     </div>
     <div id="panelHeaderRight">
       <span id="saveStatusRight" class="pill">Clean</span>
-      <button id="popOutBtn" class="btn ghost xs" title="Pop out tool">
-        ↗
-      </button>
       <button id="closePanelBtn">×</button>
     </div>
   </div>
@@ -684,7 +635,7 @@
 
   <div style="margin-top:10px;">
     <button id="saveLocalBtn" class="btn primary" style="width:100%;margin-bottom:6px;">
-      <i class="fa-solid fa-save"></i> Save (local clone)
+      <i class="fa-solid fa-save"></i> Save now
     </button>
     <button id="saveDraftBtn2" class="btn secondary" style="width:100%;margin-bottom:4px;">
       Save Draft (local browser)
@@ -699,15 +650,6 @@
       View site ↗
     </a>
   </div>
-</div>
-
-<!-- FLOATING POP-OUT TOOL WINDOW -->
-<div id="floatingTool" class="floating-tool hidden">
-  <div class="floating-tool-header">
-    <span id="floatingToolTitle">Inspector tool</span>
-    <button id="dockToolBtn" class="btn ghost xs">⇤ Dock</button>
-  </div>
-  <div id="floatingToolBody"></div>
 </div>
 
 <script>
@@ -776,6 +718,12 @@ let isDirty = false;
 let activeInspectorTab = "page";
 const DRAFT_KEY = "hn_cms_draft_v1";
 
+/* AUTOSAVE / CLOUD SAVE STATE */
+const SERVER = "https://honest-news.onrender.com";
+let isSaving = false;
+let saveQueued = false;
+let autosaveTimer = null;
+
 /* panel behavior: auto | manual | pinned | smart */
 let panelBehavior = localStorage.getItem("hn_panel_behavior") || "auto";
 
@@ -783,13 +731,6 @@ const panel    = document.getElementById("inspectorPanel");
 const handle   = document.getElementById("panelHandle");
 const closeBtn = document.getElementById("closePanelBtn");
 const saveStatusRight = document.getElementById("saveStatusRight");
-
-/* floating tool */
-const floatingTool      = document.getElementById("floatingTool");
-const floatingToolBody  = document.getElementById("floatingToolBody");
-const floatingToolTitle = document.getElementById("floatingToolTitle");
-const dockToolBtn       = document.getElementById("dockToolBtn");
-const popOutBtn         = document.getElementById("popOutBtn");
 
 /* =======================
    LOAD site-data.json
@@ -811,7 +752,6 @@ const popOutBtn         = document.getElementById("popOutBtn");
   updatePreviewHeader();
   renderPreview();
   applyPanelBehavior();
-  renderInspectorTab();
 })();
 
 /* =======================
@@ -828,7 +768,7 @@ function markDirty(){
 function markSavedLocal(){
   isDirty = false;
   if (saveStatusRight){
-    saveStatusRight.textContent = "Saved locally";
+    saveStatusRight.textContent = "Saved";
     saveStatusRight.classList.remove("dirty");
     saveStatusRight.classList.add("saved");
   }
@@ -859,6 +799,7 @@ function togglePanelManual(){
   else openPanel("manual");
 }
 function applyPanelBehavior(){
+  // nothing huge to do here yet other than ensure pinned stays open
   if (panelBehavior === "pinned") {
     panel.classList.add("open");
     handle.style.display = "none";
@@ -877,32 +818,6 @@ document.addEventListener("keydown", (e)=>{
     togglePanelManual();
   }
 });
-
-/* =======================
-   FLOATING TOOL LOGIC
-======================= */
-function popOutCurrentTool(){
-  const inspectorBody = document.getElementById("inspectorBody");
-  if (!inspectorBody) return;
-
-  let label = "Inspector";
-  if (activeInspectorTab === "page")  label = "Page settings";
-  if (activeInspectorTab === "hero")  label = "Hero settings";
-  if (activeInspectorTab === "blocks")label = "Blocks";
-  if (activeInspectorTab === "site")  label = "Site & behavior";
-
-  floatingToolTitle.textContent = label;
-  floatingToolBody.innerHTML = inspectorBody.innerHTML;
-  floatingTool.classList.remove("hidden");
-}
-
-function dockFloatingTool(){
-  floatingTool.classList.add("hidden");
-  floatingToolBody.innerHTML = "";
-}
-
-popOutBtn.addEventListener("click", popOutCurrentTool);
-dockToolBtn.addEventListener("click", dockFloatingTool);
 
 /* =======================
    SIDEBAR / PAGES
@@ -1536,34 +1451,97 @@ async function backupAll(){
 }
 
 /* =======================
-   LOCAL SAVE (to clone)
+   CLOUD SAVE (Render) + AUTOSAVE + KEEP-ALIVE
 ======================= */
-document.getElementById("saveLocalBtn").addEventListener("click", saveLocal);
 
-async function saveLocal(){
-  if(!confirm("Save your changes to your local GitHub clone?")) return;
+// Core save function
+async function performSave(isManual = false){
+  if (isSaving){
+    saveQueued = true;
+    return;
+  }
+  isSaving = true;
+  saveQueued = false;
+
+  if (saveStatusRight){
+    saveStatusRight.textContent = isManual ? "Saving…" : "Autosaving…";
+    saveStatusRight.classList.add("dirty");
+    saveStatusRight.classList.remove("saved");
+  }
 
   try{
-    const res = await fetch("http://localhost:3000/save",{
+    const res = await fetch(`${SERVER}/save`,{
       method:"POST",
       headers:{ "Content-Type":"application/json" },
       body:JSON.stringify(site)
     });
 
-    if(!res.ok) throw new Error(await res.text());
+    if(!res.ok) throw new Error("Server error");
 
     markSavedLocal();
-    alert("✔ Saved to local clone.\nCommit & Push via GitHub Desktop.");
   }catch(e){
-    console.error(e);
-    alert("❌ Save failed. Is save_server.js running on port 3000?");
+    console.error("Save failed:", e);
+    if (saveStatusRight){
+      saveStatusRight.textContent = "Save failed – retrying…";
+      saveStatusRight.classList.add("dirty");
+      saveStatusRight.classList.remove("saved");
+    }
+    // retry after 4s
+    setTimeout(()=>performSave(isManual), 4000);
+  }finally{
+    isSaving = false;
+    if (saveQueued){
+      saveQueued = false;
+      performSave(isManual);
+    }
   }
 }
+
+// Manual save button
+document.getElementById("saveLocalBtn").addEventListener("click", ()=>performSave(true));
 
 /* mirror backup buttons */
 document.getElementById("saveDraftBtn2").addEventListener("click", saveDraft);
 document.getElementById("downloadBtn2").addEventListener("click", downloadJson);
 document.getElementById("backupBtn2").addEventListener("click", backupAll);
+
+// Autosave scheduler (Webflow-style: 2s after last change)
+function scheduleAutosave(){
+  clearTimeout(autosaveTimer);
+  autosaveTimer = setTimeout(()=>{
+    if (isDirty){ // only save when something changed
+      performSave(false);
+    }
+  }, 2000);
+}
+
+// Global listeners for edits
+document.addEventListener("input", (e)=>{
+  // Only mark dirty for actual form/content elements
+  if (e.target.matches("input, textarea, select")){
+    markDirty();
+    scheduleAutosave();
+  }
+});
+document.addEventListener("change", (e)=>{
+  if (e.target.matches("input, textarea, select")){
+    markDirty();
+    scheduleAutosave();
+  }
+});
+
+// Keep Render awake with random 2–6 minute pings
+(function keepAliveLoop(){
+  const min = 2*60*1000;
+  const max = 6*60*1000;
+  const delay = Math.floor(Math.random()*(max-min+1))+min;
+
+  fetch(`${SERVER}/ping`, { cache:"no-store" })
+    .then(r=>console.log("Keep-alive /ping", r.status, new Date().toLocaleTimeString()))
+    .catch(err=>console.warn("Keep-alive failed (server may be sleeping)", err));
+
+  setTimeout(keepAliveLoop, delay);
+})();
 
 /* =======================
    SITE TAB (PANEL BEHAVIOR)
@@ -1590,15 +1568,15 @@ function renderSiteTabHtml(){
       </label>
       <p class="field-hint" style="margin-top:6px;">
         Your choice is saved per browser. “Smart” behaves like auto-open now,
-        but we can later hook it to more advanced logic.
+        but we can later hook it to more advanced logic (dragging, focus, etc.).
       </p>
     </div>
     <div class="panelSection">
       <div class="panelLabel">Data & safety</div>
       <p class="field-hint">
-        • “Save (local clone)” writes to <code>site-data.json</code> in your Git clone via <code>save_server.js</code>.<br>
+        • “Save now” writes to <code>site-data.json</code> via your Render server.<br>
         • Drafts stay only in this browser’s local storage.<br>
-        • Use GitHub Desktop to Commit & Push when you’re ready to publish.
+        • GitHub sync happens from the server side (Render + PAT).
       </p>
     </div>
   `;
@@ -1613,9 +1591,13 @@ function wirePanelBehaviorRadios(){
     });
   });
 }
+
+/* initial inspector content */
+renderInspectorTab();
 </script>
 </body>
 </html>
+
 
 
 
