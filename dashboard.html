@@ -43,35 +43,6 @@
     flex-direction:column;
   }
 
-  /* HEADER */
-  .header{
-    padding:14px 24px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    backdrop-filter: blur(18px);
-    background:rgba(255,255,255,0.86);
-    border-bottom:1px solid rgba(148,163,184,0.18);
-  }
-  .header-left h1{
-    margin:0;
-    font-size:1.1rem;
-    letter-spacing:.04em;
-    text-transform:uppercase;
-    color:#111827;
-  }
-  .header-left small{
-    display:block;
-    margin-top:2px;
-    color:var(--text-soft);
-    font-size:.75rem;
-  }
-  .header-right{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    font-size:.8rem;
-  }
   .pill{
     padding:4px 11px;
     border-radius:var(--radius-pill);
@@ -133,10 +104,6 @@
     right:20px;
     background:#c33;
   }
-  .top-welcome .save-btn{
-    left:20px;
-    background:#16a34a;
-  }
 
   /* SIDEBAR */
   .sidebar{
@@ -168,7 +135,7 @@
     margin-top:6px;
     border-radius:12px;
     background:#f9fafb;
-    border:1px solid.transparent;
+    border:1px solid transparent;
     cursor:pointer;
     display:flex;
     align-items:center;
@@ -384,6 +351,115 @@
     .main{flex-direction:column;}
     .sidebar{width:100%;}
   }
+
+  /* ============================
+     WEBFLOW-STYLE PREVIEW FRAME
+  =============================== */
+
+  #tab-preview{
+    transition:width .25s ease, max-width .25s ease, margin .25s ease;
+    margin:0 auto;
+  }
+  #tab-preview.desktop{ max-width:100%; }
+  #tab-preview.tablet{ max-width:800px; }
+  #tab-preview.mobile{
+    max-width:430px;
+    border-radius:22px;
+    border:1px solid #0f172a;
+    background:#0b1120;
+    overflow:hidden;
+  }
+
+  /* ============================
+     RIGHT INSPECTOR PANEL
+  =============================== */
+
+  #inspectorPanel{
+    position:fixed;
+    top:60px; /* below welcome bar */
+    right:-330px;
+    width:330px;
+    height:calc(100% - 60px);
+    background:#0b1120;
+    color:white;
+    border-left:1px solid #1e293b;
+    box-shadow:-4px 0 30px rgba(0,0,0,0.4);
+    padding:14px;
+    z-index:9999;
+    transition:right .25s ease;
+    display:flex;
+    flex-direction:column;
+    font-size:.85rem;
+  }
+  #panelHeader{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:12px;
+  }
+  #panelHeaderRight{
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .mode-btn{
+    border:none;
+    background:#1e293b;
+    color:white;
+    padding:5px 8px;
+    border-radius:6px;
+    font-size:.75rem;
+    cursor:pointer;
+  }
+  .mode-btn.active{ background:#2563eb; }
+
+  #closePanelBtn{
+    border:none;
+    background:#9a3412;
+    color:white;
+    padding:5px 8px;
+    font-size:1rem;
+    cursor:pointer;
+    border-radius:6px;
+  }
+
+  #panelContent{
+    flex:1;
+    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+
+  .panelSection{
+    margin-top:8px;
+  }
+  .panelLabel{
+    font-size:.75rem;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    color:#9ca3af;
+    margin-bottom:4px;
+  }
+
+  #panelHandle{
+    position:fixed;
+    top:50%;
+    right:0;
+    width:18px;
+    height:65px;
+    background:#2563eb;
+    color:white;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:6px 0 0 6px;
+    z-index:10000;
+    font-size:.85rem;
+    font-weight:600;
+  }
 </style>
 </head>
 <body>
@@ -394,31 +470,6 @@
           onclick="localStorage.removeItem('hn_logged');location.href='admin.html'">
     Log Out
   </button>
-  <button class="save-btn" onclick="saveToGithub()">
-    SAVE TO GITHUB
-  </button>
-</div>
-
-<div class="header">
-  <div class="header-left">
-    <h1>Honest News Editor</h1>
-    <small>Apple-smooth visual editor for your site</small>
-  </div>
-  <div class="header-right">
-    <span id="saveStatus" class="pill">Clean</span>
-    <button id="saveDraftBtn" class="btn secondary">
-      <i class="fa-regular fa-floppy-disk"></i> Save draft (local)
-    </button>
-    <button id="downloadBtn" class="btn ghost">
-      Download JSON
-    </button>
-    <button id="backupBtn" class="btn ghost">
-      Full backup (.zip)
-    </button>
-    <a href="index.html" target="_blank" class="btn ghost">
-      View site ↗
-    </a>
-  </div>
 </div>
 
 <div class="main">
@@ -464,6 +515,42 @@
       <div id="tab-preview" class="tab-panel" style="display:none;"></div>
     </div>
   </section>
+</div>
+
+<!-- PANEL HANDLE + INSPECTOR -->
+<div id="panelHandle" title="Open Inspector">◂</div>
+
+<div id="inspectorPanel">
+  <div id="panelHeader">
+    <span style="font-weight:600;">Inspector</span>
+    <div id="panelHeaderRight">
+      <button class="mode-btn active" data-preview-mode="desktop">D</button>
+      <button class="mode-btn" data-preview-mode="tablet">T</button>
+      <button class="mode-btn" data-preview-mode="mobile">M</button>
+      <button id="closePanelBtn">×</button>
+    </div>
+  </div>
+
+  <div id="panelContent">
+    <button id="saveLocalBtn" class="btn primary" style="width:100%;justify-content:center;">
+      <i class="fa-solid fa-save"></i> Save
+    </button>
+
+    <div class="panelSection">
+      <div class="panelLabel">Status</div>
+      <span id="saveStatusRight" class="pill">Clean</span>
+    </div>
+
+    <div class="panelSection">
+      <button id="saveDraftBtn2" class="btn secondary" style="width:100%;">Save Draft (local)</button>
+      <button id="downloadBtn2" class="btn ghost" style="width:100%;">Download JSON</button>
+      <button id="backupBtn2" class="btn ghost" style="width:100%;">Full backup (.zip)</button>
+      <a href="index.html" target="_blank" class="btn ghost"
+         style="width:100%;justify-content:center;text-align:center;">
+        View site ↗
+      </a>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -553,21 +640,25 @@ const DRAFT_KEY = "hn_cms_draft_v1";
 })();
 
 /* =======================
-   SAVE STATUS
+   SAVE STATUS (panel-based)
 ======================= */
 function markDirty(){
   isDirty = true;
-  const pill = document.getElementById("saveStatus");
-  pill.textContent = "Unsaved changes";
-  pill.classList.add("dirty");
-  pill.classList.remove("saved");
+  const pillRight = document.getElementById("saveStatusRight");
+  if (pillRight){
+    pillRight.textContent = "Unsaved changes";
+    pillRight.classList.add("dirty");
+    pillRight.classList.remove("saved");
+  }
 }
 function markSavedLocal(){
   isDirty = false;
-  const pill = document.getElementById("saveStatus");
-  pill.textContent = "Draft saved locally";
-  pill.classList.remove("dirty");
-  pill.classList.add("saved");
+  const pillRight = document.getElementById("saveStatusRight");
+  if (pillRight){
+    pillRight.textContent = "Saved locally";
+    pillRight.classList.remove("dirty");
+    pillRight.classList.add("saved");
+  }
 }
 
 /* =======================
@@ -1184,92 +1275,90 @@ async function backupAll(){
   a.click();
 }
 
-/* =======================
-   INIT BUTTONS
-======================= */
-document.getElementById("saveDraftBtn").addEventListener("click", saveDraft);
-document.getElementById("downloadBtn").addEventListener("click", downloadJson);
-document.getElementById("backupBtn").addEventListener("click", backupAll);
+/* ============================
+   RESPONSIVE PREVIEW MODES
+=============================== */
+const preview = document.getElementById("tab-preview");
 
-/* =======================
-   SAVE TO GITHUB (DIRECT)
-======================= */
-async function saveToGithub() {
-  if (!confirm("Push changes LIVE to site-data.json on GitHub?")) return;
+function setPreviewMode(mode){
+  if (!preview) return;
+  preview.classList.remove("desktop","tablet","mobile");
+  preview.classList.add(mode);
 
-  // ⚠️ PASTE YOUR REAL CLASSIC TOKEN HERE (40 chars, no spaces)
-  const token = "";
+  document.querySelectorAll(".mode-btn").forEach(b=>{
+    b.classList.toggle("active", b.dataset.previewMode === mode);
+  });
+}
 
-  if (!token || token === "") {
-    alert("You must open dashboard.html and paste your real GitHub token in saveToGithub().");
-    return;
+document.querySelectorAll(".mode-btn").forEach(btn=>{
+  btn.addEventListener("click",()=>setPreviewMode(btn.dataset.previewMode));
+});
+
+// default mode
+setPreviewMode("desktop");
+
+/* ============================
+   RIGHT PANEL OPEN/CLOSE
+=============================== */
+const panel    = document.getElementById("inspectorPanel");
+const handle   = document.getElementById("panelHandle");
+const closeBtn = document.getElementById("closePanelBtn");
+
+handle.addEventListener("click", ()=> {
+  panel.style.right = "0";
+  handle.style.display = "none";
+});
+closeBtn.addEventListener("click", ()=> {
+  panel.style.right = "-330px";
+  handle.style.display = "flex";
+});
+
+// Optional keyboard shortcut: Shift+P toggles panel (nice on Mac)
+document.addEventListener("keydown", (e)=>{
+  if(e.shiftKey && e.key.toLowerCase()==="p"){
+    if(panel.style.right === "0px"){
+      panel.style.right = "-330px";
+      handle.style.display = "flex";
+    } else {
+      panel.style.right = "0";
+      handle.style.display = "none";
+    }
   }
+});
 
-  const owner  = "rrsales";
-  const repo   = "Honest-News";
-  const path   = "site-data.json";
-  const branch = "main";
+/* ============================
+   LOCAL SAVE (to clone via Node)
+=============================== */
+document.getElementById("saveLocalBtn").addEventListener("click", saveLocal);
 
-  try {
-    // 1) Get current file to obtain SHA (required by GitHub)
-    const getRes = await fetch(
-      `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}?ref=${branch}`,
-      {
-        headers: {
-          "Accept": "application/vnd.github.v3+json",
-          "Authorization": `token ${token}`
-        }
-      }
-    );
+async function saveLocal(){
+  if(!confirm("Save your changes to your local GitHub clone?")) return;
 
-    if (!getRes.ok) {
-      const err = await getRes.json().catch(()=>({}));
-      alert("GitHub GET error: " + (err.message || getRes.statusText));
-      return;
-    }
+  try{
+    const res = await fetch("http://localhost:3000/save",{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify(site)
+    });
 
-    const currentFile = await getRes.json();
-    const sha = currentFile.sha;
+    if(!res.ok) throw new Error(await res.text());
 
-    // 2) Prepare new content
-    const json = JSON.stringify(site, null, 2);
-    const content = btoa(unescape(encodeURIComponent(json)));
-
-    // 3) PUT updated file
-    const putRes = await fetch(
-      `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`,
-      {
-        method: "PUT",
-        headers: {
-          "Accept": "application/vnd.github.v3+json",
-          "Authorization": `token ${token}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          message: "Dashboard update from Honest News editor",
-          content,
-          sha,
-          branch
-        })
-      }
-    );
-
-    if (!putRes.ok) {
-      const err = await putRes.json().catch(()=>({}));
-      alert("GitHub PUT error: " + (err.message || putRes.statusText));
-      return;
-    }
-
-    alert("✔ LIVE! site-data.json updated on GitHub. Refresh the public site in a few seconds.");
-
-  } catch (e) {
+    markSavedLocal();
+    alert("✔ Saved to local clone.\nCommit & Push via GitHub Desktop.");
+  }catch(e){
     console.error(e);
-    alert("Network / auth error talking to GitHub. Check console and token.");
+    alert("❌ Save failed. Is save_server.js running on port 3000?");
   }
 }
+
+/* Mirror actions for panel buttons */
+document.getElementById("saveDraftBtn2").addEventListener("click", saveDraft);
+document.getElementById("downloadBtn2").addEventListener("click", downloadJson);
+document.getElementById("backupBtn2").addEventListener("click", backupAll);
 </script>
 </body>
 </html>
+
 
 
 
