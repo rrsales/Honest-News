@@ -17,11 +17,11 @@
 
 <style>
   :root{
-    --bg: #0b1120;
-    --card-bg: #020617;
+    --bg: #020305;
+    --card-bg: #050509;
     --border: #1f2937;
-    --shadow-soft: 0 20px 45px rgba(15,23,42,0.6);
-    --accent: #6366f1;      /* Webflow-ish indigo */
+    --shadow-soft: 0 22px 60px rgba(0,0,0,0.9);
+    --accent: #6366f1;
     --accent-soft: #3730a3;
     --accent-soft-bg: rgba(99,102,241,.12);
     --text-main: #e5e7eb;
@@ -36,7 +36,8 @@
   body{
     margin:0;
     font-family:system-ui,-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;
-    background: radial-gradient(circle at top, #1f2937 0, #020617 45%, #000 100%);
+    background:
+      radial-gradient(circle at top, #1f2937 0, #020617 40%, #000 100%);
     color:var(--text-main);
     height:100vh;
     display:flex;
@@ -44,16 +45,33 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* APPLE-STYLE TOP BAR */
+  /* GLOSSY APPLE-STYLE TOP BAR */
   .top-welcome{
-    background:rgba(15,15,15,0.92);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom:1px solid rgba(148,163,184,0.35);
-    padding:12px 20px;
+    background:
+      radial-gradient(circle at top, #3b3b3f 0, #111113 40%, #050506 100%);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+    border-bottom:1px solid rgba(148,163,184,0.28);
+    padding:10px 18px;
     display:flex;
     align-items:center;
     justify-content:space-between;
+  }
+  .top-left{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .top-dot-row{
+    display:flex;
+    gap:6px;
+  }
+  .top-dot{
+    width:10px;
+    height:10px;
+    border-radius:999px;
+    background:radial-gradient(circle at 30% 30%,rgba(255,255,255,0.7),rgba(0,0,0,0.4));
+    border:1px solid rgba(0,0,0,0.7);
   }
   .top-welcome span{
     letter-spacing:.06em;
@@ -67,16 +85,17 @@
     padding:7px 16px;
     cursor:pointer;
     font-weight:600;
-    background:rgba(15,23,42,.85);
+    background:linear-gradient(135deg,#14141a,#050509);
     color:#e5e7eb;
-    border:1px solid rgba(148,163,184,.5);
+    border:1px solid rgba(148,163,184,0.6);
     display:inline-flex;
     align-items:center;
     gap:6px;
     font-size:.8rem;
+    box-shadow:0 12px 25px rgba(0,0,0,0.8);
   }
   .logout-btn:hover{
-    background:rgba(15,23,42,1);
+    background:linear-gradient(135deg,#181820,#050509);
   }
 
   .main{
@@ -89,15 +108,16 @@
 
   /* LEFT SIDEBAR */
   .sidebar{
-    width:260px;
-    background:rgba(15,23,42,0.98);
+    width:280px;
+    background:
+      radial-gradient(circle at top,#181820 0,#050509 35%,#020308 100%);
     border-radius:var(--radius-lg);
     padding:16px 14px;
     border:1px solid rgba(148,163,184,0.35);
-    box-shadow:0 18px 40px rgba(15,23,42,0.75);
+    box-shadow:0 24px 60px rgba(0,0,0,0.95);
     display:flex;
     flex-direction:column;
-    gap:14px;
+    gap:18px;
     overflow:hidden;
   }
   .sidebar h3{
@@ -116,7 +136,7 @@
     padding:9px 10px;
     margin-top:6px;
     border-radius:12px;
-    background:#020617;
+    background:rgba(2,6,23,0.9);
     border:1px solid transparent;
     cursor:pointer;
     display:flex;
@@ -124,13 +144,69 @@
     justify-content:space-between;
     font-size:.84rem;
     color:var(--text-main);
+    transition:background .18s ease,border-color .18s ease,transform .12s ease;
   }
   .page span.title{font-weight:600;}
   .page span.slug{font-size:.7rem;color:#6b7280;}
+  .page:hover{
+    background:rgba(15,23,42,0.9);
+    transform:translateY(-1px);
+  }
   .page.active{
     background:var(--accent-soft-bg);
     border-color:var(--accent);
     box-shadow:0 0 0 1px rgba(129,140,248,.4);
+  }
+
+  .sidebar-section{
+    margin-top:6px;
+  }
+
+  .sidebar-subtitle{
+    font-size:.72rem;
+    color:#6b7280;
+    margin-top:3px;
+  }
+
+  /* BLOCKS LIST IN LEFT SIDEBAR */
+  #blocksList{
+    margin-top:6px;
+    max-height:150px;
+    overflow-y:auto;
+  }
+  .sidebar-empty{
+    font-size:.74rem;
+    color:#6b7280;
+    margin-top:6px;
+  }
+  .block-row{
+    margin-top:4px;
+    padding:7px 9px;
+    border-radius:10px;
+    background:rgba(15,23,42,0.8);
+    border:1px solid transparent;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    font-size:.78rem;
+    color:#e5e7eb;
+    transition:background .18s ease,border-color .18s ease,transform .12s ease;
+  }
+  .block-row span.type{
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    font-size:.68rem;
+    color:#9ca3af;
+  }
+  .block-row:hover{
+    background:rgba(30,64,175,0.25);
+    border-color:rgba(129,140,248,0.7);
+    transform:translateY(-1px);
+  }
+  .block-row.active{
+    background:rgba(129,140,248,0.18);
+    border-color:var(--accent);
   }
 
   .btn{
@@ -144,15 +220,37 @@
     align-items:center;
     justify-content:center;
     gap:6px;
-    background:#111827;
+    background:linear-gradient(135deg,#0b1120,#020617);
     color:#e5e7eb;
+    border:1px solid rgba(15,23,42,0.9);
   }
-  .btn.secondary{background:#111827;color:#e5e7eb;border:1px solid #1f2937;}
-  .btn.secondary:hover{background:#020617;}
-  .btn.ghost{background:transparent;color:#9ca3af;border:1px solid rgba(148,163,184,.25);}
-  .btn.ghost:hover{color:#e5e7eb;border-color:#e5e7eb;}
-  .btn.primary{background:#22c55e;color:#022c22;border:1px solid #16a34a;}
-  .btn.primary:hover{background:#16a34a;}
+  .btn.secondary{
+    background:linear-gradient(135deg,#020617,#020617);
+    color:#e5e7eb;
+    border:1px solid #1f2937;
+  }
+  .btn.secondary:hover{
+    background:linear-gradient(135deg,#020617,#020617);
+    box-shadow:0 10px 30px rgba(0,0,0,0.8);
+  }
+  .btn.ghost{
+    background:transparent;
+    color:#9ca3af;
+    border:1px solid rgba(148,163,184,.25);
+  }
+  .btn.ghost:hover{
+    color:#e5e7eb;
+    border-color:#e5e7eb;
+  }
+  .btn.primary{
+    background:linear-gradient(135deg,#22c55e,#16a34a);
+    color:#022c22;
+    border:1px solid #16a34a;
+    box-shadow:0 14px 30px rgba(22,163,74,0.5);
+  }
+  .btn.primary:hover{
+    background:linear-gradient(135deg,#16a34a,#15803d);
+  }
 
   .textarea-small{
     width:100%;
@@ -177,10 +275,11 @@
 
   #previewCard{
     flex:1;
-    background:rgba(15,23,42,0.98);
+    background:
+      radial-gradient(circle at top,#111827 0,#020617 40%,#020309 100%);
     border-radius:var(--radius-lg);
     padding:12px 14px 18px;
-    border:1px solid rgba(148,163,184,0.4);
+    border:1px solid rgba(148,163,184,0.35);
     box-shadow:var(--shadow-soft);
     display:flex;
     flex-direction:column;
@@ -324,7 +423,7 @@
     background:#020617;
     color:#e5e7eb;
     border-left:1px solid rgba(148,163,184,.55);
-    box-shadow:-12px 0 35px rgba(0,0,0,.9);
+    box-shadow:-12px 0 35px rgba(0,0,0,.95);
     padding:12px 12px 16px;
     z-index:9999;
     display:flex;
@@ -480,6 +579,7 @@
     border-radius:var(--radius-md);
     border:1px dashed rgba(75,85,99,.9);
     position:relative;
+    transition:border-color .18s ease,box-shadow .18s ease;
   }
   .block-header-line{
     display:flex;
@@ -522,6 +622,12 @@
     color:#e5e7eb;
   }
 
+  /* highlight when block focused from sidebar */
+  .block-focus{
+    border-color:var(--accent);
+    box-shadow:0 0 0 1px rgba(129,140,248,0.7);
+  }
+
   @media (max-width:900px){
     .main{flex-direction:column;}
     .sidebar{width:100%;}
@@ -532,7 +638,14 @@
 <body>
 
 <div class="top-welcome">
-  <span>Welcome back, Joseph</span>
+  <div class="top-left">
+    <div class="top-dot-row">
+      <div class="top-dot"></div>
+      <div class="top-dot"></div>
+      <div class="top-dot"></div>
+    </div>
+    <span>Honest News Dashboard</span>
+  </div>
   <button class="logout-btn"
           onclick="localStorage.removeItem('hn_logged');location.href='admin.html'">
     <i class="fa-solid fa-right-from-bracket"></i> Log Out
@@ -542,7 +655,8 @@
 <div class="main">
   <!-- SIDEBAR -->
   <aside class="sidebar">
-    <div>
+    <!-- PAGES -->
+    <div class="sidebar-section">
       <h3>Pages</h3>
       <div class="sidebar-inner" id="pages"></div>
       <button class="btn secondary" style="width:100%;margin-top:8px;" onclick="newPage()">
@@ -550,9 +664,36 @@
       </button>
     </div>
 
-    <div style="margin-top:16px;">
+    <!-- BLOCKS QUICK PANEL -->
+    <div class="sidebar-section">
+      <h3>Blocks</h3>
+      <div class="sidebar-subtitle">For current page</div>
+      <div id="blocksList"></div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;">
+        <button class="btn secondary" type="button" onclick="addBlock('heading')">H</button>
+        <button class="btn secondary" type="button" onclick="addBlock('paragraph')">P</button>
+        <button class="btn secondary" type="button" onclick="addBlock('image')">
+          <i class="fa-regular fa-image"></i>
+        </button>
+        <button class="btn secondary" type="button" onclick="addBlock('button')">
+          <i class="fa-solid fa-link"></i>
+        </button>
+        <button class="btn secondary" type="button" onclick="addBlock('product')">
+          <i class="fa-solid fa-cart-shopping"></i>
+        </button>
+        <button class="btn secondary" type="button" onclick="addBlock('podcast')">
+          <i class="fa-solid fa-podcast"></i>
+        </button>
+        <button class="btn secondary" type="button" onclick="addBlock('youtube')">
+          <i class="fa-brands fa-youtube"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- NAV MENU CMS -->
+    <div class="sidebar-section">
       <h3>Navigation</h3>
-      <p class="field-hint" style="margin-top:4px;">
+      <p class="sidebar-subtitle">
         One per line: <code>Title | URL</code>
       </p>
       <textarea id="menuRaw" class="textarea-small" oninput="menuFromRaw(this.value)"></textarea>
@@ -581,7 +722,7 @@
               <div id="heroPreviewOverlay"></div>
               <div id="heroPreviewInner">
                 <h1>Pick a page on the left</h1>
-                <p>Then use the sliding panel to edit Page, Hero, and Blocks.</p>
+                <p>Then use the inspector on the right to edit Page, Hero, and Blocks.</p>
               </div>
             </div>
             <div id="blockPreview"></div>
@@ -702,7 +843,7 @@ let activeInspectorTab = "page";
 const DRAFT_KEY = "hn_cms_draft_v1";
 
 /* panel behavior: auto | manual | pinned | smart */
-let panelBehavior = localStorage.getItem("hn_panel_behavior") || "auto";
+let panelBehavior = localStorage.getItem("hn_panel_behavior") || "pinned"; // default pinned like pro apps
 
 const panel    = document.getElementById("inspectorPanel");
 const handle   = document.getElementById("panelHandle");
@@ -726,9 +867,12 @@ const saveStatusRight = document.getElementById("saveStatusRight");
   }
   restoreDraftIfAny();
   renderPages();
+  renderBlocksSidebar();
   updatePreviewHeader();
   renderPreview();
   applyPanelBehavior();
+  // open panel by default so Page/Hero/Blocks are visible
+  openPanel("auto");
 })();
 
 /* =======================
@@ -833,6 +977,50 @@ function newPage(){
 }
 
 /* =======================
+   BLOCKS SIDEBAR (CMS)
+======================= */
+function renderBlocksSidebar(activeIndex){
+  const list = document.getElementById("blocksList");
+  if (!list){
+    return;
+  }
+  if (!current){
+    list.innerHTML = `<p class="sidebar-empty">Pick a page to see its blocks.</p>`;
+    return;
+  }
+  const blocks = current.blocks || [];
+  if (!blocks.length){
+    list.innerHTML = `<p class="sidebar-empty">No blocks yet. Add one below.</p>`;
+    return;
+  }
+  list.innerHTML = blocks.map((b,i)=>`
+    <div class="block-row ${i===activeIndex?'active':''}" onclick="focusBlock(${i})">
+      <span>${i+1}. ${b.title || b.content || b.type}</span>
+      <span class="type">${b.type}</span>
+    </div>
+  `).join("");
+}
+
+function focusBlock(i){
+  activeInspectorTab = "blocks";
+  document.querySelectorAll(".inspect-tab").forEach(t=>{
+    t.classList.toggle("active", t.dataset.inspect==="blocks");
+  });
+  renderInspectorTab();
+  if (panelBehavior !== "manual"){
+    openPanel("auto");
+  }
+  requestAnimationFrame(()=>{
+    const el = document.getElementById("block-edit-"+i);
+    if (el){
+      el.scrollIntoView({behavior:"smooth", block:"start"});
+      el.classList.add("block-focus");
+      setTimeout(()=>el.classList.remove("block-focus"),700);
+    }
+  });
+}
+
+/* =======================
    MENU EDITOR
 ======================= */
 function rawFromMenu(){
@@ -856,6 +1044,7 @@ function menuFromRaw(text){
 function selectPage(i){
   current = site.pages[i];
   renderPages();
+  renderBlocksSidebar();
   updatePreviewHeader();
   renderPreview();
   renderInspectorTab(); // refresh panel content
@@ -1145,7 +1334,7 @@ function setHeroCustom(val){
   renderPreview();
 }
 
-/* BLOCKS TAB */
+/* BLOCKS TAB (INSPECTOR) */
 function renderBlocksTabHtml(c){
   const blocks = c.blocks || [];
   let html = `
@@ -1166,7 +1355,7 @@ function renderBlocksTabHtml(c){
   blocks.forEach((b,i)=>{
     const motion = b.motion || "fade";
     html += `
-      <div class="block">
+      <div class="block" id="block-edit-${i}">
         <div class="block-header-line">
           <span class="block-type">${b.type.toUpperCase()}</span>
           <span>
@@ -1199,7 +1388,7 @@ function renderBlockFields(b,i){
       <div class="field-group">
         <div class="field-label">Text</div>
         <input type="text" value="${b.content || ''}"
-          onchange="current.blocks[${i}].content=this.value;markDirty();renderPreview();">
+          onchange="current.blocks[${i}].content=this.value;markDirty();renderPreview();renderBlocksSidebar(${i});">
       </div>
     `;
   }
@@ -1208,7 +1397,7 @@ function renderBlockFields(b,i){
       <div class="field-group">
         <div class="field-label">Text</div>
         <textarea rows="4"
-          onchange="current.blocks[${i}].content=this.value;markDirty();renderPreview();">${b.content || ''}</textarea>
+          onchange="current.blocks[${i}].content=this.value;markDirty();renderPreview();renderBlocksSidebar(${i});">${b.content || ''}</textarea>
       </div>
     `;
   }
@@ -1229,7 +1418,7 @@ function renderBlockFields(b,i){
           <div class="field-group">
             <div class="field-label">Image URL</div>
             <input type="url" value="${b.content || ''}"
-              onchange="current.blocks[${i}].content=this.value;markDirty();renderPreview();">
+              onchange="current.blocks[${i}].content=this.value;markDirty();renderPreview();renderBlocksSidebar(${i});">
           </div>`
       }
     `;
@@ -1239,7 +1428,7 @@ function renderBlockFields(b,i){
       <div class="field-group">
         <div class="field-label">Button text</div>
         <input type="text" value="${b.text || ''}"
-          onchange="current.blocks[${i}].text=this.value;markDirty();renderPreview();">
+          onchange="current.blocks[${i}].text=this.value;markDirty();renderPreview();renderBlocksSidebar(${i});">
       </div>
       <div class="field-group">
         <div class="field-label">Button URL</div>
@@ -1253,7 +1442,7 @@ function renderBlockFields(b,i){
       <div class="field-group">
         <div class="field-label">Product title</div>
         <input type="text" value="${b.title || ''}"
-          onchange="current.blocks[${i}].title=this.value;markDirty();renderPreview();">
+          onchange="current.blocks[${i}].title=this.value;markDirty();renderPreview();renderBlocksSidebar(${i});">
       </div>
       <div class="field-group">
         <div class="field-label">Description</div>
@@ -1277,7 +1466,7 @@ function renderBlockFields(b,i){
       <div class="field-group">
         <div class="field-label">Episode title</div>
         <input type="text" value="${b.title || ''}"
-          onchange="current.blocks[${i}].title=this.value;markDirty();renderPreview();">
+          onchange="current.blocks[${i}].title=this.value;markDirty();renderPreview();renderBlocksSidebar(${i});">
       </div>
       <div class="field-group">
         <div class="field-label">Podbean embed URL or iframe src</div>
@@ -1291,7 +1480,7 @@ function renderBlockFields(b,i){
       <div class="field-group">
         <div class="field-label">Video title</div>
         <input type="text" value="${b.title || ''}"
-          onchange="current.blocks[${i}].title=this.value;markDirty();renderPreview();">
+          onchange="current.blocks[${i}].title=this.value;markDirty();renderPreview();renderBlocksSidebar(${i});">
       </div>
       <div class="field-group">
         <div class="field-label">YouTube URL or ID</div>
@@ -1304,6 +1493,10 @@ function renderBlockFields(b,i){
 }
 
 function addBlock(type){
+  if (!current){
+    alert("Pick a page first.");
+    return;
+  }
   if (!current.blocks) current.blocks = [];
   const b = {type, motion:"fade"};
   if(type==="heading")   b.content="New heading";
@@ -1317,6 +1510,7 @@ function addBlock(type){
   markDirty();
   renderInspectorTab();
   renderPreview();
+  renderBlocksSidebar(current.blocks.length-1);
 }
 
 function moveBlock(i,d){
@@ -1329,12 +1523,14 @@ function moveBlock(i,d){
   markDirty();
   renderInspectorTab();
   renderPreview();
+  renderBlocksSidebar(newIndex);
 }
 function removeBlock(i){
   current.blocks.splice(i,1);
   markDirty();
   renderInspectorTab();
   renderPreview();
+  renderBlocksSidebar();
 }
 
 function handleImageUpload(e,index){
@@ -1345,6 +1541,7 @@ function handleImageUpload(e,index){
     current.blocks[index].content = reader.result;
     markDirty();
     renderPreview();
+    renderBlocksSidebar(index);
   };
   reader.readAsDataURL(file);
 }
@@ -1457,7 +1654,7 @@ document.getElementById("downloadBtn2").addEventListener("click", downloadJson);
 document.getElementById("backupBtn2").addEventListener("click", backupAll);
 
 /* =======================
-   SITE TAB (PANEL BEHAVIOR)
+   SITE TAB (PANEL BEHAVIOR + CMS NOTES)
 ======================= */
 function renderSiteTabHtml(){
   return `
@@ -1473,23 +1670,23 @@ function renderSiteTabHtml(){
       </label><br>
       <label class="inline" style="margin-bottom:4px;display:flex;">
         <input type="radio" name="panelBehavior" value="pinned" ${panelBehavior==='pinned'?'checked':''}>
-        <span>Pinned open</span>
+        <span>Pinned open (Webflow-style)</span>
       </label><br>
       <label class="inline" style="margin-bottom:4px;display:flex;">
         <input type="radio" name="panelBehavior" value="smart" ${panelBehavior==='smart'?'checked':''}>
         <span>Smart (auto like Webflow)</span>
       </label>
       <p class="field-hint" style="margin-top:6px;">
-        Your choice is saved per browser. “Smart” behaves like auto-open now,
-        and can later be extended for more advanced behavior.
+        This inspector is your CMS brain: Page, Hero, and Blocks for each page,
+        plus global Site controls. Your preference is saved per browser.
       </p>
     </div>
     <div class="panelSection">
       <div class="panelLabel">Data & safety</div>
       <p class="field-hint">
         • “Save (local clone)” writes to <code>site-data.json</code> in your Git clone via <code>save_server.js</code>.<br>
-        • Drafts stay only in this browser’s local storage.<br>
-        • Use GitHub Desktop to Commit & Push when you’re ready to publish.
+        • Drafts stay only in this browser’s local storage (no Git).<br>
+        • Use GitHub Desktop (or CLI) to Commit & Push when you’re ready to publish live.
       </p>
     </div>
   `;
@@ -1510,6 +1707,7 @@ renderInspectorTab();
 </script>
 </body>
 </html>
+
 
 
 
