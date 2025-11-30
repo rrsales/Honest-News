@@ -45,18 +45,34 @@
   }
 
   /* TOP BLUE BAR */
-  .top-welcome{
-    background:linear-gradient(90deg,#0ea5e9,#6366f1);
-    color:white;
-    padding:14px 24px;
-    font-size:1rem;
-    font-weight:600;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    position:relative;
-    z-index:10;
-    box-shadow:0 8px 30px rgba(15,23,42,.5);
+.top-welcome{
+  background:#0066cc;
+  color:white;
+  padding:20px 40px;
+  text-align:center;
+  font-size:1.4rem;
+  font-weight:bold;
+  position:relative;
+}
+.top-welcome button{
+  position:absolute;
+  top:15px;
+  padding:10px 20px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:bold;
+  color:white;
+}
+.top-welcome .logout-btn{
+    right:20px;
+    background:#c33;
+}
+.top-welcome .save-btn{
+    left:20px;
+    background:#16a34a;
+}
+
   }
   .top-welcome span{
     letter-spacing:.03em;
