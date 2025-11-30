@@ -9,3 +9,15 @@
     "express": "^4.19.2"
   }
 }
+{
+  "name": "honest-news-cloud-cms",
+  "version": "1.0.0",
+  "description": "Render-hosted backend for Honest News dashboard, pushing site-data.json to GitHub.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "Joseph / Honest News",
+  "license": "MIT"
+}
