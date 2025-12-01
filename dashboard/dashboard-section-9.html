@@ -1,0 +1,49 @@
+/* =========================================
+   SECTION 9: SITE TAB (RIGHT → SITE)
+   ========================================= */
+
+function renderSiteTabHtml(){
+  return `
+    <div class="panelSection">
+      <div class="panelLabel">Panel behavior</div>
+      <label class="inline" style="margin-bottom:4px;display:flex;">
+        <input type="radio" name="panelBehavior" value="auto" ${panelBehavior==='auto'?'checked':''}>
+        <span>Auto-open when editing</span>
+      </label><br>
+      <label class="inline" style="margin-bottom:4px;display:flex;">
+        <input type="radio" name="panelBehavior" value="manual" ${panelBehavior==='manual'?'checked':''}>
+        <span>Manual (use handle / Shift+P)</span>
+      </label><br>
+      <label class="inline" style="margin-bottom:4px;display:flex;">
+        <input type="radio" name="panelBehavior" value="pinned" ${panelBehavior==='pinned'?'checked':''}>
+        <span>Pinned open</span>
+      </label><br>
+      <label class="inline" style="margin-bottom:4px;display:flex;">
+        <input type="radio" name="panelBehavior" value="smart" ${panelBehavior==='smart'?'checked':''}>
+        <span>Smart (auto like Webflow)</span>
+      </label>
+      <p class="field-hint" style="margin-top:6px;">
+        Your choice is saved per browser. “Smart” behaves like auto-open for now,
+        but we can later hook it to more advanced logic (dragging, focus, etc.).
+      </p>
+    </div>
+    <div class="panelSection">
+      <div class="panelLabel">Data & safety</div>
+      <p class="field-hint">
+        • “Save to Cloud” sends <code>site-data.json</code> to your Honest-News repo via Render (GitHub API).<br>
+        • Drafts stay only in this browser’s local storage.<br>
+        • Use GitHub Desktop to Commit & Push when you’re ready to publish.
+      </p>
+    </div>
+  `;
+}
+
+function wirePanelBehaviorRadios(){
+  document.querySelectorAll('input[name="panelBehavior"]').forEach(r=>{
+    r.addEventListener("change", ()=>{
+      panelBehavior = r.value;
+      localStorage.setItem("hn_panel_behavior", panelBehavior);
+      applyPanelBehavior();
+    });
+  });
+}
