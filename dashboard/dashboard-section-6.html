@@ -1,0 +1,116 @@
+/* =========================================
+   SECTION 6: PREVIEW (CENTER DEVICE FRAME)
+   ========================================= */
+
+function updatePreviewHeader(){
+  const tEl = document.getElementById("previewPageTitle");
+  const sEl = document.getElementById("previewPageSlug");
+  const pl  = document.getElementById("panelPageLabel");
+  if (!current){
+    if (tEl) tEl.textContent = "No page selected";
+    if (sEl) sEl.textContent = "";
+    if (pl)  pl.textContent  = "No page selected";
+    return;
+  }
+  if (tEl) tEl.textContent = current.title || "Untitled";
+  if (sEl) sEl.textContent = current.slug || "";
+  if (pl)  pl.textContent  = current.title + (current.slug ? ` (${current.slug})` : "");
+}
+
+function renderPreview(){
+  const h = current && current.hero ? current.hero : {
+    overlay:"Pick a page",
+    sub:"Use the left bar to choose a page"
+  };
+  const heroDiv = document.getElementById("heroPreview");
+  const titleEl = document.getElementById("heroPreviewInner").querySelector("h1");
+  const subEl   = document.getElementById("heroPreviewInner").querySelector("p");
+
+  titleEl.textContent = h.overlay || "";
+  subEl.textContent   = h.sub || "";
+
+  if (h.bg){
+    heroDiv.style.backgroundImage = `url('${h.bg}')`;
+  } else {
+    heroDiv.style.backgroundImage = "none";
+    heroDiv.style.backgroundColor = "#020617";
+  }
+
+  let height = "60vh";
+  const size = h.size || "full";
+  if(size==="small")  height="40vh";
+  else if(size==="medium") height="60vh";
+  else if(size==="large")  height="80vh";
+  else if(size==="full")   height="100vh";
+  else if(size==="custom" && h.customHeight) height = h.customHeight;
+  heroDiv.style.height = height;
+
+  const blocksEl = document.getElementById("blockPreview");
+  const blocks = (current && current.blocks) ? current.blocks : [];
+  let html = "";
+  blocks.forEach(b=>{
+    if(b.type==="heading"){
+      html += `<h2 style="margin-top:1rem;color:#e5e7eb;font-size:1.1rem;">${escapeHtml(b.content || "")}</h2>`;
+    } else if(b.type==="paragraph"){
+      const text = (b.content || "").replace(/\n/g,"<br>");
+      html += `<p style="margin-top:.4rem;color:#9ca3af;font-size:.9rem;">${text}</p>`;
+    } else if(b.type==="image" && b.content){
+      html += `<img src="${escapeHtml(b.content)}" style="max-width:100%;border-radius:12px;margin:1rem 0;">`;
+    } else if(b.type==="button"){
+      html += `<a href="${escapeHtml(b.url || '#')}"
+        style="display:inline-block;margin:0.7rem 0;padding:0.6rem 1.6rem;border-radius:999px;background:#22c55e;color:#022c22;text-decoration:none;font-weight:600;font-size:.88rem;">
+        ${escapeHtml(b.text || "Learn more")}
+      </a>`;
+    } else if(b.type==="product"){
+      html += `
+        <div style="background:#020617;border-radius:14px;margin:0.8rem 0;padding:0.9rem;display:flex;gap:0.9rem;align-items:flex-start;border:1px solid rgba(55,65,81,.8);">
+          ${b.image ? `<img src="${escapeHtml(b.image)}" style="width:110px;border-radius:10px;object-fit:cover;">` : ""}
+          <div>
+            <h3 style="margin:0 0 .3rem;font-size:.96rem;color:#e5e7eb;">${escapeHtml(b.title || "")}</h3>
+            <p style="margin:0 0 .5rem;font-size:.8rem;color:#9ca3af;">${escapeHtml(b.text || "")}</p>
+            ${b.url ? `<a href="${escapeHtml(b.url)}" target="_blank" rel="noopener noreferrer"
+                style="display:inline-block;margin-top:0.2rem;padding:0.45rem 1.4rem;border-radius:999px;background:#22c55e;color:#022c22;font-size:.8rem;font-weight:600;text-decoration:none;">
+                Buy on Amazon
+              </a>` : ""}
+          </div>
+        </div>
+      `;
+    } else if(b.type==="podcast" && b.embed){
+      html += `
+        <div style="margin:1.2rem 0;">
+          <h3 style="margin:0 0 .3rem;color:#e5e7eb;">${escapeHtml(b.title || "")}</h3>
+          <iframe src="${escapeHtml(b.embed)}"
+            style="width:100%;height:150px;border:none;border-radius:10px;background:#0f172a;" allow="autoplay"></iframe>
+        </div>
+      `;
+    } else if(b.type==="youtube" && b.videoId){
+      let id = b.videoId.trim();
+      const m = id.match(/v=([^&]+)/);
+      if(m) id = m[1];
+      html += `
+        <div style="margin:1.2rem 0;">
+          <h3 style="margin:0 0 .3rem;color:#e5e7eb;">${escapeHtml(b.title || "")}</h3>
+          <div style="position:relative;padding-bottom:56.25%;height:0;border-radius:12px;overflow:hidden;">
+            <iframe src="https://www.youtube.com/embed/${escapeHtml(id)}"
+              style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"
+              allowfullscreen></iframe>
+          </div>
+        </div>
+      `;
+    }
+  });
+  blocksEl.innerHTML = html;
+}
+
+/* Device toggle */
+const previewFrame = document.getElementById("previewFrame");
+document.querySelectorAll(".device-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    const mode = btn.dataset.device;
+    previewFrame.classList.remove("desktop","tablet","mobile");
+    previewFrame.classList.add(mode);
+    document.querySelectorAll(".device-btn").forEach(b=>{
+      b.classList.toggle("active", b===btn);
+    });
+  });
+});
