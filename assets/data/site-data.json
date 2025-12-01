@@ -1,0 +1,78 @@
+{
+  "site": {
+    "title": "Honest News – Biblical Truth",
+    "tagline": "Biblical Truth · Podcast · Resources",
+    "theme": "dark",
+    "menu": [
+      { "id": "home",    "label": "Home",    "href": "index.html" },
+      { "id": "podcast", "label": "Podcast", "href": "podcast.html" },
+      { "id": "shop",    "label": "Shop",    "href": "shop.html" },
+      { "id": "support", "label": "Support", "href": "support.html" }
+    ]
+  },
+  "pages": {
+    "home": {
+      "id": "home",
+      "title": "Honest News",
+      "slug": "index",
+      "hero": {
+        "eyebrow": "Honest News",
+        "title": "Honest News. Biblical Truth.",
+        "subtitle": "Clarity and courage in a world drowning in spin.",
+        "style": "apple",
+        "transparentHeader": true,
+        "backgroundImage": "assets/images/hero-home.jpg"
+      },
+      "blocks": [
+        {
+          "type": "text",
+          "id": "home-intro",
+          "heading": "Welcome to Honest News",
+          "body": "This block is managed from the Dashboard. Use it to introduce your mission, latest series, or key resources."
+        }
+      ]
+    },
+    "podcast": {
+      "id": "podcast",
+      "title": "Podcast",
+      "slug": "podcast",
+      "hero": {
+        "eyebrow": "Podcast",
+        "title": "Honest News Podcast",
+        "subtitle": "Conversations grounded in Scripture and truth.",
+        "style": "simple",
+        "transparentHeader": false,
+        "backgroundImage": ""
+      },
+      "blocks": []
+    },
+    "shop": {
+      "id": "shop",
+      "title": "Shop",
+      "slug": "shop",
+      "hero": {
+        "eyebrow": "Resources",
+        "title": "Shop Honest Resources",
+        "subtitle": "Books, materials, and tools to equip believers.",
+        "style": "simple",
+        "transparentHeader": false,
+        "backgroundImage": ""
+      },
+      "blocks": []
+    },
+    "support": {
+      "id": "support",
+      "title": "Support",
+      "slug": "support",
+      "hero": {
+        "eyebrow": "Support",
+        "title": "Support Honest News",
+        "subtitle": "Partner with us in prayer and provision.",
+        "style": "simple",
+        "transparentHeader": false,
+        "backgroundImage": ""
+      },
+      "blocks": []
+    }
+  }
+}
