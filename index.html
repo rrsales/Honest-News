@@ -1,55 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Honest News – Biblical Truth</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+<head>
+  <meta charset="UTF-8">
+  <title>Home – Honest News</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/live.js" defer></script>
+</head>
 
-    <link rel="stylesheet" href="assets/css/site.css" />
-  </head>
-  <body data-page="home">
-    <header class="site-header">
-      <div class="site-header-inner">
-        <div class="site-logo">Honest News</div>
-        <nav>
-          <!-- live.js fills this from site.menu -->
-          <ul id="menuList"></ul>
-        </nav>
-      </div>
-    </header>
+<body data-page="home">
 
-    <section class="hero" data-hero>
-      <div class="hero-overlay-soft"></div>
-      <div class="hero-inner">
-        <!-- live.js will overwrite this h1 + p from site.pages[home].hero -->
-        <h1>Honest News. Biblical Truth.</h1>
-        <p>Standing on Scripture in an upside-down world.</p>
-      </div>
-    </section>
+<header>
+  <div class="logo">Honest News</div>
+  <nav>
+    <ul id="menuList"></ul>
+  </nav>
+</header>
 
-    <main>
-      <!-- live.js will fill blocks here based on "home" page config -->
-      <div data-blocks-target></div>
-    </main>
+<section class="hero" data-hero>
+  <div class="hero-overlay-soft"></div>
+  <div class="hero-inner">
+    <h1>Loading…</h1>
+    <p></p>
+  </div>
+</section>
 
-    <footer class="site-footer">
-      &copy; <span id="year"></span> Honest News Network – Biblical Truth.
-    </footer>
+<!-- Dynamic Blocks Loader -->
+<div data-blocks-target></div>
 
-    <script>
-      // Simple year utility
-      document.addEventListener("DOMContentLoaded", () => {
-        const y = document.getElementById("year");
-        if (y) y.textContent = new Date().getFullYear();
-      });
-    </script>
-
-    <script src="assets/js/live.js"></script>
-  </body>
+</body>
 </html>
-
-
-
 
 
 
