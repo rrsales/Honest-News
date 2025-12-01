@@ -1,47 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Honest News – Contact</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+<head>
+  <meta charset="UTF-8">
+  <title>Contact – Honest News</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/live.js" defer></script>
+</head>
 
-    <link rel="stylesheet" href="assets/css/site.css" />
-  </head>
-  <body data-page="contact">
-    <header class="site-header">
-      <div class="site-header-inner">
-        <div class="site-logo">Honest News</div>
-        <nav>
-          <ul id="menuList"></ul>
-        </nav>
-      </div>
-    </header>
+<body data-page="contact">
 
-    <section class="hero" data-hero>
-      <div class="hero-overlay-soft"></div>
-      <div class="hero-inner">
-        <h1>Contact Honest News</h1>
-        <p>Questions, testimonies, or invitations — we’d love to hear from you.</p>
-      </div>
-    </section>
+<header>
+  <div class="logo">Honest News</div>
+  <nav>
+    <ul id="menuList"></ul>
+  </nav>
+</header>
 
-    <main>
-      <!-- Dashboard "contact" blocks here (form embed, email, etc.) -->
-      <div data-blocks-target></div>
-    </main>
+<section class="hero" data-hero>
+  <div class="hero-overlay-soft"></div>
+  <div class="hero-inner">
+    <h1>Loading…</h1>
+    <p></p>
+  </div>
+</section>
 
-    <footer class="site-footer">
-      &copy; <span id="year"></span> Honest News Network.
-    </footer>
+<div data-blocks-target></div>
 
-    <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        const y = document.getElementById("year");
-        if (y) y.textContent = new Date().getFullYear();
-      });
-    </script>
-
-    <script src="assets/js/live.js"></script>
-  </body>
+</body>
 </html>
-
