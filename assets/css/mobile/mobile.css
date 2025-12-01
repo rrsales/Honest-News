@@ -1,24 +1,281 @@
-/* =================================================
-   Honest News – Base Mobile Styles (FULL OVERWRITE)
-   ================================================= */
+/* assets/css/mobile.css */
+
+/* Generic variables */
+:root {
+  --hn-header-height: 72px;
+}
+
+/* ===========================================
+   BASE HEADER
+=========================================== */
+.hn-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--hn-header-height);
+  display: flex;
+  align-items: center;
+  z-index: 40;
+  transition:
+    background-color 0.25s ease,
+    box-shadow 0.25s ease,
+    backdrop-filter 0.25s ease,
+    transform 0.25s ease;
+}
+
+/* inner layout */
+.hn-header-inner {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+/* logo */
+.hn-logo {
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #e5e7eb;
+  text-decoration: none;
+}
+
+/* nav desktop */
+.hn-nav ul {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  gap: 18px;
+}
+
+.hn-nav a {
+  color: #e5e7eb;
+  text-decoration: none;
+  font-size: 0.86rem;
+  padding-bottom: 2px;
+  border-bottom: 2px solid transparent;
+}
+
+.hn-nav a.active {
+  border-bottom-color: #38bdf8;
+}
+
+/* mobile toggle */
+.hn-mobile-toggle {
+  border: none;
+  background: rgba(15, 23, 42, 0.85);
+  color: #e5e7eb;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* hamburger icon */
+.hn-mobile-toggle span {
+  display: block;
+  width: 18px;
+  height: 2px;
+  background: currentColor;
+  position: relative;
+}
+.hn-mobile-toggle span::before,
+.hn-mobile-toggle span::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 18px;
+  height: 2px;
+  background: currentColor;
+}
+.hn-mobile-toggle span::before {
+  top: -5px;
+}
+.hn-mobile-toggle span::after {
+  top: 5px;
+}
+
+/* Desktop-only / mobile-only */
+.desktop-only {
+  display: flex;
+}
+.mobile-only {
+  display: none;
+}
+
+/* ===========================================
+   HEADER STYLE VARIANTS
+=========================================== */
+
+/* Apple style */
+.hn-header--apple {
+  background: radial-gradient(circle at top, rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.95));
+  backdrop-filter: blur(18px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.85);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+/* Webflow style */
+.hn-header--webflow {
+  background: #020617;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85);
+  border-bottom: 1px solid rgba(30, 64, 175, 0.55);
+}
+
+/* Podbean style */
+.hn-header--podbean {
+  background: linear-gradient(90deg, #0f172a, #0f766e);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9);
+}
+
+/* Minimal style */
+.hn-header--minimal {
+  height: 56px;
+  --hn-header-height: 56px;
+  background: #020617;
+  border-bottom: 1px solid rgba(51, 65, 85, 0.9);
+}
+
+/* Floating style (sits over hero like a pill) */
+.hn-header--floating {
+  top: 18px;
+  height: 54px;
+}
+.hn-header--floating .hn-header-inner {
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.9);
+}
+
+/* Transparent over hero */
+.hn-header--transparent {
+  background: linear-gradient(
+    to bottom,
+    rgba(15, 23, 42, 0.65),
+    rgba(15, 23, 42, 0.15)
+  );
+  border-bottom-color: transparent;
+}
+
+/* ===========================================
+   HERO OFFSET (solid vs transparent header)
+=========================================== */
+
+body.has-solid-header .hero[data-hero],
+body.has-solid-header [data-hero] {
+  margin-top: var(--hn-header-offset, 72px);
+}
+
+body.has-transparent-header .hero[data-hero],
+body.has-transparent-header [data-hero] {
+  margin-top: 0;
+}
+
+/* Make sure hero fills width and respects header overlap */
+.hero[data-hero],
+[data-hero] {
+  position: relative;
+}
+
+/* ===========================================
+   MOBILE MENU PANEL
+=========================================== */
+
+.hn-mobile-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 80%;
+  max-width: 320px;
+  background: #020617;
+  border-right: 1px solid rgba(51, 65, 85, 0.9);
+  box-shadow: 20px 0 45px rgba(0, 0, 0, 0.95);
+  transform: translateX(-100%);
+  transition: transform 0.25s ease-in-out;
+  z-index: 45;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 14px;
+}
+
+.hn-mobile-menu.is-open {
+  transform: translateX(0);
+}
+
+/* overlay via body state (use existing page bg) */
+body.mobile-menu-open {
+  overflow: hidden;
+}
+
+/* mobile menu header */
+.hn-mobile-menu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.hn-mobile-menu-title {
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #9ca3af;
+}
+#mobileMenuClose {
+  border: none;
+  background: #0f172a;
+  color: #e5e7eb;
+  border-radius: 999px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+}
+
+/* mobile menu links */
+#mobileNavMenu {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+}
+#mobileNavMenu li {
+  margin-bottom: 4px;
+}
+#mobileNavMenu a {
+  display: block;
+  padding: 10px 6px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: #e5e7eb;
+  font-size: 0.9rem;
+}
+#mobileNavMenu a.active {
+  background: rgba(56, 189, 248, 0.16);
+}
+
+/* ===========================================
+   RESPONSIVE BEHAVIOR
+=========================================== */
 
 @media (max-width: 900px) {
-
-  body {
-    overflow-x: hidden;
-    background: #0b0b0c;
+  .hn-nav.desktop-only {
+    display: none;
   }
-
-  /* Hide desktop-only elements */
-  .desktop-nav,
-  .sidebar,
-  .top-welcome {
-    display: none !important;
+  .hn-mobile-toggle {
+    display: inline-flex;
   }
-
-  /* Mobile container spacing */
-  .mobile-padding {
-    padding: 20px;
+  .mobile-only {
+    display: block;
   }
-
 }
+
