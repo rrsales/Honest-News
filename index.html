@@ -1,449 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <div class="hn-mobile-menu-overlay" data-mobile-menu-overlay>
-  <div class="hn-mobile-menu-panel">
-    <div class="hn-mobile-menu-header">
-      <span class="label">Navigate</span>
-      <span class="meta">Tap to visit</span>
-    </div>
-    <ul class="hn-mobile-menu-list">
-      <li><a href="index.html"><span class="label">Home</span></a></li>
-      <li><a href="podcast.html"><span class="label">Podcast</span></a></li>
-      <li><a href="shop.html"><span class="label">Shop</span></a></li>
-      <li><a href="support.html"><span class="label">Support</span></a></li>
-      <li><a href="contact.html"><span class="label">Contact</span></a></li>
-    </ul>
-  </div>
-</div>
-  <link rel="stylesheet" href="assets/css/mobile/mobile.css">
-  <main data-main>
-  </main>
-  <meta charset="UTF-8" />
-  <title>Home – Honest News</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <title>Honest News – Biblical Truth</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Main site styles (adjust path if needed) -->
-  <link rel="stylesheet" href="assets/css/main.css" />
-
-  <!-- Icons (optional) -->
+  <!-- Existing main styles -->
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <!-- New header + mobile styles -->
+  <link rel="stylesheet" href="assets/css/mobile.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-  <style>
-    /* ====== BASE THEME HOOKS FOR live.js ====== */
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
-      background: #020617;
-      color: #e5e7eb;
-    }
-    body.theme-light {
-      background: #f9fafb;
-      color: #111827;
-    }
-    body.theme-dark {
-      background: #020617;
-      color: #e5e7eb;
-    }
-
-    /* ====== HEADER / NAV ====== */
-    header.site-header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 7vw;
-      background: rgba(15,23,42,0.95);
-      backdrop-filter: blur(14px);
-      border-bottom: 1px solid rgba(148,163,184,0.35);
-      transition: background 0.25s ease, box-shadow 0.25s ease;
-    }
-    header.site-header.header--transparent {
-      background: linear-gradient(to bottom, rgba(15,23,42,0.7), rgba(15,23,42,0.05));
-      box-shadow: none;
-      border-bottom-color: transparent;
-    }
-    header.site-header.scrolled {
-      background: rgba(15,23,42,0.97);
-      box-shadow: 0 16px 35px rgba(0,0,0,0.85);
-    }
-
-    .brand {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-    .brand-title {
-      font-weight: 700;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      font-size: .7rem;
-    }
-    .brand-sub {
-      font-size: .8rem;
-      color: #9ca3af;
-    }
-
-    nav ul {
-      display: flex;
-      gap: 18px;
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      font-size: .9rem;
-    }
-    nav a {
-      color: #e5e7eb;
-      text-decoration: none;
-      padding-bottom: 3px;
-      border-bottom: 2px solid transparent;
-      opacity: .8;
-    }
-    nav a:hover {
-      opacity: 1;
-    }
-    nav a.active {
-      border-color: #0ea5e9;
-      color: #f9fafb;
-      opacity: 1;
-    }
-
-    .header-cta {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 6px 14px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,184,0.7);
-      background: rgba(15,23,42,0.7);
-      font-size: .78rem;
-      color: #e5e7eb;
-    }
-
-    /* ====== HERO ====== */
-    main {
-      margin-top: 72px; /* offset fixed header */
-    }
-    section.hero {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      color: #f9fafb;
-      background: radial-gradient(circle at top, #1f2937, #020617);
-      overflow: hidden;
-    }
-    .hero-overlay-soft {
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at top, rgba(148,163,184,0.45), transparent 60%);
-      mix-blend-mode: soft-light;
-      pointer-events: none;
-    }
-    .hero-inner {
-      position: relative;
-      max-width: 720px;
-      padding: 0 1.5rem;
-    }
-    .hero-eyebrow {
-      text-transform: uppercase;
-      letter-spacing: .16em;
-      font-size: .75rem;
-      color: rgba(209,213,219,0.9);
-      margin-bottom: .7rem;
-    }
-    .hero-inner h1 {
-      margin: 0;
-      font-size: clamp(2.4rem, 4vw, 3.2rem);
-      letter-spacing: -.03em;
-    }
-    .hero-inner p {
-      margin: .9rem auto 1.3rem;
-      max-width: 560px;
-      font-size: .95rem;
-      color: rgba(229,231,235,0.9);
-    }
-    .hero-actions {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: .2rem;
-    }
-    .btn-hero-primary,
-    .btn-hero-ghost {
-      border-radius: 999px;
-      padding: 8px 18px;
-      font-size: .86rem;
-      font-weight: 600;
-      border: none;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      text-decoration: none;
-    }
-    .btn-hero-primary {
-      background: #22c55e;
-      color: #022c22;
-      box-shadow: 0 18px 40px rgba(22,163,74,0.65);
-    }
-    .btn-hero-ghost {
-      background: rgba(15,23,42,0.9);
-      color: #e5e7eb;
-      border: 1px solid rgba(148,163,184,0.7);
-    }
-
-    /* ====== BLOCKS AREA (dynamic) ====== */
-    .blocks-shell {
-      max-width: 980px;
-      margin: 2.8rem auto 3.6rem;
-      padding: 0 1.5rem;
-    }
-    .block {
-      margin-bottom: 1.5rem;
-    }
-    .block-heading h2 {
-      font-size: 1.4rem;
-      margin-bottom: .4rem;
-    }
-    .block-paragraph p {
-      line-height: 1.6;
-      color: #9ca3af;
-    }
-    .block-image img {
-      max-width: 100%;
-      border-radius: 16px;
-      display: block;
-    }
-    .block-button .btn-block {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0.6rem 1.7rem;
-      border-radius: 999px;
-      background: #22c55e;
-      color: #022c22;
-      font-weight: 600;
-      text-decoration: none;
-      font-size: .9rem;
-    }
-
-    .block-product .product-card {
-      display: flex;
-      gap: 1rem;
-      padding: 1rem;
-      border-radius: 16px;
-      background: radial-gradient(circle at top left, rgba(15,23,42,0.9), #020617);
-      border: 1px solid rgba(55,65,81,0.9);
-    }
-    .product-card img.product-image {
-      width: 120px;
-      height: 120px;
-      object-fit: cover;
-      border-radius: 14px;
-    }
-    .product-info h3 {
-      margin: 0 0 .25rem;
-      font-size: 1rem;
-    }
-    .product-info p {
-      margin: 0 0 .6rem;
-      font-size: .85rem;
-      color: #9ca3af;
-    }
-    .product-btn {
-      display: inline-flex;
-      padding: .5rem 1.4rem;
-      border-radius: 999px;
-      background: #f97316;
-      color: #111827;
-      text-decoration: none;
-      font-size: .82rem;
-      font-weight: 600;
-    }
-
-    .block-podcast iframe,
-    .block-youtube iframe {
-      width: 100%;
-      border-radius: 14px;
-      border: none;
-      min-height: 150px;
-    }
-    .block-youtube .video-wrap {
-      position: relative;
-      padding-bottom: 56.25%;
-      height: 0;
-      overflow: hidden;
-      border-radius: 14px;
-      background: #020617;
-    }
-    .block-youtube .video-wrap iframe {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-    }
-
-    /* ====== FOOTER (simple) ====== */
-    footer.site-footer {
-      border-top: 1px solid rgba(31,41,55,0.9);
-      padding: 1.6rem 7vw 2.2rem;
-      font-size: .8rem;
-      color: #9ca3af;
-      background: radial-gradient(circle at bottom, #020617, #000);
-    }
-  </style>
-
-  <!-- Live data wiring -->
-  <script src="assets/js/" defer></script>
-  <button id="mobileMenuBtn" class="mobile-menu-btn">
-  ☰
-</button>
-  <div class="hn-header-inner">
-  <div class="hn-logo-mark">
-    <span>Honest News</span>
-    <span class="badge">Network</span>
-  </div>
-
-  <!-- If you have existing nav links, wrap that in .hn-nav-desktop and .desktop-only -->
-  <nav class="hn-nav-desktop desktop-only">
-    <!-- existing menu UL here -->
-  </nav>
-
-  <!-- Mobile hamburger -->
-  <button class="hn-hamburger mobile-only" type="button" data-mobile-menu-toggle>
-    <div class="hn-hamburger-lines">
-      <div class="hn-hamburger-line"></div>
-      <div class="hn-hamburger-line"></div>
-      <div class="hn-hamburger-line"></div>
-    </div>
-  </button>
-</div>
 </head>
 <body data-page="home" class="theme-dark">
 
-<header class="site-header">
-  <div class="brand">
-    <span class="brand-title">HONEST NEWS</span>
-    <span class="brand-sub">Biblical Truth · Podcast · Resources</span>
-  </div>
+  <!-- HEADER -->
+  <header class="hn-header hn-header--apple">
+    <div class="hn-header-inner">
+      <a href="index.html" class="hn-logo">Honest News</a>
 
-  <nav aria-label="Main">
-    <ul id="menuList">
-      <!-- live.js will inject menu items from site.menu -->
-    </ul>
+      <nav class="hn-nav desktop-only">
+        <ul id="nav-menu"></ul>
+      </nav>
+
+      <button class="hn-mobile-toggle" id="mobileMenuToggle" aria-label="Open menu">
+        <span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MOBILE MENU -->
+  <nav class="hn-mobile-menu" id="mobileMenu" aria-label="Mobile navigation">
+    <div class="hn-mobile-menu-header">
+      <span class="hn-mobile-menu-title">Menu</span>
+      <button id="mobileMenuClose" aria-label="Close menu">×</button>
+    </div>
+    <ul id="mobileNavMenu"></ul>
   </nav>
 
-  <div class="header-cta">
-    <i class="fa-solid fa-podcast"></i>
-    Latest Episode
-  </div>
-</header>
-<div id="mobileMenu" class="mobile-menu">
-  <nav id="mobileMenuList"></nav>
-</div>
-<main>
-  <!-- HERO: live.js will override h1 + p + background from site.pages[home].hero -->
+  <!-- HERO (live.js will override text + image from site-data.json) -->
   <section class="hero" data-hero>
     <div class="hero-overlay-soft"></div>
     <div class="hero-inner">
-      <div class="hero-eyebrow">Honest News Network</div>
-      <h1>Honest News. Biblical Truth.</h1>
-      <p>
-        This is the home hero. Edit the Home page in your Dashboard to change this
-        background, title, subtitle, and header transparency.
-      </p>
-      <div class="hero-actions">
-        <a href="podcast.html" class="btn-hero-primary">
-          <i class="fa-solid fa-play"></i> Listen to the podcast
-        </a>
-        <a href="shop.html" class="btn-hero-ghost">
-          <i class="fa-solid fa-book-open"></i> View recommended resources
-        </a>
-      </div>
+      <h1>Honest News Network</h1>
+      <p>Everything you need for Biblical truth.</p>
     </div>
   </section>
 
-  <!-- BLOCKS: dashboard Blocks tab will render here via live.js -->
-  <div class="blocks-shell" data-blocks-target>
-    <!-- Dynamic blocks from site.pages[home].blocks -->
-  </div>
-</main>
-
-<footer class="site-footer">
-  Honest News Network · Biblical Truth in an upside-down world.
-</footer>
-
-<script>
-  // Optional: add "scrolled" class when user scrolls, for nicer transparent header behavior
-  (function() {
-    const header = document.querySelector("header.site-header");
-    if (!header) return;
-    window.addEventListener("scroll", () => {
-      if (window.scrollY > 40) header.classList.add("scrolled");
-      else header.classList.remove("scrolled");
-    });
-  })();
-</script>
-<!-- Shared mobile overlay for dropdown menu and drawer -->
-<div class="hn-mobile-menu-overlay" data-mobile-menu-overlay>
-  <div class="hn-mobile-menu-panel">
-    <div class="hn-mobile-menu-header">
-      <span class="label">Navigate</span>
-      <span class="meta">Tap to visit</span>
+  <!-- MAIN CONTENT -->
+  <main>
+    <div class="page-content">
+      <!-- live.js will inject blocks here -->
+      <div data-blocks-target></div>
     </div>
-    <ul class="hn-mobile-menu-list">
-      <!-- live.js will still build the main menu into #menuList / #nav-menu.
-           For now you can duplicate those items, or later we can hook this
-           to site.menu and auto-generate. -->
-      <!-- Example static version (replace with real links): -->
-      <li><a href="index.html"><span class="label">Home</span></a></li>
-      <li><a href="podcast.html"><span class="label">Podcast</span></a></li>
-      <li><a href="shop.html"><span class="label">Shop</span></a></li>
-      <li><a href="support.html"><span class="label">Support</span></a></li>
-      <li><a href="contact.html"><span class="label">Contact</span></a></li>
-    </ul>
-  </div>
-</div>
-<script type="module" src="assets/js/mobile/mobile.js"></script>
-</body>
-</html>
+  </main>
 
+  <footer class="site-footer">
+    <p>&copy; <span id="year"></span> Honest News. All rights reserved.</p>
+  </footer>
 
-  <!-- BLOCKS: dashboard Blocks tab will render here via live.js -->
-  <div class="blocks-shell" data-blocks-target>
-    <!-- Dynamic blocks from site.pages[home].blocks -->
-  </div>
-</main>
-
-<footer class="site-footer">
-  Honest News Network · Biblical Truth in an upside-down world.
-</footer>
-
-<script>
-  // Optional: add "scrolled" class when user scrolls, for nicer transparent header behavior
-  (function() {
-    const header = document.querySelector("header.site-header");
-    if (!header) return;
-    window.addEventListener("scroll", () => {
-      if (window.scrollY > 40) header.classList.add("scrolled");
-      else header.classList.remove("scrolled");
+  <script>
+    // simple year helper
+    document.addEventListener("DOMContentLoaded", function(){
+      var y = document.getElementById("year");
+      if (y) y.textContent = new Date().getFullYear();
     });
-  })();
-</script>
-<link rel="stylesheet" href="assets/css/mobile/mobile.css">
-<link rel="stylesheet" href="assets/css/mobile/mobile.menu.css">
-<link rel="stylesheet" href="assets/css/mobile/mobile.header.css">
+  </script>
 
-<script src="assets/js/mobile/mobile.js"></script>
-<script type="module" src="assets/js/mobile/mobile.js"></script>
+  <script src="assets/js/live.js"></script>
+  <script src="assets/js/mobile.js"></script>
 </body>
 </html>
+
 
 
