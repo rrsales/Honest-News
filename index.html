@@ -1,80 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Honest News – Biblical Truth</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- 2.0: single main stylesheet -->
-  <link rel="stylesheet" href="assets/css/styles.css" />
+  <!-- Use the same CSS as your old pages -->
+  <link rel="stylesheet" href="assets/css/main.css">
+
+  <!-- If you really have this file, keep it; otherwise remove this line -->
+  <!-- <link rel="stylesheet" href="assets/css/mobile/mobile.css"> -->
+
+  <!-- Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-  <!-- TEMP: legacy layout styles (can be moved into styles.css later) -->
-  <style>
-    body{margin:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;background:#020617;color:#e5e7eb;}
-    body.theme-light{background:#f9fafb;color:#111827;}
-    body.theme-dark{background:#020617;color:#e5e7eb;}
-
-    header.site-header{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:14px 7vw;background:rgba(15,23,42,0.95);backdrop-filter:blur(14px);border-bottom:1px solid rgba(148,163,184,0.35);transition:background .25s ease,box-shadow .25s ease;}
-    header.site-header.header--transparent{background:linear-gradient(to bottom,rgba(15,23,42,0.7),rgba(15,23,42,0.05));box-shadow:none;border-bottom-color:transparent;}
-    header.site-header.scrolled{background:rgba(15,23,42,0.97);box-shadow:0 16px 35px rgba(0,0,0,0.85);}
-
-    .brand{display:flex;flex-direction:column;gap:2px;}
-    .brand-title{font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:.7rem;}
-    .brand-sub{font-size:.8rem;color:#9ca3af;}
-
-    nav ul{display:flex;gap:18px;list-style:none;margin:0;padding:0;font-size:.9rem;}
-    nav a{color:#e5e7eb;text-decoration:none;padding-bottom:3px;border-bottom:2px solid transparent;opacity:.8;}
-    nav a:hover{opacity:1;}
-    nav a.active{border-color:#0ea5e9;color:#f9fafb;opacity:1;}
-
-    .header-cta{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;border:1px solid rgba(148,163,184,0.7);background:rgba(15,23,42,0.7);font-size:.78rem;color:#e5e7eb;}
-
-    main{margin-top:72px;}
-
-    section.hero{position:relative;display:flex;align-items:center;justify-content:center;text-align:center;color:#f9fafb;background:radial-gradient(circle at top,#1f2937,#020617);overflow:hidden;}
-    .hero-overlay-soft{position:absolute;inset:0;background:radial-gradient(circle at top,rgba(148,163,184,0.45),transparent 60%);mix-blend-mode:soft-light;pointer-events:none;}
-    .hero-inner{position:relative;max-width:720px;padding:0 1.5rem;}
-    .hero-eyebrow{text-transform:uppercase;letter-spacing:.16em;font-size:.75rem;color:rgba(209,213,219,0.9);margin-bottom:.7rem;}
-    .hero-inner h1{margin:0;font-size:clamp(2.1rem,3.2vw,2.7rem);letter-spacing:-.03em;}
-    .hero-inner p{margin:.9rem auto 1.3rem;max-width:560px;font-size:.95rem;color:rgba(229,231,235,0.9);}
-
-    .blocks-shell{max-width:820px;margin:2.4rem auto 3.6rem;padding:0 1.5rem;}
-    .block{margin-bottom:1.5rem;}
-    .block-heading h2{font-size:1.35rem;margin-bottom:.4rem;}
-    .block-paragraph p{line-height:1.6;color:#9ca3af;}
-
-    footer.site-footer{border-top:1px solid rgba(31,41,55,0.9);padding:1.6rem 7vw 2.2rem;font-size:.8rem;color:#9ca3af;background:radial-gradient(circle at bottom,#020617,#000);}
-  </style>
 </head>
 
-<!-- 2.0: data-page used by JSON engine -->
+<!-- IMPORTANT: data-page="home" so live.js knows this is "home" -->
 <body data-page="home" class="theme-dark">
 
-  <!-- HEADER -->
+  <!-- =========================
+       HEADER (old structure)
+       Matches what main.css expects
+  ========================== -->
   <header class="site-header">
-    <div class="brand">
-      <span class="brand-title">HONEST NEWS</span>
-      <span class="brand-sub">Biblical Truth · Podcast · Resources</span>
+    <div class="site-header-inner">
+      <a href="index.html" class="logo">Honest News</a>
+
+      <!-- Desktop menu: live.js fills #menuList -->
+      <nav class="desktop-nav">
+        <ul id="menuList"></ul>
+      </nav>
+
+      <!-- Mobile hamburger (optional, if mobile.js uses this) -->
+      <button class="hn-mobile-toggle" id="mobileMenuToggle" aria-label="Open menu">
+        <span></span>
+      </button>
     </div>
-
-    <nav aria-label="Main">
-      <!-- Filled by HN.renderMenu from site-data.json -->
-      <ul id="menuList"></ul>
-    </nav>
-
-    <div class="header-cta">
-      <i class="fa-solid fa-podcast"></i>
-      Listen
-    </div>
-
-    <!-- 2.0: mobile menu toggle -->
-    <button class="hn-mobile-toggle" id="mobileMenuToggle" aria-label="Open menu">
-      <span></span>
-    </button>
   </header>
 
-  <!-- 2.0: mobile menu drawer -->
+  <!-- MOBILE MENU (if your old pages use it) -->
   <nav class="hn-mobile-menu" id="mobileMenu" aria-label="Mobile navigation">
     <div class="hn-mobile-menu-header">
       <span class="hn-mobile-menu-title">Menu</span>
@@ -83,28 +47,31 @@
     <ul id="mobileNavMenu"></ul>
   </nav>
 
-  <main>
-    <!-- HERO: 2.0 engine will override content based on JSON -->
-    <section class="hero" data-hero>
-      <div class="hero-overlay-soft"></div>
-      <div class="hero-inner">
-        <div class="hero-eyebrow">Honest News</div>
-        <h1>Honest News. Biblical Truth.</h1>
-        <p>
-          This hero is controlled by the “Home” page in your Dashboard.
-          Use Blocks for featured episodes, articles, and key resources.
-        </p>
-      </div>
-    </section>
+  <!-- =========================
+       HERO (same hook as live.js expects)
+  ========================== -->
+  <section class="hero" data-hero>
+    <div class="hero-inner">
+      <h1>Honest News Network</h1>
+      <p>Everything you need for Biblical truth.</p>
+    </div>
+  </section>
 
-    <!-- BLOCKS: 2.0 engine injects blocks here -->
-    <div class="blocks-shell" data-blocks-target>
-      <!-- Home page blocks from Dashboard -->
+  <!-- =========================
+       MAIN CONTENT
+       live.js injects blocks here
+  ========================== -->
+  <main>
+    <div class="page-content">
+      <div data-blocks-target></div>
     </div>
   </main>
 
+  <!-- =========================
+       FOOTER
+  ========================== -->
   <footer class="site-footer">
-    &copy; <span id="year"></span> Honest News. All rights reserved.
+    <p>&copy; <span id="year"></span> Honest News. All rights reserved.</p>
   </footer>
 
   <script>
@@ -114,12 +81,26 @@
     });
   </script>
 
-  <!-- 2.0 CORE RUNTIME -->
-  <script src="assets/js/core/hn-data.js"></script>
-  <script src="assets/js/core/hn-menu.js"></script>
-  <script src="assets/js/core/hn-page.js"></script>
-  <script src="assets/js/core/hn-mobile.js"></script>
-  <script src="assets/js/core/live.js"></script>
+  <!-- LIVE ENGINE -->
+  <script src="assets/js/live.js?cb=2"></script>
+
+  <!-- If these actually exist and are used on old pages, include them: -->
+  <!-- <script src="assets/js/mobile/mobile.js?cb=2"></script>
+  <script src="assets/js/mobile/mobile.hero.js?cb=2"></script> -->
+
+  <!-- SCROLL SCRIPT (uses .site-header) -->
+  <script>
+    (function(){
+      const header = document.querySelector("header.site-header");
+      if (!header) return;
+      window.addEventListener("scroll", () => {
+        if (window.scrollY > 40) header.classList.add("scrolled");
+        else header.classList.remove("scrolled");
+      });
+    })();
+  </script>
+
 </body>
 </html>
+
 
