@@ -194,9 +194,7 @@
   }
   .sidebar-section-body.closed{
     display:none;
-  }
-
-  .page{
+   .page{
     padding:9px 10px;
     margin-top:6px;
     border-radius:12px;
@@ -209,12 +207,30 @@
     font-size:.84rem;
     color:var(--text-main);
   }
+  .page-main{
+    display:flex;
+    flex-direction:column;
+  }
   .page span.title{font-weight:600;}
   .page span.slug{font-size:.7rem;color:#6b7280;}
   .page.active{
     background:var(--accent-soft-bg);
     border-color:var(--accent);
     box-shadow:0 0 0 1px rgba(56,189,248,.4);
+  }
+
+  .page-delete-btn{
+    border:none;
+    background:transparent;
+    color:#6b7280;
+    cursor:pointer;
+    padding:4px;
+    border-radius:999px;
+    flex-shrink:0;
+  }
+  .page-delete-btn:hover{
+    background:rgba(15,23,42,.9);
+    color:#f97316;
   }
 
   .textarea-small{
