@@ -158,7 +158,7 @@
     padding-right:4px;
   }
 
-  /* Accordion-style sections on left */
+  /* NEW: Accordion-style sections on left */
   .sidebar-section{
     margin-bottom:10px;
   }
@@ -196,7 +196,7 @@
     display:none;
   }
 
-  /* Page list items (fixed CSS, not nested) */
+  /* PAGE LIST ITEMS */
   .page{
     padding:9px 10px;
     margin-top:6px;
@@ -233,7 +233,7 @@
   }
   .page-delete-btn:hover{
     background:rgba(15,23,42,.9);
-    color:#f97316; /* small CSS tweak for delete icon */
+    color:#f97316;
   }
 
   .textarea-small{
@@ -636,13 +636,13 @@
   <!-- SIDEBAR -->
   <aside class="sidebar">
 
-    <!-- PAGES SECTION (accordion, default closed) -->
+    <!-- PAGES SECTION (accordion, default OPEN) -->
     <div class="sidebar-section">
       <button class="sidebar-section-header" type="button" onclick="toggleSidebarSection('pages')">
         <span class="label">Pages</span>
-        <i class="fa-solid fa-chevron-down sidebar-chevron rotated" id="pagesChevron"></i>
+        <i class="fa-solid fa-chevron-down sidebar-chevron" id="pagesChevron"></i>
       </button>
-      <div class="sidebar-section-body closed" id="pagesSection">
+      <div class="sidebar-section-body" id="pagesSection">
         <div class="sidebar-inner" id="pages"></div>
         <button class="btn secondary" style="width:100%;margin-top:8px;" onclick="newPage()">
           + New Page
@@ -650,7 +650,7 @@
       </div>
     </div>
 
-    <!-- NAVIGATION SECTION (accordion, default closed) -->
+    <!-- NAVIGATION SECTION (accordion, default CLOSED) -->
     <div class="sidebar-section">
       <button class="sidebar-section-header" type="button" onclick="toggleSidebarSection('nav')">
         <span class="label">Navigation</span>
@@ -961,9 +961,9 @@ function toggleSidebarSection(which){
   const chevron = document.getElementById(which + "Chevron");
   if (!body) return;
 
-  const willBeClosed = !body.classList.contains("closed");
+  const wasClosed = body.classList.contains("closed");
 
-  // close all sections
+  // close all sections (accordion behavior)
   document.querySelectorAll(".sidebar-section-body").forEach(el=>{
     el.classList.add("closed");
   });
@@ -972,7 +972,7 @@ function toggleSidebarSection(which){
   });
 
   // open this one if it was closed
-  if (willBeClosed){
+  if (wasClosed){
     body.classList.remove("closed");
     if (chevron) chevron.classList.remove("rotated");
   }
@@ -1036,17 +1036,38 @@ document.addEventListener("keydown", (e)=>{
 function renderPages(){
   const container = document.getElementById("pages");
   container.innerHTML = (site.pages || []).map((p,i)=>`
-    <div class="page ${p===current?'active':''}">
-      <div class="page-main" onclick="selectPage(${i})">
+    <div class="page ${p===current?'active':''}" onclick="selectPage(${i})">
+      <div class="page-main">
         <span class="title">${p.title || 'Untitled'}</span>
         <span class="slug">${p.slug || ''}</span>
       </div>
-      <button class="page-delete-btn" type="button" onclick="deletePage(event, ${i})" title="Delete page">
-        <i class="fa-solid fa-trash"></i>
+      <button class="page-delete-btn" title="Delete page"
+              onclick="deletePage(${i}, event)">
+        <i class="fa-solid fa-trash-can"></i>
       </button>
     </div>
   `).join("");
   rawFromMenu();
+}
+
+/* DELETE PAGE */
+function deletePage(idx, ev){
+  ev.stopPropagation(); // don't trigger selectPage
+  const p = site.pages[idx];
+  if (!p) return;
+
+  if (!confirm(`Delete page "${p.title || p.slug || 'Untitled'}"?`)) return;
+
+  site.pages.splice(idx, 1);
+
+  if (current === p){
+    current = site.pages[0] || null;
+  }
+
+  markDirty();
+  renderPages();
+  updatePreviewHeader();
+  renderPreview();
 }
 
 function newPage(){
@@ -1072,24 +1093,6 @@ function newPage(){
   markDirty();
   renderPages();
   openSidebarSection("pages");
-}
-
-function deletePage(ev, idx){
-  ev.stopPropagation(); // don't trigger selectPage
-  const page = site.pages[idx];
-  if (!page) return;
-  const name = page.title || page.slug || "Untitled";
-  if (!confirm(`Delete page "${name}"?\nThis cannot be undone.`)) return;
-
-  // if current is this page, clear it first
-  const wasCurrent = (current === page);
-  site.pages.splice(idx, 1);
-  if (wasCurrent) current = null;
-
-  markDirty();
-  renderPages();
-  updatePreviewHeader();
-  renderPreview();
 }
 
 /* =======================
@@ -1787,6 +1790,7 @@ renderInspectorTab();
 
 </body>
 </html>
+
 
 
 
