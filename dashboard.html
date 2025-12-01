@@ -6,16 +6,15 @@
 <title>Honest News Dashboard</title>
 
 <style>
-/* ------------------------------------------
-   APPLE / WEBFLOW 2.0 UI
------------------------------------------- */
+/* -------------------------------------------------------
+   APPLE / WEBFLOW 2.0 Visual Style
+-------------------------------------------------------- */
 :root {
   --panel-bg: #0b0b0c;
   --panel-border: #1a1a1c;
   --header-bg: #111;
   --header-text: #eee;
-  --blue: #007aff; /* Apple blue */
-  --accent: #0db3ff;
+  --blue: #007aff;
   --preview-bg: #fff;
   --preview-border: #222;
 }
@@ -28,9 +27,9 @@ body {
   overflow: hidden;
 }
 
-/* ------------------------------------------
-   HEADER
------------------------------------------- */
+/* -------------------------------------------------------
+   TOP HEADER
+-------------------------------------------------------- */
 #topHeader {
   background: var(--header-bg);
   height: 52px;
@@ -51,9 +50,9 @@ body {
   cursor: pointer;
 }
 
-/* ------------------------------------------
-   LEFT PANEL (Pages / Blocks / Menu soon)
------------------------------------------- */
+/* -------------------------------------------------------
+   LEFT PANEL (Pages Blocks Hero placeholder)
+-------------------------------------------------------- */
 #leftPanel {
   position: fixed;
   top: 52px;
@@ -82,9 +81,9 @@ body {
   margin-bottom: 10px;
 }
 
-/* ------------------------------------------
-   RIGHT PANEL (Settings, Tools)
------------------------------------------- */
+/* -------------------------------------------------------
+   RIGHT PANEL (Settings / Save)
+-------------------------------------------------------- */
 #rightPanel {
   position: fixed;
   top: 52px;
@@ -115,9 +114,9 @@ body {
   line-height: 24px;
 }
 
-/* ------------------------------------------
+/* -------------------------------------------------------
    PREVIEW AREA
------------------------------------------- */
+-------------------------------------------------------- */
 #preview {
   position: absolute;
   top: 52px;
@@ -131,7 +130,6 @@ body {
   transition: all 0.25s ease;
 }
 
-/* When panels are closed adjust preview area */
 #leftPanel.closed + #preview {
   left: 0;
 }
@@ -140,80 +138,80 @@ body {
   right: 0;
 }
 
-/* Save Button */
+/* -------------------------------------------------------
+   Save Button
+-------------------------------------------------------- */
 #saveBtn {
   background: var(--blue);
   color: #fff;
   border-radius: 6px;
   border: none;
-  padding: 10px 16px;
+  padding: 12px 16px;
   cursor: pointer;
   font-weight: 600;
   width: 100%;
+  margin-top: 20px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- ------------------------------------------
+<!-- ----------------------------------------------------
      TOP HEADER
-------------------------------------------- -->
+----------------------------------------------------- -->
 <div id="topHeader">
   <div>Welcome Honest News</div>
   <button id="logoutBtn">Logout</button>
 </div>
 
-<!-- ------------------------------------------
-     LEFT PANEL (Pages / Blocks / Hero config)
-------------------------------------------- -->
+<!-- ----------------------------------------------------
+     LEFT PANEL
+----------------------------------------------------- -->
 <div id="leftPanel">
   <div id="closeLeft">✕</div>
 
   <h3>Pages</h3>
-  <div id="pagesList">
-    <!-- Pages will populate dynamically -->
-  </div>
+  <div style="opacity:.5;font-size:14px;">(Pages module coming soon)</div>
 
   <h3 style="margin-top:25px;">Blocks</h3>
-  <button onclick="addBlock()">+ Add Block</button>
+  <div style="opacity:.5;font-size:14px;">(Blocks module coming soon)</div>
 
   <h3 style="margin-top:25px;">Hero</h3>
-  <button onclick="editHero()">Edit Hero</button>
+  <div style="opacity:.5;font-size:14px;">(Hero editor coming soon)</div>
 </div>
 
-<!-- ------------------------------------------
-     RIGHT PANEL (Settings / Save / Tools)
-------------------------------------------- -->
+<!-- ----------------------------------------------------
+     RIGHT PANEL
+----------------------------------------------------- -->
 <div id="rightPanel">
   <div id="toggleRight">←</div>
 
   <h3>Settings</h3>
+  <div style="opacity:.5;font-size:14px;">(Full settings panel coming soon)</div>
 
   <button id="saveBtn">Save</button>
 </div>
 
-<!-- ------------------------------------------
-     PREVIEW
-------------------------------------------- -->
+<!-- ----------------------------------------------------
+     PREVIEW IFRAME
+----------------------------------------------------- -->
 <div id="preview">
   <iframe id="previewFrame" src="index.html" style="width:100%;height:100%;border:0;"></iframe>
 </div>
 
 <script>
 /* -------------------------------------------------------
-   PANEL TOGGLE FIXES
+   PANEL TOGGLES
 -------------------------------------------------------- */
 const leftPanel = document.getElementById("leftPanel");
 const rightPanel = document.getElementById("rightPanel");
 
-document.getElementById("closeLeft").onclick = () => {
+document.getElementById("closeLeft").onclick = () =>
   leftPanel.classList.toggle("closed");
-};
 
-document.getElementById("toggleRight").onclick = () => {
+document.getElementById("toggleRight").onclick = () =>
   rightPanel.classList.toggle("closed");
-};
 
 /* -------------------------------------------------------
    SAVE TO RENDER CLOUD
@@ -223,7 +221,7 @@ async function saveToRender() {
     const response = await fetch("https://honest-news.onrender.com/save", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(site) // site object must exist in global JS
+      body: JSON.stringify(site) // site must exist globally (your live.js or data loader)
     });
 
     const data = await response.json();
@@ -241,18 +239,15 @@ async function saveToRender() {
 document.getElementById("saveBtn").onclick = saveToRender;
 
 /* -------------------------------------------------------
-   Placeholder functions until CMS & Menu are added
+   Placeholder site object so save doesn't crash
 -------------------------------------------------------- */
-function addBlock() {
-  alert("Block adding logic goes here (CMS module)");
-}
-
-function editHero() {
-  alert("Hero editor will be implemented next.");
+if (typeof site === "undefined") {
+  window.site = { test: true, message: "Render connectivity test" };
 }
 </script>
 
 </body>
 </html>
+
 
 
