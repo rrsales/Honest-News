@@ -134,6 +134,114 @@ document.getElementById("pass").addEventListener("keypress", e=>{
     // HNAdmin.exportSiteData(data);
   })();
 </script>
+  <script src="assets/js/admin/hn-admin-data.js"></script>
+<script src="assets/js/admin/hn-admin-pages.js"></script>
+<script src="assets/js/admin/hn-admin-hero.js"></script>
+<script src="assets/js/admin/hn-admin-blocks.js"></script>
+
+<script>
+  (async function () {
+    let data = await HNAdmin.loadSiteData();
+    HNAdmin.saveLocalSnapshot(data);
+
+    const pageListEl = document.getElementById("hn-page-list");
+    const currentPageLabel = document.getElementById("hn-current-page-label");
+
+    const heroEyebrow = document.getElementById("hn-hero-eyebrow");
+    const heroTitle = document.getElementById("hn-hero-title");
+    const heroSubtitle = document.getElementById("hn-hero-subtitle");
+    const heroStyle = document.getElementById("hn-hero-style");
+    const heroTransparent = document.getElementById("hn-hero-transparent");
+    const heroBg = document.getElementById("hn-hero-bg");
+
+    const blocksListEl = document.getElementById("hn-blocks-list");
+
+    let currentPageId = null;
+
+    function renderPageList() {
+      pageListEl.innerHTML = "";
+      Object.keys(data.pages).forEach(id => {
+        const li = document.createElement("li");
+        const btn = document.createElement("button");
+        btn.textContent = data.pages[id].title || id;
+        btn.addEventListener("click", () => selectPage(id));
+        li.appendChild(btn);
+        pageListEl.appendChild(li);
+      });
+    }
+
+    function selectPage(id) {
+      currentPageId = id;
+      const page = data.pages[id];
+      currentPageLabel.textContent = page.title || id;
+
+      // Fill hero form
+      const hero = page.hero || {};
+      heroEyebrow.value = hero.eyebrow || "";
+      heroTitle.value = hero.title || "";
+      heroSubtitle.value = hero.subtitle || "";
+      heroStyle.value = hero.style || "simple";
+      heroTransparent.checked = !!hero.transparentHeader;
+      heroBg.value = hero.backgroundImage || "";
+
+      // Fill blocks list (simple text-only view for now)
+      blocksListEl.innerHTML = "";
+      (page.blocks || []).forEach(block => {
+        const li = document.createElement("li");
+        li.textContent = block.id + " (" + block.type + ")";
+        blocksListEl.appendChild(li);
+      });
+    }
+
+    // Save hero button
+    document.getElementById("hn-hero-save-btn").addEventListener("click", () => {
+      if (!currentPageId) return;
+      data = HNAdmin.updateHero(data, currentPageId, {
+        eyebrow: heroEyebrow.value,
+        title: heroTitle.value,
+        subtitle: heroSubtitle.value,
+        style: heroStyle.value,
+        transparentHeader: heroTransparent.checked,
+        backgroundImage: heroBg.value
+      });
+      HNAdmin.saveLocalSnapshot(data);
+      alert("Hero updated for " + currentPageId);
+    });
+
+    // Add text block button (simple example)
+    document.getElementById("hn-add-text-block-btn").addEventListener("click", () => {
+      if (!currentPageId) return;
+      const id = prompt("Block ID (e.g. home-intro):");
+      if (!id) return;
+      const heading = prompt("Heading:");
+      const body = prompt("Body text:");
+
+      data = HNAdmin.addBlock(data, currentPageId, {
+        type: "text",
+        id,
+        heading,
+        body
+      });
+      HNAdmin.saveLocalSnapshot(data);
+      selectPage(currentPageId);
+    });
+
+    // Export + clear
+    document.getElementById("hn-export-json-btn").addEventListener("click", () => {
+      HNAdmin.exportSiteData(data);
+    });
+
+    document.getElementById("hn-clear-local-btn").addEventListener("click", () => {
+      HNAdmin.clearLocalSnapshot();
+      alert("Local draft cleared. Reload admin to re-sync from repo.");
+    });
+
+    // Initial render
+    renderPageList();
+    // Auto-select "home" if present
+    if (data.pages.home) selectPage("home");
+  })();
+</script>
 </body>
 </html>
 
