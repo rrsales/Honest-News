@@ -39,11 +39,12 @@
     background:
       radial-gradient(circle at top, #1e293b 0, #020617 48%, #000 100%);
     color:var(--text-main);
-    height:100vh;
+    min-height:100vh;              /* was height:100vh */
     display:flex;
     flex-direction:column;
     -webkit-font-smoothing: antialiased;
-    overflow:hidden;
+    overflow-x:hidden;
+    overflow-y:auto;               /* allow vertical scroll (fix mobile) */
   }
 
   /* TOP GLOSSY APPLE-STYLE BAR */
@@ -163,6 +164,8 @@
     overflow-y:auto;
     padding-right:4px;
   }
+
+  /* OLD .page (kept, but accordion is used now) */
   .page{
     padding:9px 10px;
     margin-top:6px;
@@ -552,10 +555,104 @@
     color:#e5e7eb;
   }
 
+  /* ACCORDION-STYLE PAGE LIST */
+  .page-accordion{
+    border-radius:12px;
+    margin-top:6px;
+    background:#020617;
+    border:1px solid rgba(31,41,55,.9);
+    overflow:hidden;
+  }
+
+  .page-accordion-header{
+    width:100%;
+    border:none;
+    background:transparent;
+    color:inherit;
+    padding:8px 10px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    cursor:pointer;
+  }
+
+  .page-accordion-header .title{
+    font-weight:600;
+    font-size:.84rem;
+  }
+
+  .page-accordion-header .slug{
+    font-size:.7rem;
+    color:#6b7280;
+  }
+
+  .page-accordion-header .chevron{
+    font-size:.65rem;
+    opacity:.7;
+    transition:transform .18s ease;
+  }
+
+  .page-accordion-header.active{
+    background:var(--accent-soft-bg);
+    border-bottom:1px solid rgba(15,23,42,.9);
+  }
+
+  .page-accordion-header.active .chevron{
+    transform:rotate(180deg);
+  }
+
+  .page-accordion-body{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .18s ease, padding .18s ease;
+    background:#020617;
+    border-top:1px solid rgba(31,41,55,.9);
+    padding:0 10px;
+  }
+
+  .page-accordion-body.open{
+    max-height:80px;
+    padding:6px 10px 8px;
+  }
+
+  .mini-btn{
+    border:none;
+    border-radius:999px;
+    padding:4px 9px;
+    font-size:.72rem;
+    cursor:pointer;
+    background:#111827;
+    color:#e5e7eb;
+    margin-right:6px;
+  }
+
+  .mini-btn.danger{
+    background:#7f1d1d;
+    color:#fee2e2;
+  }
+
   @media (max-width:900px){
     .main{flex-direction:column;}
     .sidebar{width:100%;}
     #panelHandle{top:auto;bottom:90px;}
+  }
+
+  /* Small-phone tweak: inspector as bottom sheet */
+  @media (max-width:600px){
+    .main{
+      padding:12px;
+      gap:12px;
+    }
+    #inspectorPanel{
+      top:auto;
+      bottom:0;
+      height:70vh;
+      right:-100%;
+      width:100%;
+    }
+    #inspectorPanel.open{
+      right:0;
+    }
   }
 </style>
 </head>
@@ -586,12 +683,6 @@
       <div class="sidebar-inner" id="pages"></div>
       <button class="btn secondary" style="width:100%;margin-top:8px;" onclick="newPage()">
         + New Page
-      </button>
-      <!-- NEW: delete current page -->
-      <button class="btn ghost"
-              style="width:100%;margin-top:6px;color:#f97373;border-color:#b91c1c;"
-              onclick="deleteCurrentPage()">
-        Delete current page
       </button>
     </div>
 
@@ -936,16 +1027,39 @@ document.addEventListener("keydown", (e)=>{
 });
 
 /* =======================
-   SIDEBAR / PAGES
+   SIDEBAR / PAGES (ACCORDION)
 ======================= */
 function renderPages(){
   const container = document.getElementById("pages");
-  container.innerHTML = (site.pages || []).map((p,i)=>`
-    <div class="page ${p===current?'active':''}" onclick="selectPage(${i})">
-      <span class="title">${p.title || 'Untitled'}</span>
-      <span class="slug">${p.slug || ''}</span>
-    </div>
-  `).join("");
+  const pages = site.pages || [];
+
+  container.innerHTML = pages.map((p,i)=>{
+    const isActive = (p === current);
+    return `
+      <div class="page-accordion">
+        <button type="button"
+                class="page-accordion-header ${isActive ? 'active' : ''}"
+                onclick="selectPage(${i})">
+          <div>
+            <div class="title">${p.title || 'Untitled'}</div>
+            <div class="slug">${p.slug || ''}</div>
+          </div>
+          <span class="chevron"><i class="fa-solid fa-chevron-down"></i></span>
+        </button>
+        <div class="page-accordion-body ${isActive ? 'open' : ''}">
+          <button type="button" class="mini-btn"
+                  onclick="renamePagePrompt(${i});event.stopPropagation();">
+            Rename
+          </button>
+          <button type="button" class="mini-btn danger"
+                  onclick="deletePageByIndex(${i});event.stopPropagation();">
+            Delete
+          </button>
+        </div>
+      </div>
+    `;
+  }).join("");
+
   rawFromMenu();
 }
 
@@ -954,7 +1068,7 @@ function newPage(){
   if (!t) return;
   const slug = t.toLowerCase().replace(/\s+/g,"-");
   if (!site.pages) site.pages = [];
-  site.pages.push({
+  const page = {
     title:t,
     slug,
     theme:"dark",
@@ -968,50 +1082,86 @@ function newPage(){
       customHeight:""
     },
     blocks:[]
-  });
-  markDirty();
-  renderPages();
-}
-
-/* NEW: DELETE CURRENT PAGE */
-function deleteCurrentPage(){
-  if (!current) {
-    alert("No page selected.");
-    return;
-  }
-
-  // Protect Home
-  if (current.slug === "home" || current.title === "Home") {
-    alert("You cannot delete the Home page.");
-    return;
-  }
-
-  const name = current.title || current.slug || "this page";
-  const confirmed = confirm(
-    `Delete "${name}" from the CMS?\n\n` +
-    `This will remove it from Pages and the navigation menu.`
-  );
-  if (!confirmed) return;
-
-  const slug = current.slug;
-
-  // Remove from pages array
-  site.pages = (site.pages || []).filter(p => p !== current);
-
-  // Remove from menu (by id or by url)
-  if (site.menu && slug) {
-    site.menu = site.menu.filter(m =>
-      m.id !== slug && m.url !== slug + ".html"
-    );
-  }
-
-  // Clear current + refresh UI
-  current = null;
+  };
+  site.pages.push(page);
+  current = page;
   markDirty();
   renderPages();
   updatePreviewHeader();
   renderPreview();
   renderInspectorTab();
+}
+
+/* rename + delete helpers */
+
+function renamePagePrompt(index){
+  const pages = site.pages || [];
+  const page = pages[index];
+  if (!page) return;
+
+  const newTitle = prompt("New page title:", page.title || "");
+  if (!newTitle) return;
+
+  const oldSlug = page.slug || "";
+  page.title = newTitle;
+
+  // If slug looked auto-generated, keep it in sync with new title
+  const autoFromOld = oldSlug.toLowerCase().replace(/\s+/g,"-");
+  if (!oldSlug || autoFromOld === oldSlug){
+    page.slug = newTitle.toLowerCase().replace(/\s+/g,"-");
+  }
+
+  markDirty();
+  renderPages();
+  updatePreviewHeader();
+}
+
+function deletePageByIndex(index){
+  const pages = site.pages || [];
+  const page = pages[index];
+  if (!page) return;
+
+  const label = page.title || page.slug || "this page";
+  const isHome = page.slug === "home" || page.title === "Home";
+
+  const msg = isHome
+    ? `Delete "${label}" from the CMS?\n\nThis will remove it from site-data.json (home config). index.html is still on disk.`
+    : `Delete "${label}" from the CMS?\n\nThis removes it from site-data.json (heroes/blocks). The physical .html file remains.`;
+
+  if (!confirm(msg)) return;
+
+  const wasCurrent = (current === page);
+
+  pages.splice(index, 1);
+  site.pages = pages;
+
+  if (wasCurrent){
+    if (site.pages.length){
+      current = site.pages[Math.max(0, index - 1)];
+    } else {
+      current = null;
+    }
+  }
+
+  markDirty();
+  renderPages();
+  updatePreviewHeader();
+  renderPreview();
+  renderInspectorTab();
+}
+
+/* Optional helper if you ever want a global "Delete current" button */
+function deleteCurrentPage(){
+  if (!current){
+    alert("Select a page on the left to delete.");
+    return;
+  }
+  const idx = (site.pages || []).indexOf(current);
+  if (idx === -1){
+    alert("Could not locate this page in the list. Try reloading.");
+    return;
+  }
+  deletePageByIndex(idx);
 }
 
 /* =======================
@@ -1707,4 +1857,5 @@ renderInspectorTab();
 </script>
 </body>
 </html>
+
 
