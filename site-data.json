@@ -1,9 +1,4 @@
 {
-  "pages": [],
-  "heroSlides": [],
-  "theme": {}
-}
-{
   "menu": [
     {
       "id": "home",
@@ -70,6 +65,10 @@
       "subItems": []
     }
   ],
+
+  "heroSlides": [],
+
+  "theme": {},
 
   "pages": [
     {
