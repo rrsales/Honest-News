@@ -635,19 +635,21 @@
   <!-- SIDEBAR -->
   <aside class="sidebar">
 
-    <!-- PAGES SECTION (open by default) -->
-    <div class="sidebar-section">
-      <button class="sidebar-section-header" type="button" onclick="toggleSidebarSection('pages')">
-        <span class="label">Pages</span>
-        <i class="fa-solid fa-chevron-down sidebar-chevron" id="pagesChevron"></i>
-      </button>
-      <div class="sidebar-section-body" id="pagesSection">
-        <div class="sidebar-inner" id="pages"></div>
-        <button class="btn secondary" style="width:100%;margin-top:8px;" onclick="newPage()">
-          + New Page
-        </button>
-      </div>
-    </div>
+   <!-- PAGES SECTION (closed by default – under dropdown) -->
+<div class="sidebar-section">
+  <button class="sidebar-section-header" type="button" onclick="toggleSidebarSection('pages')">
+    <span class="label">Pages</span>
+    <!-- rotated = “closed” arrow by default -->
+    <i class="fa-solid fa-chevron-down sidebar-chevron rotated" id="pagesChevron"></i>
+  </button>
+  <div class="sidebar-section-body closed" id="pagesSection">
+    <div class="sidebar-inner" id="pages"></div>
+    <button class="btn secondary" style="width:100%;margin-top:8px;" onclick="newPage()">
+      + New Page
+    </button>
+  </div>
+</div>
+
 
     <!-- NAVIGATION SECTION (closed by default) -->
     <div class="sidebar-section">
