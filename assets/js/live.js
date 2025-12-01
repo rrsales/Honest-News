@@ -1,20 +1,21 @@
 // assets/js/live.js
+
 document.addEventListener("DOMContentLoaded", () => {
   const body = document.body;
   const slug = body.getAttribute("data-page") || "home";
 
-  // Flexible hero + header selection
+  // Flexible hero selection (works for home/support/contact, etc.)
   const hero =
     document.querySelector(".hero") ||
     document.querySelector(".hero-carousel") ||
     document.querySelector("[data-hero]");
 
+  // Your main header (support.html / index.html use .site-header)
   const header =
     document.querySelector("header.site-header") ||
-    document.querySelector("header.hn-header") ||
     document.querySelector("header");
 
-  // Where to render dynamic blocks on the page
+  // Where dynamic blocks render on each page
   const blocksTarget = document.querySelector("[data-blocks-target]");
 
   /* =============================================================
@@ -28,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
       Date.now();
     const LOCAL = "site-data.json?cb=" + Date.now();
 
-    // Attempt LIVE GitHub
+    // Attempt RAW GitHub (fresh)
     try {
       const r = await fetch(RAW, { cache: "no-store" });
       if (r.ok) {
@@ -37,18 +38,13 @@ document.addEventListener("DOMContentLoaded", () => {
           "color:#22c55e"
         );
         return await r.json();
-      } else {
-        console.warn("RAW GitHub responded", r.status);
       }
     } catch (e) {
       console.warn("RAW GitHub failed → fallback to local", e);
     }
 
-    // Fallback to GitHub Pages copy
+    // Fallback: GitHub Pages copy
     const r2 = await fetch(LOCAL, { cache: "no-store" });
-    if (!r2.ok) {
-      throw new Error("Could not load site-data.json from RAW or LOCAL");
-    }
     console.log(
       "%cLoaded site-data.json from GitHub Pages copy",
       "color:#38bdf8"
@@ -57,84 +53,54 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =============================================================
-     Fetch + render site data
+     MAIN INIT
   ============================================================= */
   loadSiteData()
     .then((site) => {
-      if (!site || !site.pages || !Array.isArray(site.pages)) {
-        console.warn("site-data.json missing pages array");
+      if (!site || !Array.isArray(site.pages)) {
+        console.warn("site-data.json missing or invalid");
         return;
       }
 
-      // pick page by slug (data-page on <body>)
+      // Pick current page by slug (fallback to first page)
       let page = site.pages.find((p) => p.slug === slug);
       if (!page) page = site.pages[0];
 
-      const headerConfig = site.header || {
-        style: "apple",       // default style
-        mobileMenu: "slide-left"
-      };
-
-      applyTheme(page);
-      applyHeaderStyle(header, headerConfig);
+      applyTheme(body, page);
       buildMenu(site.menu || [], slug);
       applyHero(hero, header, page.hero || {});
       if (blocksTarget) renderBlocks(blocksTarget, page.blocks || []);
+
+      initHeaderScroll(header); // adds .scrolled when you scroll down
     })
     .catch((err) => {
-      console.error("live.js error while loading site-data:", err);
+      console.error("live.js error:", err);
     });
 
   /* =============================================================
      THEME
   ============================================================= */
-  function applyTheme(page) {
-    body.classList.remove("theme-light", "theme-dark");
-    if (page.theme === "light") body.classList.add("theme-light");
-    else body.classList.add("theme-dark");
-  }
+  function applyTheme(bodyEl, page) {
+    bodyEl.classList.remove("theme-light", "theme-dark");
 
-  /* =============================================================
-     HEADER STYLE ENGINE
-     style = apple | webflow | podbean | minimal | floating
-  ============================================================= */
-  function applyHeaderStyle(headerEl, headerConfig) {
-    if (!headerEl) return;
-
-    const style = (headerConfig && headerConfig.style) || "apple";
-
-    headerEl.classList.add("hn-header");
-    headerEl.classList.remove(
-      "hn-header--apple",
-      "hn-header--webflow",
-      "hn-header--podbean",
-      "hn-header--minimal",
-      "hn-header--floating"
-    );
-
-    headerEl.classList.add("hn-header--" + style);
-
-    // store for mobile.js to read if needed
-    document.body.dataset.mobileMenuStyle =
-      (headerConfig && headerConfig.mobileMenu) || "slide-left";
-
-    // Scroll shadow effect for .site-header
-    window.addEventListener("scroll", () => {
-      if (window.scrollY > 40) {
-        headerEl.classList.add("scrolled");
-      } else {
-        headerEl.classList.remove("scrolled");
-      }
-    });
+    if (page.theme === "light") {
+      bodyEl.classList.add("theme-light");
+    } else {
+      bodyEl.classList.add("theme-dark");
+    }
   }
 
   /* =============================================================
      MENU BUILDER (desktop + mobile)
+     Uses site.menu from site-data.json
   ============================================================= */
   function buildMenu(items, currentSlug) {
+    // Desktop menu (index/support/contact use either #nav-menu or #menuList)
     const desktopMenu =
       document.getElementById("nav-menu") ||
       document.getElementById("menuList");
+
+    // Mobile drawer menu
     const mobileMenu = document.getElementById("mobileNavMenu");
 
     if (!desktopMenu && !mobileMenu) return;
@@ -150,13 +116,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const isHomeFile =
           url === "index.html" &&
           (currentFile === "" || currentFile === "index.html");
+
         const isActive =
           currentFile === url || (isHomeSlug && isHomeFile);
 
         return `
           <li>
             <a href="${url}" class="${isActive ? "active" : ""}">
-              ${label}
+              ${escapeHtml(label)}
             </a>
           </li>
         `;
@@ -168,7 +135,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =============================================================
-     HERO SETUP
+     HERO SETUP (background, height, text, transparent header)
+     Driven by page.hero in site-data.json
   ============================================================= */
   function applyHero(heroEl, headerEl, h) {
     if (!heroEl) return;
@@ -205,25 +173,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     heroEl.style.height = height;
 
-    // Text content (live override)
+    // Text content (override static H1/P if hero config has values)
     const title = heroEl.querySelector("h1");
     const sub = heroEl.querySelector("p");
 
     if (title && h.overlay) title.textContent = h.overlay;
     if (sub && typeof h.sub === "string") sub.textContent = h.sub;
 
-    // Transparent header handling
+    // Transparent header handling (support.html / index.html style)
     if (headerEl) {
       if (h.transparentMenu) {
-        headerEl.classList.add("hn-header--transparent");
+        headerEl.classList.add("header--transparent");
         document.body.classList.add("has-transparent-header");
         document.body.classList.remove("has-solid-header");
-        heroEl.style.marginTop = "0";
       } else {
-        headerEl.classList.remove("hn-header--transparent");
+        headerEl.classList.remove("header--transparent");
         document.body.classList.remove("has-transparent-header");
         document.body.classList.add("has-solid-header");
-        heroEl.style.marginTop = "var(--hn-header-offset, 72px)";
       }
     }
 
@@ -251,7 +217,23 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =============================================================
-     BLOCK RENDERING
+     HEADER SCROLL EFFECT
+     Adds .scrolled to header.site-header like your old inline script
+  ============================================================= */
+  function initHeaderScroll(headerEl) {
+    if (!headerEl) return;
+
+    window.addEventListener("scroll", () => {
+      if (window.scrollY > 40) {
+        headerEl.classList.add("scrolled");
+      } else {
+        headerEl.classList.remove("scrolled");
+      }
+    });
+  }
+
+  /* =============================================================
+     BLOCK RENDERING (driven by page.blocks)
   ============================================================= */
   function renderBlocks(target, blocks) {
     if (!blocks || !blocks.length) {
@@ -288,7 +270,13 @@ document.addEventListener("DOMContentLoaded", () => {
         html += `
           <section class="block block-product">
             <div class="product-card">
-              ${b.image ? `<img src="${escapeHtml(b.image)}" class="product-image" />` : ""}
+              ${
+                b.image
+                  ? `<img src="${escapeHtml(
+                      b.image
+                    )}" class="product-image" />`
+                  : ""
+              }
               <div class="product-info">
                 <h3>${escapeHtml(b.title || "")}</h3>
                 <p>${escapeHtml(b.text || "")}</p>
@@ -332,6 +320,9 @@ document.addEventListener("DOMContentLoaded", () => {
     target.innerHTML = html;
   }
 
+  /* =============================================================
+     UTIL
+  ============================================================= */
   function escapeHtml(str) {
     return String(str || "")
       .replace(/&/g, "&amp;")
@@ -339,6 +330,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .replace(/>/g, "&gt;");
   }
 });
+
 
 
 
