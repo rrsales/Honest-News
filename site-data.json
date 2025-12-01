@@ -32,16 +32,10 @@
         "sub": "Everything You Need for Biblical Truth",
         "transparentMenu": true,
         "behavior": "parallax-medium",
-        "size": "small",
+        "size": "full",
         "customHeight": ""
       },
       "blocks": [
-        {
-          "type": "youtube",
-          "motion": "fade",
-          "title": "",
-          "videoId": ""
-        },
         {
           "type": "heading",
           "motion": "float",
