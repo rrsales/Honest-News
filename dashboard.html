@@ -1,23 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Honest News – Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<title>Honest News – Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- PROTECT DASHBOARD: only enter if logged in -->
-  <script>
-    if (localStorage.getItem("hn_logged") !== "yes") {
-      location.href = "admin.html";
-    }
-  </script>
+<!-- PROTECT DASHBOARD: only enter if logged in -->
+<script>
+  if (localStorage.getItem("hn_logged") !== "yes") {
+    location.href = "admin.html";
+  }
+</script>
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 
-  <!-- moved styles out of the HTML -->
-  <link rel="stylesheet" href="styles/dashboard.css">
+<!-- externalized dashboard styles -->
+<link rel="stylesheet" href="styles/dashboard.css">
 </head>
+<body>
 
+<div class="top-welcome">
+  <div class="top-left">
+    <span class="label">Honest News · Dashboard</span>
+    <span class="title">Welcome back, Joseph</span>
+  </div>
+  <div class="top-actions">
+    <span class="pill-badge">
+      <i class="fa-regular fa-circle-dot"></i>
+      Cloud save: Render & GitHub
+    </span>
+    <button class="logout-btn"
+            onclick="localStorage.removeItem('hn_logged');location.href='admin.html'">
+      <i class="fa-solid fa-right-from-bracket"></i> Log Out
+    </button>
+  </div>
+</div>
 
+<div class="main">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+
+    <!-- PAGES SECTION (closed by default) -->
+    <div class="sidebar-section">
+      <button class="sidebar-section-header" type="button" onclick="toggleSidebarSection('pages')">
+        <span class="label">Pages</span>
+        <i class="fa-solid fa-chevron-down sidebar-chevron rotated" id="pagesChevron"></i>
+      </button>
+      <div class="sidebar-section-body closed" id="pagesSection">
+        <div class="sidebar-inner" id="pages"></div>
+        <button class="btn secondary" style="width:100%;margin-top:8px;" onclick="newPage()">
+          + New Page
+        </button>
+      </div>
+    </div>
+
+    <!-- NAVIGATION SECTION (closed by default) -->
+    <div class="sidebar-section">
+      <button class="sidebar-section-header" type="button" onclick="toggleSidebarSection('nav')">
+        <span class="label">Navigation</span>
+        <i class="fa-solid fa-chevron-down sidebar-chevron rotated" id="navChevron"></i>
+      </button>
+      <div class="sidebar-section-body closed" id="navSection">
+        <p class="field-hint" style="margin-top:4px;">
+          One per line: <code>Title | URL</code>
+        </p>
+        <textarea id="menuRaw" class="textarea-small" oninput="menuFromRaw(this.value)"></textarea>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- PREVIEW ONLY -->
+  <section class="content">
+    <div id="previewCard">
+      <div id="previewToolbar">
+        <div id="previewTitle">
+          <span id="previewPageTitle">No page selected</span>
+          <span class="slug" id="previewPageSlug"></span>
+        </div>
+        <div class="device-toggle-group">
+          <button class="device-btn active" data-device="desktop"><i class="fa-solid fa-display"></i></button>
+          <button class="device-btn" data-device="tablet"><i class="fa-solid fa-tablet-screen-button"></i></button>
+          <button class="device-btn" data-device="mobile"><i class="fa-solid fa-mobile-screen"></i></button>
+        </div>
+      </div>
+
+      <div id="previewInnerWrap">
+        <div id="previewFrame" class="desktop">
+          <div class="preview-wrap">
+            <div id="heroPreview">
+              <div id="heroPreviewOverlay"></div>
+              <div id="heroPreviewInner">
+                <h1>Pick a page on the left</h1>
+                <p>Then use the sliding panel to edit Page, Hero, and Blocks.</p>
+              </div>
+            </div>
+            <div id="blockPreview"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- RIGHT PANEL HANDLE + INSPECTOR -->
+<div id="panelHandle" title="Open inspector">◂</div>
+
+<div id="inspectorPanel">
+  <div id="panelHeader">
+    <div id="panelHeaderLeft">
+      <span class="title">Inspector</span>
+      <span class="sub" id="panelPageLabel">No page selected</span>
+    </div>
+    <div id="panelHeaderRight">
+      <span id="saveStatusRight" class="pill">Clean</span>
+      <button id="closePanelBtn">×</button>
+    </div>
+  </div>
+
+  <div id="inspectorTabs">
+    <button class="inspect-tab active" data-inspect="page">Page</button>
+    <button class="inspect-tab" data-inspect="hero">Hero</button>
+    <button class="inspect-tab" data-inspect="blocks">Blocks</button>
+    <button class="inspect-tab" data-inspect="site">Site</button>
+  </div>
+
+  <div id="inspectorBody"></div>
+
+  <div style="margin-top:10px;">
+    <button id="saveLocalBtn" class="btn primary" style="width:100%;margin-bottom:6px;">
+      <i class="fa-solid fa-cloud-arrow-up"></i> Save to Cloud
+    </button>
+    <button id="saveDraftBtn2" class="btn secondary" style="width:100%;margin-bottom:4px;">
+      Save Draft (this browser)
+    </button>
+    <button id="downloadBtn2" class="btn ghost" style="width:100%;margin-bottom:4px;">
+      Download JSON
+    </button>
+    <button id="backupBtn2" class="btn ghost" style="width:100%;margin-bottom:4px;">
+      Full backup (.zip)
+    </button>
+    <a href="index.html" target="_blank" class="btn ghost" style="width:100%;text-decoration:none;justify-content:center;">
+      View site ↗
+    </a>
+  </div>
+</div>
+
+<script>
+/* =======================
+   STATE
+======================= */
+let site = {
+  menu: [
+    { id:"home", label:"Home", url:"index.html", type:"link", showOn:"both", subItems:[] },
+    { id:"podcast", label:"Podcast", url:"podcast.html", type:"link", showOn:"both", subItems:[] },
+    { id:"shop", label:"Shop", url:"shop.html", type:"link", showOn:"both", subItems:[] },
+    {
+      id:"resources",
+      label:"Resources",
+      url:"#",
+      type:"mega",
+      showOn:"desktop",
+      subItems:[
+        { label:"Getting started", url:"getting-started.html", description:"How Honest News + podcast + YouTube fit together." },
+        { label:"For Pastors", url:"pastors.html", description:"Tools and workflows to preach, record, and publish." },
+        { label:"For Listeners", url:"listeners.html", description:"Where to listen, how to subscribe, how to support." }
+      ]
+    },
+    { id:"support", label:"Support", url:"support.html", type:"link", showOn:"both", subItems:[] },
+    { id:"contact", label:"Contact", url:"contact.html", type:"link", showOn:"both", subItems:[] }
+  ],
+  pages: [
+    {
+      title:"Home",
+      slug:"home",
+      theme:"dark",
+      hero:{
+        bg:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80",
+        overlay:"Honest News Network",
+        sub:"Everything You Need for Biblical Truth",
+        transparentMenu:false,
+        behavior:"parallax-medium",
+        size:"full",
+        customHeight:""
+      },
+      blocks:[]
+    },
+    {
+      title:"Podcast",
+      slug:"podcast",
+      theme:"dark",
+      hero:{
+        bg:"",
+        overlay:"Latest Episodes",
+        sub:"New episodes every Sunday",
+        transparentMenu:true,
+        behavior:"parallax-slow",
+        size:"full",
+        customHeight:""
+      },
+      blocks:[]
+    },
+    {
+      title:"Shop",
+      slug:"shop",
+      theme:"dark",
+      hero:{
+        bg:"",
+        overlay:"Recommended Resources",
+        sub:"Support your walk and support the ministry",
+        transparentMenu:true,
+        behavior:"still",
+        size:"medium",
+        customHeight:""
+      },
+      blocks:[]
+    },
+    {
+      title:"Support",
+      slug:"support",
+      theme:"dark",
+      hero:{
+        bg:"",
+        overlay:"Support Honest News",
+        sub:"Partner with the work of Biblical Truth",
+        transparentMenu:true,
+        behavior:"still",
+        size:"medium",
+        customHeight:""
+      },
+      blocks:[]
+    },
+    {
+      title:"Contact",
+      slug:"contact",
+      theme:"dark",
+      hero:{
+        bg:"",
+        overlay:"Contact",
+        sub:"Reach out with questions, prayer requests, or ideas.",
+        transparentMenu:false,
+        behavior:"still",
+        size:"medium",
+        customHeight:""
+      },
+      blocks:[]
+    }
+  ],
+  theme: {},
+  heroSlides: []
+};
+
+let current = null;
+let isDirty = false;
+let activeInspectorTab = "page";
+const DRAFT_KEY = "hn_cms_draft_v1";
+
+/* panel behavior: auto | manual | pinned | smart */
+let panelBehavior = localStorage.getItem("hn_panel_behavior") || "auto";
+
+const panel    = document.getElementById("inspectorPanel");
+const handle   = document.getElementById("panelHandle");
+const closeBtn = document.getElementById("closePanelBtn");
+const saveStatusRight = document.getElementById("saveStatusRight");
+
+/* Render Cloud endpoint */
+const SAVE_ENDPOINT = "https://honest-news.onrender.com/save";
+
+/* =======================
+   LOAD site-data.json
+======================= */
+(async function loadSiteData() {
+  try {
+    const res = await fetch("site-data.json?cache-bust=" + Date.now());
+    if (res.ok) {
+      const data = await res.json();
+      if (data && typeof data === "object") {
+        site = Object.assign({}, site, data);
+      }
+    }
+  } catch (e) {
+    console.warn("Could not load site-data.json, using defaults", e);
+  }
+  restoreDraftIfAny();
+  renderPages();
+  updatePreviewHeader();
+  renderPreview();
+  applyPanelBehavior();
+})();
+
+/* =======================
+   SAVE STATUS
+======================= */
+function markDirty(){
+  isDirty = true;
+  if (saveStatusRight){
+    saveStatusRight.textContent = "Unsaved changes";
+    saveStatusRight.classList.add("dirty");
+    saveStatusRight.classList.remove("saved");
+  }
+}
+function markSavedLocal(){
+  isDirty = false;
+  if (saveStatusRight){
+    saveStatusRight.textContent = "Saved to cloud";
+    saveStatusRight.classList.remove("dirty");
+    saveStatusRight.classList.add("saved");
+  }
+}
+
+/* =======================
+   LEFT ACCORDION LOGIC
+======================= */
+function toggleSidebarSection(which){
+  const body    = document.getElementById(which + "Section");
+  const chevron = document.getElementById(which + "Chevron");
+  if (!body) return;
+
+  const willClose = !body.classList.contains("closed");
+
+  // close all
+  document.querySelectorAll(".sidebar-section-body").forEach(el=>{
+    el.classList.add("closed");
+  });
+  document.querySelectorAll(".sidebar-chevron").forEach(el=>{
+    el.classList.add("rotated");
+  });
+
+  // reopen this one if it was previously closed
+  if (!willClose){
+    body.classList.remove("closed");
+    if (chevron) chevron.classList.remove("rotated");
+  }
+}
+
+function openSidebarSection(which){
+  const body    = document.getElementById(which + "Section");
+  const chevron = document.getElementById(which + "Chevron");
+  if (!body) return;
+  body.classList.remove("closed");
+  if (chevron) chevron.classList.remove("rotated");
+}
+
+/* =======================
+   PANEL BEHAVIOR + OPEN/CLOSE
+======================= */
+function isPanelOpen(){
+  return panel.classList.contains("open");
+}
+function openPanel(reason){
+  if (panelBehavior === "manual" && reason !== "manual") return;
+  panel.classList.add("open");
+  handle.style.display = "none";
+}
+function closePanel(reason){
+  if (panelBehavior === "pinned") return;
+  panel.classList.remove("open");
+  handle.style.display = "flex";
+}
+function togglePanelManual(){
+  if (isPanelOpen()) closePanel("manual");
+  else openPanel("manual");
+}
+function applyPanelBehavior(){
+  if (panelBehavior === "pinned") {
+    panel.classList.add("open");
+    handle.style.display = "none";
+  } else {
+    handle.style.display = isPanelOpen() ? "none" : "flex";
+  }
+}
+
+/* click handle to open manually */
+handle.addEventListener("click", ()=>togglePanelManual());
+closeBtn.addEventListener("click", ()=>closePanel("manual"));
+
+/* keyboard shortcut: Shift+P toggles panel */
+document.addEventListener("keydown", (e)=>{
+  if(e.shiftKey && e.key.toLowerCase()==="p"){
+    togglePanelManual();
+  }
+});
+
+/* =======================
+   SIDEBAR / PAGES
+======================= */
+function renderPages(){
+  const container = document.getElementById("pages");
+  if (!container) return;
+  container.innerHTML = (site.pages || []).map((p,i)=>`
+    <div class="page ${p===current?'active':''}">
+      <div class="page-main" onclick="selectPage(${i})">
+        <span class="title">${p.title || 'Untitled'}</span>
+        <span class="slug">${p.slug || ''}</span>
+      </div>
+      ${p.slug === 'home'
+        ? ''
+        : `<button class="page-delete-btn" title="Delete page"
+             onclick="event.stopPropagation();deletePage(${i});">
+             <i class="fa-regular fa-trash-can"></i>
+           </button>`}
+    </div>
+  `).join("");
+  rawFromMenu();
+}
+
+function newPage(){
+  const t = prompt("Page title?");
+  if (!t) return;
+  const slug = t.toLowerCase().replace(/\s+/g,"-");
+  if (!site.pages) site.pages = [];
+  site.pages.push({
+    title:t,
+    slug,
+    theme:"dark",
+    hero:{
+      bg:"",
+      overlay:t,
+      sub:"",
+      transparentMenu:false,
+      behavior:"still",
+      size:"full",
+      customHeight:""
+    },
+    blocks:[]
+  });
+  markDirty();
+  renderPages();
+  openSidebarSection("pages");
+}
+
+function deletePage(i){
+  const p = site.pages[i];
+  if (!p) return;
+  if (p.slug === "home"){
+    alert("You cannot delete the Home page.");
+    return;
+  }
+  if (!confirm(`Delete page "${p.title || p.slug}"? This cannot be undone (except via backup).`)) return;
+  site.pages.splice(i,1);
+  if (current === p){
+    current = site.pages[0] || null;
+  }
+  markDirty();
+  renderPages();
+  updatePreviewHeader();
+  renderPreview();
+  renderInspectorTab();
+}
+
+/* =======================
+   MENU EDITOR
+======================= */
+function rawFromMenu(){
+  const ta = document.getElementById("menuRaw");
+  if(!ta) return;
+  const menuArr = site.menu || [];
+  ta.value = menuArr.map(m=>`${m.label || m.title || 'Item'} | ${m.url || "#"}`).join("\n");
+}
+
+function menuFromRaw(text){
+  const lines = text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+  site.menu = lines.map((l,idx)=>{
+    const [title,url] = l.split("|").map(s=>(s||"").trim());
+    return {
+      id: (title || "item-"+idx).toLowerCase().replace(/\s+/g,"-"),
+      label: title || "Item",
+      url: url || "#",
+      type:"link",
+      showOn:"both",
+      subItems:[]
+    };
+  });
+  markDirty();
+}
+
+/* =======================
+   SELECT PAGE
+======================= */
+function selectPage(i){
+  current = site.pages[i];
+  renderPages();
+  updatePreviewHeader();
+  renderPreview();
+  renderInspectorTab();
+  if (panelBehavior === "auto" || panelBehavior === "pinned" || panelBehavior === "smart"){
+    openPanel("auto");
+  }
+}
+
+/* =======================
+   PREVIEW
+======================= */
+function updatePreviewHeader(){
+  const tEl = document.getElementById("previewPageTitle");
+  const sEl = document.getElementById("previewPageSlug");
+  const pl  = document.getElementById("panelPageLabel");
+  if (!current){
+    if (tEl) tEl.textContent = "No page selected";
+    if (sEl) sEl.textContent = "";
+    if (pl)  pl.textContent  = "No page selected";
+    return;
+  }
+  if (tEl) tEl.textContent = current.title || "Untitled";
+  if (sEl) sEl.textContent = current.slug || "";
+  if (pl)  pl.textContent  = current.title + (current.slug ? ` (${current.slug})` : "");
+}
+
+function renderPreview(){
+  const h = current && current.hero ? current.hero : {
+    overlay:"Pick a page",
+    sub:"Use the left bar to choose a page"
+  };
+  const heroDiv = document.getElementById("heroPreview");
+  const titleEl = document.getElementById("heroPreviewInner").querySelector("h1");
+  const subEl   = document.getElementById("heroPreviewInner").querySelector("p");
+
+  titleEl.textContent = h.overlay || "";
+  subEl.textContent   = h.sub || "";
+
+  if (h.bg){
+    heroDiv.style.backgroundImage = `url('${h.bg}')`;
+  } else {
+    heroDiv.style.backgroundImage = "none";
+    heroDiv.style.backgroundColor = "#020617";
+  }
+
+  let height = "60vh";
+  const size = h.size || "full";
+  if(size==="small")  height="40vh";
+  else if(size==="medium") height="60vh";
+  else if(size==="large")  height="80vh";
+  else if(size==="full")   height="100vh";
+  else if(size==="custom" && h.customHeight) height = h.customHeight;
+  heroDiv.style.height = height;
+
+  const blocksEl = document.getElementById("blockPreview");
+  const blocks = (current && current.blocks) ? current.blocks : [];
+  let html = "";
+  blocks.forEach(b=>{
+    if(b.type==="heading"){
+      html += `<h2 style="margin-top:1rem;color:#e5e7eb;font-size:1.1rem;">${escapeHtml(b.content || "")}</h2>`;
+    } else if(b.type==="paragraph"){
+      const text = (b.content || "").replace(/\n/g,"<br>");
+      html += `<p style="margin-top:.4rem;color:#9ca3af;font-size:.9rem;">${text}</p>`;
+    } else if(b.type==="image" && b.content){
+      html += `<img src="${escapeHtml(b.content)}" style="max-width:100%;border-radius:12px;margin:1rem 0;">`;
+    } else if(b.type==="button"){
+      html += `<a href="${escapeHtml(b.url || '#')}"
+        style="display:inline-block;margin:0.7rem 0;padding:0.6rem 1.6rem;border-radius:999px;background:#22c55e;color:#022c22;text-decoration:none;font-weight:600;font-size:.88rem;">
+        ${escapeHtml(b.text || "Learn more")}
+      </a>`;
+    } else if(b.type==="product"){
+      html += `
+        <div style="background:#020617;border-radius:14px;margin:0.8rem 0;padding:0.9rem;display:flex;gap:0.9rem;align-items:flex-start;border:1px solid rgba(55,65,81,.8);">
+          ${b.image ? `<img src="${escapeHtml(b.image)}" style="width:110px;border-radius:10px;object-fit:cover;">` : ""}
+          <div>
+            <h3 style="margin:0 0 .3rem;font-size:.96rem;color:#e5e7eb;">${escapeHtml(b.title || "")}</h3>
+            <p style="margin:0 0 .5rem;font-size:.8rem;color:#9ca3af;">${escapeHtml(b.text || "")}</p>
+            ${b.url ? `<a href="${escapeHtml(b.url)}" target="_blank" rel="noopener noreferrer"
+                style="display:inline-block;margin-top:0.2rem;padding:0.45rem 1.4rem;border-radius:999px;background:#22c55e;color:#022c22;font-size:.8rem;font-weight:600;text-decoration:none;">
+                Buy on Amazon
+              </a>` : ""}
+          </div>
+        </div>
+      `;
+    } else if(b.type==="podcast" && b.embed){
+      html += `
+        <div style="margin:1.2rem 0;">
+          <h3 style="margin:0 0 .3rem;color:#e5e7eb;">${escapeHtml(b.title || "")}</h3>
+          <iframe src="${escapeHtml(b.embed)}"
+            style="width:100%;height:150px;border:none;border-radius:10px;background:#0f172a;" allow="autoplay"></iframe>
+        </div>
+      `;
+    } else if(b.type==="youtube" && b.videoId){
+      let id = b.videoId.trim();
+      const m = id.match(/v=([^&]+)/);
+      if(m) id = m[1];
+      html += `
+        <div style="margin:1.2rem 0;">
+          <h3 style="margin:0 0 .3rem;color:#e5e7eb;">${escapeHtml(b.title || "")}</h3>
+          <div style="position:relative;padding-bottom:56.25%;height:0;border-radius:12px;overflow:hidden;">
+            <iframe src="https://www.youtube.com/embed/${escapeHtml(id)}"
+              style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"
+              allowfullscreen></iframe>
+          </div>
+        </div>
+      `;
+    }
+  });
+  blocksEl.innerHTML = html;
+}
+
+/* DEVICE PREVIEW */
+const previewFrame = document.getElementById("previewFrame");
+document.querySelectorAll(".device-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    const mode = btn.dataset.device;
+    previewFrame.classList.remove("desktop","tablet","mobile");
+    previewFrame.classList.add(mode);
+    document.querySelectorAll(".device-btn").forEach(b=>{
+      b.classList.toggle("active", b===btn);
+    });
+  });
+});
+
+/* =======================
+   INSPECTOR TABS
+======================= */
+document.querySelectorAll(".inspect-tab").forEach(tab=>{
+  tab.addEventListener("click", ()=>{
+    activeInspectorTab = tab.dataset.inspect;
+    document.querySelectorAll(".inspect-tab").forEach(t=>{
+      t.classList.toggle("active", t===tab);
+    });
+    renderInspectorTab();
+    if (panelBehavior === "auto" || panelBehavior === "pinned" || panelBehavior === "smart"){
+      openPanel("auto");
+    }
+  });
+});
+
+function renderInspectorTab(){
+  const body = document.getElementById("inspectorBody");
+  if (!current && activeInspectorTab!=="site"){
+    body.innerHTML = `<p style="color:#9ca3af;">Select a page on the left to edit.</p>`;
+    return;
+  }
+  if (activeInspectorTab === "page"){
+    body.innerHTML = renderPageTabHtml(current);
+  } else if (activeInspectorTab === "hero"){
+    body.innerHTML = renderHeroTabHtml(current);
+  } else if (activeInspectorTab === "blocks"){
+    body.innerHTML = renderBlocksTabHtml(current);
+  } else {
+    body.innerHTML = renderSiteTabHtml();
+    wirePanelBehaviorRadios();
+  }
+}
+
+/* PAGE TAB */
+function renderPageTabHtml(c){
+  const themeLight = c.theme === "light";
+  return `
+    <div class="section">
+      <div class="field-group">
+        <div class="field-label">Title</div>
+        <input type="text" value="${c.title || ''}"
+          onchange="current.title=this.value;markDirty();renderPages();updatePreviewHeader();">
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Slug</div>
+        <input type="text" value="${c.slug || ''}"
+          placeholder="home, podcast, shop..."
+          onchange="current.slug=this.value;markDirty();renderPages();updatePreviewHeader();">
+        <div class="field-hint">
+          Used by <code>data-page="slug"</code> in your HTML &lt;body&gt;.
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Theme</div>
+        <label class="inline">
+          <input type="radio" name="themeRadio" value="light" ${themeLight?'checked':''}
+            onchange="current.theme='light';markDirty();">
+          Light
+        </label>
+        <label class="inline">
+          <input type="radio" name="themeRadio" value="dark" ${!themeLight?'checked':''}
+            onchange="current.theme='dark';markDirty();">
+          Dark
+        </label>
+      </div>
+    </div>
+  `;
+}
+
+/* HERO TAB */
+function renderHeroTabHtml(c){
+  const h = c.hero || {};
+  const size = h.size || "full";
+  const behavior = h.behavior || "still";
+
+  return `
+    <div class="section">
+      <div class="field-group">
+        <div class="field-label">Background image URL</div>
+        <input type="url" value="${h.bg || ''}" placeholder="https://..."
+          onchange="current.hero.bg=this.value;markDirty();renderPreview();">
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Main title</div>
+        <input type="text" value="${h.overlay || ''}" placeholder="Main hero title"
+          onchange="current.hero.overlay=this.value;markDirty();renderPreview();">
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Subtitle</div>
+        <input type="text" value="${h.sub || ''}" placeholder="Optional subtitle"
+          onchange="current.hero.sub=this.value;markDirty();renderPreview();">
+      </div>
+
+      <div class="field-group">
+        <label class="inline">
+          <input type="checkbox" ${h.transparentMenu ? "checked" : "" }
+            onchange="current.hero.transparentMenu=this.checked;markDirty();">
+          Transparent header on this page
+        </label>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Hero behavior</div>
+        <select onchange="current.hero.behavior=this.value;markDirty();">
+          <option value="still" ${behavior==='still'?'selected':''}>Still image</option>
+          <option value="parallax-slow" ${behavior==='parallax-slow'?'selected':''}>Parallax – slow</option>
+          <option value="parallax-medium" ${behavior==='parallax-medium'?'selected':''}>Parallax – medium</option>
+          <option value="float-up" ${behavior==='float-up'?'selected':''}>Float up</option>
+        </select>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Hero height</div>
+        <label class="inline">
+          <input type="radio" name="heroSize" value="small" ${size==="small"?'checked':''}
+            onchange="setHeroSize('small')">
+          Small (≈40vh)
+        </label><br>
+        <label class="inline">
+          <input type="radio" name="heroSize" value="medium" ${size==="medium"?'checked':''}
+            onchange="setHeroSize('medium')">
+          Medium (≈60vh)
+        </label><br>
+        <label class="inline">
+          <input type="radio" name="heroSize" value="large" ${size==="large"?'checked':''}
+            onchange="setHeroSize('large')">
+          Large (≈80vh)
+        </label><br>
+        <label class="inline">
+          <input type="radio" name="heroSize" value="full" ${size==="full"?'checked':''}
+            onchange="setHeroSize('full')">
+          Fullscreen (100vh)
+        </label><br>
+        <label class="inline">
+          <input type="radio" name="heroSize" value="custom" ${size==="custom"?'checked':''}
+            onchange="setHeroSize('custom')">
+          Custom:
+        </label>
+        <input type="text" value="${h.customHeight || ''}" placeholder="e.g. 520px or 80vh"
+          onchange="setHeroCustom(this.value)">
+        <div class="field-hint">Custom height lets you match Podbean-style heroes exactly.</div>
+      </div>
+    </div>
+  `;
+}
+
+function setHeroSize(size){
+  if (!current.hero) current.hero = {};
+  current.hero.size = size;
+  markDirty();
+  renderPreview();
+}
+function setHeroCustom(val){
+  if (!current.hero) current.hero = {};
+  current.hero.size = "custom";
+  current.hero.customHeight = val.trim();
+  markDirty();
+  renderPreview();
+}
+
+/* BLOCKS TAB */
+function renderBlocksTabHtml(c){
+  const blocks = c.blocks || [];
+  let html = `
+    <div class="panelSection">
+      <div class="panelLabel">Add blocks</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        <button class="btn secondary" type="button" onclick="addBlock('heading')">+ Heading</button>
+        <button class="btn secondary" type="button" onclick="addBlock('paragraph')">+ Paragraph</button>
+        <button class="btn secondary" type="button" onclick="addBlock('image')">+ Image</button>
+        <button class="btn secondary" type="button" onclick="addBlock('button')">+ Button</button>
+        <button class="btn secondary" type="button" onclick="addBlock('product')">+ Amazon product</button>
+        <button class="btn secondary" type="button" onclick="addBlock('podcast')">+ Podcast</button>
+        <button class="btn secondary" type="button" onclick="addBlock('youtube')">+ YouTube</button>
+      </div>
+    </div>
+    <div class="panelSection">
+  `;
+  blocks.forEach((b,i)=>{
+    const motion = b.motion || "fade";
+    html += `
+      <div class="block">
+        <div class="block-header-line">
+          <span class="block-type">${b.type.toUpperCase()}</span>
+          <span>
+            Motion:
+            <select class="motion-select"
+              onchange="current.blocks[${i}].motion=this.value;markDirty();renderPreview();">
+              <option value="none"  ${motion==='none'?'selected':''}>None</option>
+              <option value="fade"  ${motion==='fade'?'selected':''}>Fade</option>
+              <option value="float" ${motion==='float'?'selected':''}>Float</option>
+              <option value="slide" ${motion==='slide'?'selected':''}>Slide</option>
+            </select>
+          </span>
+        </div>
+        ${renderBlockFields(b,i)}
+        <div class="tools">
+          <button onclick="moveBlock(${i},-1)">↑</button>
+          <button onclick="moveBlock(${i},1)">↓</button>
+          <button onclick="removeBlock(${i})">×</button>
+        </div>
+      </div>
+    `;
+  });
+  html += `</div>`;
+  return html;
+}
+
+function renderBlockFields(b,i){
+  if (b.type==="heading"){
+    return `
+      <div class="field-group">
+        <div class="field-label">Text</div>
+        <input type="text" value="${b.content || ''}"
+          onchange="current.blocks[${i}].content=this.value;markDirty();renderPreview();">
+      </div>
+    `;
+  }
+  if (b.type==="paragraph"){
+    return `
+      <div class="field-group">
+        <div class="field-label">Text</div>
+        <textarea rows="4"
+          onchange="current.blocks[${i}].content=this.value;markDirty();renderPreview();">${b.content || ''}</textarea>
+      </div>
+    `;
+  }
+  if (b.type==="image"){
+    const mode = b.mode==="upload" ? "upload" : "url";
+    return `
+      <div class="field-group">
+        <div class="field-label">Image source</div>
+        <select onchange="current.blocks[${i}].mode=this.value;markDirty();renderInspectorTab();">
+          <option value="url" ${mode==='url'?'selected':''}>URL</option>
+          <option value="upload" ${mode==='upload'?'selected':''}>Upload</option>
+        </select>
+      </div>
+      ${
+        mode==="upload"
+        ? `<input type="file" accept="image/*" onchange="handleImageUpload(event,${i})">`
+        : `
+          <div class="field-group">
+            <div class="field-label">Image URL</div>
+            <input type="url" value="${b.content || ''}"
+              onchange="current.blocks[${i}].content=this.value;markDirty();renderPreview();">
+          </div>`
+      }
+    `;
+  }
+  if (b.type==="button"){
+    return `
+      <div class="field-group">
+        <div class="field-label">Button text</div>
+        <input type="text" value="${b.text || ''}"
+          onchange="current.blocks[${i}].text=this.value;markDirty();renderPreview();">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Button URL</div>
+        <input type="url" value="${b.url || ''}"
+          onchange="current.blocks[${i}].url=this.value;markDirty();renderPreview();">
+      </div>
+    `;
+  }
+  if (b.type==="product"){
+    return `
+      <div class="field-group">
+        <div class="field-label">Product title</div>
+        <input type="text" value="${b.title || ''}"
+          onchange="current.blocks[${i}].title=this.value;markDirty();renderPreview();">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Description</div>
+        <textarea rows="3"
+          onchange="current.blocks[${i}].text=this.value;markDirty();renderPreview();">${b.text || ''}</textarea>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Image URL</div>
+        <input type="url" value="${b.image || ''}"
+          onchange="current.blocks[${i}].image=this.value;markDirty();renderPreview();">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Amazon affiliate URL</div>
+        <input type="url" value="${b.url || ''}"
+          onchange="current.blocks[${i}].url=this.value;markDirty();renderPreview();">
+      </div>
+    `;
+  }
+  if (b.type==="podcast"){
+    return `
+      <div class="field-group">
+        <div class="field-label">Episode title</div>
+        <input type="text" value="${b.title || ''}"
+          onchange="current.blocks[${i}].title=this.value;markDirty();renderPreview();">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Podbean embed URL or iframe src</div>
+        <textarea rows="3"
+          onchange="current.blocks[${i}].embed=this.value;markDirty();renderPreview();">${b.embed || ''}</textarea>
+      </div>
+    `;
+  }
+  if (b.type==="youtube"){
+    return `
+      <div class="field-group">
+        <div class="field-label">Video title</div>
+        <input type="text" value="${b.title || ''}"
+          onchange="current.blocks[${i}].title=this.value;markDirty();renderPreview();">
+      </div>
+      <div class="field-group">
+        <div class="field-label">YouTube URL or ID</div>
+        <input type="text" value="${b.videoId || ''}"
+          onchange="current.blocks[${i}].videoId=this.value;markDirty();renderPreview();">
+      </div>
+    `;
+  }
+  return "";
+}
+
+function addBlock(type){
+  if (!current.blocks) current.blocks = [];
+  const b = {type, motion:"fade"};
+  if(type==="heading")   b.content="New heading";
+  if(type==="paragraph") b.content="Your text here...";
+  if(type==="image"){    b.mode="url"; b.content=""; }
+  if(type==="button"){   b.text="Learn more"; b.url="#"; }
+  if(type==="product"){  b.title="Product title"; b.text="Short description"; b.image=""; b.url=""; }
+  if(type==="podcast"){  b.title="Episode title"; b.embed=""; }
+  if(type==="youtube"){  b.title="Video title";   b.videoId=""; }
+  current.blocks.push(b);
+  markDirty();
+  renderInspectorTab();
+  renderPreview();
+}
+
+function moveBlock(i,d){
+  const arr = current.blocks;
+  const item = arr.splice(i,1)[0];
+  let newIndex = i + d;
+  if (newIndex < 0) newIndex = 0;
+  if (newIndex > arr.length) newIndex = arr.length;
+  arr.splice(newIndex,0,item);
+  markDirty();
+  renderInspectorTab();
+  renderPreview();
+}
+function removeBlock(i){
+  current.blocks.splice(i,1);
+  markDirty();
+  renderInspectorTab();
+  renderPreview();
+}
+
+function handleImageUpload(e,index){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    current.blocks[index].content = reader.result;
+    markDirty();
+    renderPreview();
+  };
+  reader.readAsDataURL(file);
+}
+
+/* =======================
+   UTIL
+======================= */
+function escapeHtml(str){
+  return String(str || "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;");
+}
+
+/* =======================
+   DRAFT SAVE
+======================= */
+function saveDraft(){
+  try{
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(site));
+    markSavedLocal();
+  } catch(e){
+    alert("Could not save draft locally.");
+  }
+}
+function restoreDraftIfAny(){
+  try{
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if(!raw) return;
+    const parsed = JSON.parse(raw);
+    if(parsed && typeof parsed === "object") {
+      site = Object.assign({}, site, parsed);
+    }
+  } catch(e){
+    console.warn("No valid draft to restore");
+  }
+}
+
+/* =======================
+   DOWNLOAD / BACKUP
+======================= */
+function downloadJson(){
+  const blob = new Blob([JSON.stringify(site,null,2)],{type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "site-data.json";
+  a.click();
+}
+
+async function backupAll(){
+  const zip = new JSZip();
+  zip.file("site-data.json", JSON.stringify(site,null,2));
+
+  const files = [
+    "index.html",
+    "podcast.html",
+    "shop.html",
+    "contact.html",
+    "support.html",
+    "admin.html",
+    "dashboard.html",
+    "assets/js/live.js"
+  ];
+
+  for(const f of files){
+    try{
+      const res = await fetch(f,{cache:"no-store"});
+      if(res.ok){
+        const text = await res.text();
+        zip.file(f,text);
+      }
+    }catch(e){
+      console.warn("Could not add to backup:", f);
+    }
+  }
+
+  const blob = await zip.generateAsync({type:"blob"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "honest-news-full-backup.zip";
+  a.click();
+}
+
+/* =======================
+   CLOUD SAVE (Render → GitHub)
+======================= */
+document.getElementById("saveLocalBtn").addEventListener("click", saveToCloud);
+
+async function saveToCloud(){
+  if(!confirm("Save your changes to GitHub via Honest News Cloud CMS (Render)?")) return;
+
+  try{
+    const res = await fetch(SAVE_ENDPOINT,{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify(site)
+    });
+
+    const data = await res.json().catch(()=> ({}));
+
+    if(!res.ok || !data.ok){
+      throw new Error(data.error || ("HTTP " + res.status));
+    }
+
+    markSavedLocal();
+    alert("✔ Saved to cloud.\nRender → GitHub site-data.json updated.");
+
+  }catch(e){
+    console.error(e);
+    alert("❌ Save failed.\n" + e.message);
+  }
+}
+
+/* mirror backup buttons */
+document.getElementById("saveDraftBtn2").addEventListener("click", saveDraft);
+document.getElementById("downloadBtn2").addEventListener("click", downloadJson);
+document.getElementById("backupBtn2").addEventListener("click", backupAll);
+
+/* =======================
+   SITE TAB (PANEL BEHAVIOR)
+======================= */
+function renderSiteTabHtml(){
+  return `
+    <div class="panelSection">
+      <div class="panelLabel">Panel behavior</div>
+      <label class="inline" style="margin-bottom:4px;display:flex;">
+        <input type="radio" name="panelBehavior" value="auto" ${panelBehavior==='auto'?'checked':''}>
+        <span>Auto-open when editing</span>
+      </label><br>
+      <label class="inline" style="margin-bottom:4px;display:flex;">
+        <input type="radio" name="panelBehavior" value="manual" ${panelBehavior==='manual'?'checked':''}>
+        <span>Manual (use handle / Shift+P)</span>
+      </label><br>
+      <label class="inline" style="margin-bottom:4px;display:flex;">
+        <input type="radio" name="panelBehavior" value="pinned" ${panelBehavior==='pinned'?'checked':''}>
+        <span>Pinned open</span>
+      </label><br>
+      <label class="inline" style="margin-bottom:4px;display:flex;">
+        <input type="radio" name="panelBehavior" value="smart" ${panelBehavior==='smart'?'checked':''}>
+        <span>Smart (auto like Webflow)</span>
+      </label>
+      <p class="field-hint" style="margin-top:6px;">
+        Your choice is saved per browser. “Smart” behaves like auto-open for now,
+        but we can later hook it to more advanced logic.
+      </p>
+    </div>
+    <div class="panelSection">
+      <div class="panelLabel">Data & safety</div>
+      <p class="field-hint">
+        • “Save to Cloud” sends <code>site-data.json</code> to your Honest-News repo via Render (GitHub API).<br>
+        • Drafts stay only in this browser’s local storage.<br>
+        • Use GitHub Desktop to Commit & Push when you’re ready to publish.
+      </p>
+    </div>
+  `;
+}
+
+function wirePanelBehaviorRadios(){
+  document.querySelectorAll('input[name="panelBehavior"]').forEach(r=>{
+    r.addEventListener("change", ()=>{
+      panelBehavior = r.value;
+      localStorage.setItem("hn_panel_behavior", panelBehavior);
+      applyPanelBehavior();
+    });
+  });
+}
+
+/* initial inspector content */
+renderInspectorTab(); // both sidebar sections stay closed on load
+</script>
+
+</body>
+</html>
 
 
 
