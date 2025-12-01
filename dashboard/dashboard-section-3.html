@@ -1,0 +1,59 @@
+/* =========================================
+   SECTION 3: SAVE STATUS + PANEL (RIGHT)
+   ========================================= */
+
+function markDirty(){
+  isDirty = true;
+  if (saveStatusRight){
+    saveStatusRight.textContent = "Unsaved changes";
+    saveStatusRight.classList.add("dirty");
+    saveStatusRight.classList.remove("saved");
+  }
+}
+function markSavedLocal(){
+  isDirty = false;
+  if (saveStatusRight){
+    saveStatusRight.textContent = "Saved to cloud";
+    saveStatusRight.classList.remove("dirty");
+    saveStatusRight.classList.add("saved");
+  }
+}
+
+function isPanelOpen(){
+  return panel.classList.contains("open");
+}
+function openPanel(reason){
+  if (panelBehavior === "manual" && reason !== "manual") {
+    return; // respect manual mode
+  }
+  panel.classList.add("open");
+  handle.style.display = "none";
+}
+function closePanel(reason){
+  if (panelBehavior === "pinned") {
+    return; // pinned cannot close
+  }
+  panel.classList.remove("open");
+  handle.style.display = "flex";
+}
+function togglePanelManual(){
+  if (isPanelOpen()) closePanel("manual");
+  else openPanel("manual");
+}
+function applyPanelBehavior(){
+  if (panelBehavior === "pinned") {
+    panel.classList.add("open");
+    handle.style.display = "none";
+  } else {
+    handle.style.display = isPanelOpen() ? "none" : "flex";
+  }
+}
+
+/* handle + close button + keyboard */
+handle.addEventListener("click", ()=>togglePanelManual());
+closeBtn.addEventListener("click", ()=>closePanel("manual"));
+document.addEventListener("keydown", (e)=>{
+  if(e.shiftKey && e.key.toLowerCase()==="p"){
+    togglePanelManual();
+  }
+});
