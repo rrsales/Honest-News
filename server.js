@@ -223,3 +223,7 @@ server.listen(PORT, () => {
   console.log("File:", DATA_FILE_PATH);
   console.log("=======================================");
 });
+// --- KEEP ALIVE PING ENDPOINT ---
+app.get("/ping", (req, res) => {
+  res.json({ ok: true, time: Date.now() });
+});
