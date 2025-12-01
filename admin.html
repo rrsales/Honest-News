@@ -14,6 +14,67 @@
     justify-content:center;
     color:#fff;
     font-family:system-ui,sans-serif
+    <!-- PAGE LIST CONTAINER -->
+<section id="hn-admin-pages-panel">
+  <h2>Pages</h2>
+  <button id="hn-add-page-btn">+ Add Page</button>
+  <ul id="hn-page-list"></ul>
+</section>
+
+<!-- HERO SETTINGS CONTAINER -->
+<section id="hn-admin-hero-panel">
+  <h2>Hero Settings</h2>
+  <div>Current page: <span id="hn-current-page-label">None</span></div>
+
+  <label>
+    Eyebrow
+    <input type="text" id="hn-hero-eyebrow">
+  </label>
+
+  <label>
+    Title
+    <input type="text" id="hn-hero-title">
+  </label>
+
+  <label>
+    Subtitle
+    <textarea id="hn-hero-subtitle"></textarea>
+  </label>
+
+  <label>
+    Style
+    <select id="hn-hero-style">
+      <option value="simple">Simple</option>
+      <option value="apple">Apple</option>
+    </select>
+  </label>
+
+  <label>
+    <input type="checkbox" id="hn-hero-transparent">
+    Transparent Header
+  </label>
+
+  <label>
+    Background Image URL
+    <input type="text" id="hn-hero-bg">
+  </label>
+
+  <button id="hn-hero-save-btn">Save Hero</button>
+</section>
+
+<!-- BLOCKS CONTAINER -->
+<section id="hn-admin-blocks-panel">
+  <h2>Blocks</h2>
+  <button id="hn-add-text-block-btn">+ Add Text Block</button>
+  <ul id="hn-blocks-list"></ul>
+</section>
+
+<!-- EXPORT CONTAINER -->
+<section id="hn-admin-export-panel">
+  <h2>Export Changes</h2>
+  <button id="hn-export-json-btn">Download site-data.json</button>
+  <button id="hn-clear-local-btn">Clear Local Draft</button>
+</section>
   }
   .login-box{
     background:#fff;
