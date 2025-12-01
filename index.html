@@ -5,29 +5,40 @@
   <title>Honest News – Biblical Truth</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Existing main styles -->
+  <!-- Base Styles -->
   <link rel="stylesheet" href="assets/css/styles.css">
-  <!-- New header + mobile styles -->
+
+  <!-- Mobile Styles -->
   <link rel="stylesheet" href="assets/css/mobile/mobile.css">
+
+  <!-- Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
+
 <body data-page="home" class="theme-dark">
 
-  <!-- HEADER -->
+  <!-- ============================
+       HEADER (Apple / Podbean Style)
+  ============================= -->
   <header class="hn-header hn-header--apple">
     <div class="hn-header-inner">
       <a href="index.html" class="hn-logo">Honest News</a>
 
+      <!-- Desktop Menu -->
       <nav class="hn-nav desktop-only">
         <ul id="nav-menu"></ul>
       </nav>
 
+      <!-- Mobile Menu Toggle -->
       <button class="hn-mobile-toggle" id="mobileMenuToggle" aria-label="Open menu">
         <span></span>
       </button>
     </div>
   </header>
-  <!-- MOBILE MENU -->
+
+  <!-- ============================
+        MOBILE SLIDE-IN MENU
+  ============================= -->
   <nav class="hn-mobile-menu" id="mobileMenu" aria-label="Mobile navigation">
     <div class="hn-mobile-menu-header">
       <span class="hn-mobile-menu-title">Menu</span>
@@ -36,7 +47,9 @@
     <ul id="mobileNavMenu"></ul>
   </nav>
 
-  <!-- HERO (live.js will override text + image from site-data.json) -->
+  <!-- ============================
+        HERO AREA (Dynamic: live.js)
+  ============================= -->
   <section class="hero" data-hero>
     <div class="hero-overlay-soft"></div>
     <div class="hero-inner">
@@ -45,30 +58,39 @@
     </div>
   </section>
 
-  <!-- MAIN CONTENT -->
+  <!-- ============================
+        MAIN CONTENT
+  ============================= -->
   <main>
     <div class="page-content">
-      <!-- live.js will inject blocks here -->
       <div data-blocks-target></div>
     </div>
   </main>
 
+  <!-- ============================
+        FOOTER
+  ============================= -->
   <footer class="site-footer">
     <p>&copy; <span id="year"></span> Honest News. All rights reserved.</p>
   </footer>
 
   <script>
-    // simple year helper
-    document.addEventListener("DOMContentLoaded", function(){
-      var y = document.getElementById("year");
+    document.addEventListener("DOMContentLoaded", function() {
+      const y = document.getElementById("year");
       if (y) y.textContent = new Date().getFullYear();
     });
   </script>
- <script src="assets/js/live.js"></script>
-<script src="assets/js/mobile/mobile.js"></script>
+
+  <!-- ============================
+        JAVASCRIPT (Correct Order)
+        1) live.js (loads site-data.json)
+        2) mobile.js (menu)
+        3) mobile.hero.js (mobile hero effects)
+  ============================= -->
+
+  <script src="assets/js/live.js"></script>
+  <script src="assets/js/mobile/mobile.js"></script>
+  <script src="assets/js/mobile/mobile.hero.js"></script>
 
 </body>
 </html>
-
-
-
