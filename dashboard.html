@@ -158,20 +158,27 @@
     padding-right:4px;
   }
 
-  /* LEFT: accordion sections */
+  /* LEFT: accordion sections (nested like the inspector) */
   .sidebar-section{
     margin-bottom:10px;
+    border-radius:var(--radius-md);
+    background:radial-gradient(circle at top left, #0b1120 0, #020617 60%);
+    border:1px solid rgba(37,99,235,0.55);
+    box-shadow:0 12px 32px rgba(0,0,0,0.55);
+    overflow:hidden;
   }
+
+  /* header bar – blue like inspector */
   .sidebar-section-header{
     width:100%;
     border:none;
-    background:transparent;
-    color:var(--text-soft);
+    background:linear-gradient(to right, #1d4ed8, #0f172a);
+    color:#e5e7eb;
     display:flex;
     align-items:center;
     justify-content:space-between;
     cursor:pointer;
-    padding:2px 2px 0 0;
+    padding:6px 10px;
     font-size:.78rem;
     text-transform:uppercase;
     letter-spacing:.12em;
@@ -179,18 +186,22 @@
   .sidebar-section-header span.label{
     pointer-events:none;
   }
+
   .sidebar-chevron{
     font-size:.7rem;
-    opacity:0.7;
+    opacity:0.8;
     transition:transform .18s ease, opacity .18s ease;
   }
   .sidebar-chevron.rotated{
     transform:rotate(-90deg);
-    opacity:0.5;
+    opacity:0.55;
   }
 
+  /* body = nested content under header */
   .sidebar-section-body{
-    margin-top:5px;
+    padding:8px 10px 10px;
+    background:rgba(3,7,18,0.98);
+    border-top:1px solid rgba(15,23,42,0.9);
   }
   .sidebar-section-body.closed{
     display:none;
@@ -635,21 +646,19 @@
   <!-- SIDEBAR -->
   <aside class="sidebar">
 
-   <!-- PAGES SECTION (closed by default – under dropdown) -->
-<div class="sidebar-section">
-  <button class="sidebar-section-header" type="button" onclick="toggleSidebarSection('pages')">
-    <span class="label">Pages</span>
-    <!-- rotated = “closed” arrow by default -->
-    <i class="fa-solid fa-chevron-down sidebar-chevron rotated" id="pagesChevron"></i>
-  </button>
-  <div class="sidebar-section-body closed" id="pagesSection">
-    <div class="sidebar-inner" id="pages"></div>
-    <button class="btn secondary" style="width:100%;margin-top:8px;" onclick="newPage()">
-      + New Page
-    </button>
-  </div>
-</div>
-
+    <!-- PAGES SECTION (closed by default) -->
+    <div class="sidebar-section">
+      <button class="sidebar-section-header" type="button" onclick="toggleSidebarSection('pages')">
+        <span class="label">Pages</span>
+        <i class="fa-solid fa-chevron-down sidebar-chevron rotated" id="pagesChevron"></i>
+      </button>
+      <div class="sidebar-section-body closed" id="pagesSection">
+        <div class="sidebar-inner" id="pages"></div>
+        <button class="btn secondary" style="width:100%;margin-top:8px;" onclick="newPage()">
+          + New Page
+        </button>
+      </div>
+    </div>
 
     <!-- NAVIGATION SECTION (closed by default) -->
     <div class="sidebar-section">
@@ -906,55 +915,38 @@ function markSavedLocal(){
   }
 }
 
-/* LEFT: accordion sections (nested like the inspector) */
-.sidebar-section{
-  margin-bottom:10px;
-  border-radius:var(--radius-md);
-  background:radial-gradient(circle at top left, #0b1120 0, #020617 60%);
-  border:1px solid rgba(37,99,235,0.55); /* blue-ish border to match inspector tone */
-  box-shadow:0 12px 32px rgba(0,0,0,0.55);
-  overflow:hidden; /* keeps header + body visually grouped */
+/* =======================
+   LEFT ACCORDION LOGIC
+======================= */
+function toggleSidebarSection(which){
+  const body    = document.getElementById(which + "Section");
+  const chevron = document.getElementById(which + "Chevron");
+  if (!body) return;
+
+  const willClose = !body.classList.contains("closed");
+
+  // close all
+  document.querySelectorAll(".sidebar-section-body").forEach(el=>{
+    el.classList.add("closed");
+  });
+  document.querySelectorAll(".sidebar-chevron").forEach(el=>{
+    el.classList.add("rotated");
+  });
+
+  // reopen this one if it was previously closed
+  if (!willClose){
+    body.classList.remove("closed");
+    if (chevron) chevron.classList.remove("rotated");
+  }
 }
 
-/* header bar – same blue vibe as inspector */
-.sidebar-section-header{
-  width:100%;
-  border:none;
-  background:linear-gradient(to right, #1d4ed8, #0f172a);
-  color:#e5e7eb;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  cursor:pointer;
-  padding:6px 10px;
-  font-size:.78rem;
-  text-transform:uppercase;
-  letter-spacing:.12em;
+function openSidebarSection(which){
+  const body    = document.getElementById(which + "Section");
+  const chevron = document.getElementById(which + "Chevron");
+  if (!body) return;
+  body.classList.remove("closed");
+  if (chevron) chevron.classList.remove("rotated");
 }
-.sidebar-section-header span.label{
-  pointer-events:none;
-}
-
-.sidebar-chevron{
-  font-size:.7rem;
-  opacity:0.8;
-  transition:transform .18s ease, opacity .18s ease;
-}
-.sidebar-chevron.rotated{
-  transform:rotate(-90deg);
-  opacity:0.55;
-}
-
-/* body = nested content under header */
-.sidebar-section-body{
-  padding:8px 10px 10px;
-  background:rgba(3,7,18,0.98);
-  border-top:1px solid rgba(15,23,42,0.9);
-}
-.sidebar-section-body.closed{
-  display:none;
-}
-
 
 /* =======================
    PANEL BEHAVIOR + OPEN/CLOSE
@@ -1752,12 +1744,12 @@ function wirePanelBehaviorRadios(){
 }
 
 /* initial inspector content */
-renderInspectorTab();
-openSidebarSection("pages");
+renderInspectorTab(); // both sidebar sections stay closed on load
 </script>
 
 </body>
 </html>
+
 
 
 
