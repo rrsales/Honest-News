@@ -1,82 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Honest News – Biblical Truth</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Main Site Styles -->
-  <link rel="stylesheet" href="assets/css/styles.css" />
+  <!-- Main site styles (existing) -->
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <!-- Mobile styles (correct path) -->
+  <link rel="stylesheet" href="assets/css/mobile/mobile.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <!-- Mobile Framework Styles (correct folder) -->
-  <link rel="stylesheet" href="assets/css/mobile/mobile.css" />
-  <link rel="stylesheet" href="assets/css/mobile/mobile.header.css" />
-  <link rel="stylesheet" href="assets/css/mobile/mobile.hero.css" />
-  <link rel="stylesheet" href="assets/css/mobile/mobile.cards.css" />
+  <!-- Small safety net so hero text is readable even if styles.css is opinionated -->
+  <style>
+    body {
+      margin: 0;
+    }
+    header.site-header {
+      position: relative;
+      z-index: 20;
+    }
+    .site-header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: inherit;
+    }
+    .desktop-nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      gap: 1.5rem;
+    }
+    .desktop-nav a {
+      text-decoration: none;
+    }
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    /* HERO fallback styling */
+    .hero {
+      position: relative;
+      min-height: 70vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #fff;
+      background-color: #020617;
+      background-size: cover;
+      background-position: center;
+    }
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top, rgba(15,23,42,0.5), rgba(15,23,42,0.95));
+    }
+    .hero-inner {
+      position: relative;
+      padding: 4rem 1.5rem 3rem;
+      max-width: 900px;
+    }
+    .hero-inner h1 {
+      margin: 0;
+      font-size: clamp(2.2rem, 4vw, 3rem);
+    }
+    .hero-inner p {
+      margin-top: 0.75rem;
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    main .page-content {
+      max-width: 960px;
+      margin: 2.5rem auto 3rem;
+      padding: 0 1.5rem;
+    }
+
+    footer.site-footer {
+      text-align: center;
+      padding: 1.5rem 1rem 2rem;
+      font-size: 0.85rem;
+      opacity: 0.8;
+    }
+
+    /* Hide desktop nav on small screens so mobile menu can take over */
+    @media (max-width: 768px) {
+      .desktop-nav { display: none; }
+    }
+  </style>
 </head>
 
+<!-- IMPORTANT: data-page="home" for live.js -->
 <body data-page="home" class="theme-dark">
 
-  <!-- HEADER -->
-  <header class="hn-header hn-header--apple">
-    <div class="hn-header-inner">
-      <a href="index.html" class="hn-logo">Honest News</a>
+  <!-- =========================
+       HEADER
+       (desktop nav + mobile toggle)
+  ========================== -->
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a href="index.html" class="logo">Honest News</a>
 
-      <nav class="hn-nav desktop-only">
-        <ul id="nav-menu"></ul>
+      <!-- Desktop menu (live.js fills #menuList) -->
+      <nav class="desktop-nav">
+        <ul id="menuList"></ul>
       </nav>
 
+      <!-- Mobile hamburger -->
       <button class="hn-mobile-toggle" id="mobileMenuToggle" aria-label="Open menu">
         <span></span>
       </button>
     </div>
   </header>
 
-  <!-- MOBILE MENU -->
+  <!-- =========================
+       MOBILE MENU OVERLAY
+       (mobile.js keeps this in sync with #menuList)
+  ========================== -->
   <nav class="hn-mobile-menu" id="mobileMenu" aria-label="Mobile navigation">
     <div class="hn-mobile-menu-header">
       <span class="hn-mobile-menu-title">Menu</span>
-      <button id="mobileMenuClose">×</button>
+      <button id="mobileMenuClose" aria-label="Close menu">×</button>
     </div>
     <ul id="mobileNavMenu"></ul>
   </nav>
 
-  <!-- HERO (live.js will overwrite this with CMS data) -->
+  <!-- Overlay element is created by mobile.js if not present -->
+
+  <!-- =========================
+       HERO
+       live.js will override bg, title, subtitle, height, transparency
+       based on site-data.json → pages[slug].hero
+  ========================== -->
   <section class="hero" data-hero>
-    <div class="hero-overlay-soft"></div>
     <div class="hero-inner">
       <h1>Honest News Network</h1>
       <p>Everything you need for Biblical truth.</p>
     </div>
   </section>
 
-  <!-- MAIN CONTENT -->
+  <!-- =========================
+       MAIN CONTENT
+       Blocks from site-data.json
+  ========================== -->
   <main>
     <div class="page-content">
+      <!-- live.js will inject dynamic blocks here -->
       <div data-blocks-target></div>
     </div>
   </main>
 
+  <!-- =========================
+       FOOTER
+  ========================== -->
   <footer class="site-footer">
     <p>&copy; <span id="year"></span> Honest News. All rights reserved.</p>
   </footer>
 
   <script>
+    // simple year helper
     document.addEventListener("DOMContentLoaded", function () {
-      const y = document.getElementById("year");
+      var y = document.getElementById("year");
       if (y) y.textContent = new Date().getFullYear();
     });
   </script>
 
-  <!-- LIVE ENGINE -->
-  <script src="assets/js/live.js?cb=1"></script>
+  <!-- LIVE ENGINE (menu + hero + blocks) -->
+  <script src="assets/js/live.js?cb=3"></script>
 
-  <!-- Mobile Framework JS (correct folder) -->
-  <script src="assets/js/mobile/mobile.js?cb=1"></script>
-  <script src="assets/js/mobile/mobile.hero.js?cb=1"></script>
+  <!-- Mobile navigation (hamburger & slide-out) -->
+  <script src="assets/js/mobile/mobile.js?cb=3"></script>
+  <!-- (We are NOT loading mobile.hero.js for now to keep things simple) -->
 
 </body>
 </html>
-
