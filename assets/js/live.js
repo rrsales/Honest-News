@@ -9,7 +9,10 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelector(".hero-carousel") ||
     document.querySelector("[data-hero]");
 
-  const header = document.querySelector("header");
+  const header =
+    document.querySelector("header.site-header") ||
+    document.querySelector("header.hn-header") ||
+    document.querySelector("header");
 
   // Where to render dynamic blocks on the page
   const blocksTarget = document.querySelector("[data-blocks-target]");
@@ -34,6 +37,8 @@ document.addEventListener("DOMContentLoaded", () => {
           "color:#22c55e"
         );
         return await r.json();
+      } else {
+        console.warn("RAW GitHub responded", r.status);
       }
     } catch (e) {
       console.warn("RAW GitHub failed → fallback to local", e);
@@ -41,6 +46,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Fallback to GitHub Pages copy
     const r2 = await fetch(LOCAL, { cache: "no-store" });
+    if (!r2.ok) {
+      throw new Error("Could not load site-data.json from RAW or LOCAL");
+    }
     console.log(
       "%cLoaded site-data.json from GitHub Pages copy",
       "color:#38bdf8"
@@ -53,9 +61,12 @@ document.addEventListener("DOMContentLoaded", () => {
   ============================================================= */
   loadSiteData()
     .then((site) => {
-      if (!site || !site.pages) return;
+      if (!site || !site.pages || !Array.isArray(site.pages)) {
+        console.warn("site-data.json missing pages array");
+        return;
+      }
 
-      // pick page
+      // pick page by slug (data-page on <body>)
       let page = site.pages.find((p) => p.slug === slug);
       if (!page) page = site.pages[0];
 
@@ -64,23 +75,23 @@ document.addEventListener("DOMContentLoaded", () => {
         mobileMenu: "slide-left"
       };
 
-      applyTheme(body, page);
+      applyTheme(page);
       applyHeaderStyle(header, headerConfig);
       buildMenu(site.menu || [], slug);
       applyHero(hero, header, page.hero || {});
       if (blocksTarget) renderBlocks(blocksTarget, page.blocks || []);
     })
     .catch((err) => {
-      console.log("live.js error:", err);
+      console.error("live.js error while loading site-data:", err);
     });
 
   /* =============================================================
      THEME
   ============================================================= */
-  function applyTheme(bodyEl, page) {
-    bodyEl.classList.remove("theme-light", "theme-dark");
-    if (page.theme === "light") bodyEl.classList.add("theme-light");
-    else bodyEl.classList.add("theme-dark");
+  function applyTheme(page) {
+    body.classList.remove("theme-light", "theme-dark");
+    if (page.theme === "light") body.classList.add("theme-light");
+    else body.classList.add("theme-dark");
   }
 
   /* =============================================================
@@ -106,6 +117,15 @@ document.addEventListener("DOMContentLoaded", () => {
     // store for mobile.js to read if needed
     document.body.dataset.mobileMenuStyle =
       (headerConfig && headerConfig.mobileMenu) || "slide-left";
+
+    // Scroll shadow effect for .site-header
+    window.addEventListener("scroll", () => {
+      if (window.scrollY > 40) {
+        headerEl.classList.add("scrolled");
+      } else {
+        headerEl.classList.remove("scrolled");
+      }
+    });
   }
 
   /* =============================================================
@@ -318,32 +338,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;");
   }
-  // Entry point – glue the libs together
-window.HN = window.HN || {};
-
-(function (HN) {
-  async function init() {
-    try {
-      const data = await HN.loadData();
-      HN.renderMenu(data);
-      HN.renderPage(data);
-      HN.initMobileMenu();
-
-      // Header scroll effect for .site-header
-      const header = document.querySelector("header.site-header");
-      if (header) {
-        window.addEventListener("scroll", () => {
-          if (window.scrollY > 40) header.classList.add("scrolled");
-          else header.classList.remove("scrolled");
-        });
-      }
-    } catch (err) {
-      console.error("HN init failed", err);
-    }
-  }
-
-  document.addEventListener("DOMContentLoaded", init);
-})(window.HN);
 });
+
 
 
