@@ -1,123 +1,154 @@
-// HN Admin Pages Library
-// - Add / remove pages
-// - Keep site.menu in sync
+/* assets/js/admin/hn-admin-pages.js
+ *
+ * Simple page manager for site-data.json
+ * Works with an object-style pages map:
+ * {
+ *   pages: {
+ *     home: { title, slug, hero, blocks, ... },
+ *     podcast: { ... },
+ *     ...
+ *   }
+ * }
+ */
 
-window.HNAdmin = window.HNAdmin || {};
+;(function (global) {
+  const HNAdmin = global.HNAdmin || (global.HNAdmin = {});
 
-(function (HNAdmin) {
-  function ensureRoot(data) {
-    if (!data.site) data.site = {};
-    if (!Array.isArray(data.site.menu)) data.site.menu = [];
-    if (!data.pages) data.pages = {};
+  // -----------------------
+  // Helpers
+  // -----------------------
+  function ensurePages(data) {
+    if (!data.pages || typeof data.pages !== "object" || Array.isArray(data.pages)) {
+      data.pages = {};
+    }
+    return data;
   }
 
-  // Add a new page + menu item
-  // options: { id, label, href }
-  HNAdmin.addPage = function (data, options) {
-    ensureRoot(data);
+  function slugify(str) {
+    return String(str || "")
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/\s+/g, "-");
+  }
 
-    var id = options.id;
-    var label = options.label || id;
-    var href = options.href || (id === "home" ? "index.html" : id + ".html");
-
-    if (!id) {
-      throw new Error("HNAdmin.addPage: id is required");
+  function saveIfPossible(data) {
+    if (typeof HNAdmin.saveLocalSnapshot === "function") {
+      try {
+        HNAdmin.saveLocalSnapshot(data);
+      } catch (e) {
+        console.warn("HNAdmin.saveLocalSnapshot failed:", e);
+      }
     }
-    if (data.pages[id]) {
-      throw new Error("HNAdmin.addPage: page id already exists: " + id);
+  }
+
+  // -----------------------
+  // API
+  // -----------------------
+
+  /**
+   * Returns an array of pages for easier rendering in the UI.
+   * Each item: { id, title, slug, hero, blocks }
+   */
+  HNAdmin.listPages = function listPages(data) {
+    ensurePages(data);
+    return Object.keys(data.pages)
+      .map((id) => {
+        const page = data.pages[id] || {};
+        return {
+          id,
+          title: page.title || id,
+          slug: page.slug || id,
+          hero: page.hero || {},
+          blocks: page.blocks || [],
+        };
+      })
+      .sort((a, b) => a.title.localeCompare(b.title));
+  };
+
+  /**
+   * Add a new page.
+   * opts: { title?, id?, slug?, theme?, hero?, blocks? }
+   * Returns { data, page }
+   */
+  HNAdmin.addPage = function addPage(data, opts) {
+    ensurePages(data);
+    opts = opts || {};
+
+    const baseTitle = opts.title || "New page";
+    let baseId = opts.id || slugify(baseTitle) || "page";
+    let id = baseId;
+    let i = 2;
+
+    // Make sure ID is unique
+    while (data.pages[id]) {
+      id = `${baseId}-${i++}`;
     }
 
-    // Create page entry
-    data.pages[id] = {
-      id: id,
-      title: label,
-      slug: id === "home" ? "index" : id,
-      hero: {
-        eyebrow: label,
-        title: label,
+    const page = {
+      id,
+      title: baseTitle,
+      slug: opts.slug || id,
+      theme: opts.theme || "dark",
+      hero: opts.hero || {
+        eyebrow: "",
+        title: baseTitle,
         subtitle: "",
-        style: "simple",
+        style: "simple", // or "apple"
         transparentHeader: false,
-        backgroundImage: ""
+        backgroundImage: "",
       },
-      blocks: []
+      blocks: Array.isArray(opts.blocks) ? opts.blocks : [],
     };
 
-    // Add to menu
-    data.site.menu.push({
-      id: id,
-      label: label,
-      href: href
-    });
+    data.pages[id] = page;
+    saveIfPossible(data);
 
-    return data;
+    return { data, page };
   };
 
-  // Remove a page + menu item
-  HNAdmin.removePage = function (data, id) {
-    ensureRoot(data);
-    if (!id) return data;
-
-    if (data.pages[id]) {
-      delete data.pages[id];
+  /**
+   * Delete a page by id.
+   * Returns updated data.
+   */
+  HNAdmin.deletePage = function deletePage(data, id) {
+    ensurePages(data);
+    if (!id || !data.pages[id]) {
+      return data;
     }
 
-    data.site.menu = data.site.menu.filter(function (item) {
-      return item.id !== id;
-    });
-
+    delete data.pages[id];
+    saveIfPossible(data);
     return data;
   };
 
-  // Rename a page (updates page.title + menu label)
-  // options: { id, newLabel }
-  HNAdmin.renamePage = function (data, options) {
-    ensureRoot(data);
-    var id = options.id;
-    var newLabel = options.newLabel;
+  /**
+   * Rename a page (title; optionally update slug if it was default).
+   * Returns updated data.
+   */
+  HNAdmin.renamePage = function renamePage(data, id, newTitle) {
+    ensurePages(data);
+    const page = data.pages[id];
+    if (!page) return data;
 
-    if (!id || !newLabel) {
-      throw new Error("HNAdmin.renamePage: id and newLabel are required");
+    const oldSlug = page.slug || id;
+    page.title = newTitle;
+
+    // If slug was never customized (same as id / oldSlug), keep it in sync
+    if (!oldSlug || oldSlug === id) {
+      page.slug = slugify(newTitle);
     }
 
-    if (data.pages[id]) {
-      data.pages[id].title = newLabel;
-      if (data.pages[id].hero && !data.pages[id].hero.lockTitle) {
-        data.pages[id].hero.title = newLabel;
-      }
-    }
-
-    data.site.menu.forEach(function (item) {
-      if (item.id === id) {
-        item.label = newLabel;
-      }
-    });
-
+    saveIfPossible(data);
     return data;
   };
 
-  // Reorder menu items (takes an array of ids in new order)
-  HNAdmin.reorderMenu = function (data, newOrderIds) {
-    ensureRoot(data);
-    var idToItem = {};
-    data.site.menu.forEach(function (item) {
-      idToItem[item.id] = item;
-    });
-
-    var reordered = [];
-    newOrderIds.forEach(function (id) {
-      if (idToItem[id]) {
-        reordered.push(idToItem[id]);
-        delete idToItem[id];
-      }
-    });
-
-    // Any leftovers (ids not in newOrderIds) get appended
-    Object.keys(idToItem).forEach(function (id) {
-      reordered.push(idToItem[id]);
-    });
-
-    data.site.menu = reordered;
-    return data;
+  /**
+   * Convenience: get a single page by id (or null).
+   */
+  HNAdmin.getPage = function getPage(data, id) {
+    ensurePages(data);
+    return data.pages[id] || null;
   };
-})(window.HNAdmin);
+})(window);
+
