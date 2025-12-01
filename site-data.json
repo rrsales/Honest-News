@@ -30,7 +30,7 @@
         "bg": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80",
         "overlay": "Honest News Network",
         "sub": "Everything You Need for Biblical Truth",
-        "transparentMenu": true,
+        "transparentMenu": false,
         "behavior": "parallax-medium",
         "size": "full",
         "customHeight": ""
