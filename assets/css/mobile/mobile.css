@@ -1,129 +1,131 @@
-/* ============================================================
-   Honest News – MOBILE UI Framework
-   Standalone system for all pages
-   Includes: hamburger, drawer, overlay, animations
-============================================================ */
+/* assets/css/mobile/mobile.css */
 
-/* Hide desktop nav when mobile */
-@media (max-width: 900px){
-  .desktop-only {
-    display: none !important;
-  }
-}
-
-/* SHOW mobile toggle */
+/* HAMBURGER TOGGLE */
 .hn-mobile-toggle {
-  display: none;
+  display: none; /* shown only on small screens */
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  align-items: center;
+  justify-content: center;
+  position: relative;
 }
 
-@media (max-width: 900px){
-  .hn-mobile-toggle {
-    display: flex;
-    flex-direction: column;
-    width: 32px;
-    height: 24px;
-    justify-content: space-between;
-    cursor: pointer;
-    z-index: 999999;
-    background: transparent;
-    border: none;
-    padding: 0;
-  }
-  .hn-mobile-toggle span,
-  .hn-mobile-toggle span::before,
-  .hn-mobile-toggle span::after {
-    content: "";
-    display: block;
-    height: 3px;
-    background: #fff;
-    border-radius: 3px;
-    transition: .25s ease;
-  }
+/* 3-line icon */
+.hn-mobile-toggle span,
+.hn-mobile-toggle span::before,
+.hn-mobile-toggle span::after {
+  content: "";
+  display: block;
+  position: absolute;
+  width: 18px;
+  height: 2px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+.hn-mobile-toggle span::before {
+  transform: translateY(-5px);
+}
+.hn-mobile-toggle span::after {
+  transform: translateY(5px);
 }
 
-/* Drawer menu */
+/* MOBILE MENU DRAWER */
 .hn-mobile-menu {
   position: fixed;
   top: 0;
-  right: -100%;
-  width: 78%;
-  max-width: 340px;
-  height: 100%;
-  background: #0f172a;
-  z-index: 999998;
-  padding: 20px;
-  box-shadow: -4px 0 40px rgba(0,0,0,.75);
-  transition: right .35s cubic-bezier(.19,1,.22,1);
-  overflow-y: auto;
+  right: -320px;
+  width: 280px;
+  max-width: 80%;
+  height: 100vh;
+  background: #020617;
+  color: #e5e7eb;
+  box-shadow: -24px 0 60px rgba(0, 0, 0, 0.9);
+  z-index: 9999;
+  padding: 14px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  transition: right 0.28s cubic-bezier(0.19, 1, 0.22, 1);
 }
-
-/* When open */
 .hn-mobile-menu.open {
   right: 0;
 }
 
-/* Header inside drawer */
 .hn-mobile-menu-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding-bottom: 12px;
-  margin-bottom: 16px;
-  border-bottom: 1px solid rgba(255,255,255,.15);
+  justify-content: space-between;
+  margin-bottom: 10px;
 }
-
 .hn-mobile-menu-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #fff;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #9ca3af;
 }
-
-#mobileMenuClose {
+.hn-mobile-menu button {
+  border: 0;
   background: transparent;
-  border: none;
-  font-size: 2rem;
-  color: #fff;
+  color: #e5e7eb;
+  font-size: 1.2rem;
   cursor: pointer;
 }
 
-/* Mobile UL */
-#mobileNavMenu {
+.hn-mobile-menu ul {
   list-style: none;
-  margin: 0;
   padding: 0;
+  margin: 8px 0 0;
 }
-
-#mobileNavMenu li a {
+.hn-mobile-menu li {
+  margin: 4px 0;
+}
+.hn-mobile-menu a {
   display: block;
-  padding: 14px 4px;
-  font-size: 1rem;
-  color: #e5e7eb;
+  padding: 8px 4px;
   text-decoration: none;
-  border-bottom: 1px solid rgba(255,255,255,.08);
+  color: #e5e7eb;
+  border-radius: 10px;
+}
+.hn-mobile-menu a:hover {
+  background: rgba(15, 23, 42, 0.9);
 }
 
-#mobileNavMenu li a.active {
-  color: #38bdf8;
-}
-
-/* Screen dim background */
+/* OVERLAY BEHIND DRAWER */
 .hn-mobile-overlay {
-  content: "";
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,.55);
-  z-index: 999997;
+  background: rgba(15, 23, 42, 0.75);
   opacity: 0;
   pointer-events: none;
-  transition: opacity .25s ease;
+  transition: opacity 0.18s ease;
+  z-index: 9990;
 }
-
-.hn-mobile-overlay.visible {
+.hn-mobile-overlay.open {
   opacity: 1;
   pointer-events: auto;
 }
 
-/* Lock scroll when menu open */
-body.hn-menu-open {
+/* Prevent body scroll when menu open */
+body.hn-mobile-open {
   overflow: hidden;
 }
+
+/* RESPONSIVE BEHAVIOR */
+@media (max-width: 768px) {
+  /* Show hamburger */
+  .hn-mobile-toggle {
+    display: inline-flex;
+  }
+
+  /* Hide classic desktop navs */
+  .desktop-nav,
+  .desktop-only,
+  header.site-header nav[aria-label="Main"] {
+    display: none;
+  }
+}
+
