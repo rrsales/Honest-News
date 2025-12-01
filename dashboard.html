@@ -106,31 +106,12 @@
     background:#111827;
     color:#e5e7eb;
   }
-  .btn.secondary{
-    background:#111827;
-    color:#e5e7eb;
-    border:1px solid #1f2937;
-  }
+  .btn.secondary{background:#111827;color:#e5e7eb;border:1px solid #1f2937;}
   .btn.secondary:hover{background:#020617;}
-  .btn.ghost{
-    background:transparent;
-    color:#9ca3af;
-    border:1px solid rgba(148,163,184,.25);
-  }
-  .btn.ghost:hover{
-    color:#e5e7eb;
-    border-color:#e5e7eb;
-  }
-
-  /* PRIMARY BUTTON = BLUE ACCENT */
-  .btn.primary{
-    background:var(--accent);
-    color:#0b1120;
-    border:1px solid var(--accent-soft);
-  }
-  .btn.primary:hover{
-    background:var(--accent-soft);
-  }
+  .btn.ghost{background:transparent;color:#9ca3af;border:1px solid rgba(148,163,184,.25);}
+  .btn.ghost:hover{color:#e5e7eb;border-color:#e5e7eb;}
+  .btn.primary{background:#22c55e;color:#022c22;border:1px solid #16a34a;}
+  .btn.primary:hover{background:#16a34a;}
 
   .logout-btn{
     border:none;
@@ -170,25 +151,54 @@
     gap:14px;
     overflow:hidden;
   }
-  .sidebar h3{
-    margin:0;
-    font-size:.78rem;
-    text-transform:uppercase;
-    letter-spacing:.12em;
-    color:var(--text-soft);
-  }
+
   .sidebar-inner{
     flex:1;
     overflow-y:auto;
     padding-right:4px;
   }
 
-  /* PAGE ACCORDION (NESTED) */
-  .page-accordion{
-    margin-top:6px;
+  /* NEW: Accordion-style sections on left */
+  .sidebar-section{
+    margin-bottom:10px;
   }
-  .page-header{
+  .sidebar-section-header{
+    width:100%;
+    border:none;
+    background:transparent;
+    color:var(--text-soft);
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    cursor:pointer;
+    padding:2px 2px 0 0;
+    font-size:.78rem;
+    text-transform:uppercase;
+    letter-spacing:.12em;
+  }
+  .sidebar-section-header span.label{
+    pointer-events:none;
+  }
+  .sidebar-chevron{
+    font-size:.7rem;
+    opacity:0.7;
+    transition:transform .18s ease, opacity .18s ease;
+  }
+  .sidebar-chevron.rotated{
+    transform:rotate(-90deg);
+    opacity:0.5;
+  }
+
+  .sidebar-section-body{
+    margin-top:5px;
+  }
+  .sidebar-section-body.closed{
+    display:none;
+  }
+
+  .page{
     padding:9px 10px;
+    margin-top:6px;
     border-radius:12px;
     background:#020617;
     border:1px solid transparent;
@@ -198,100 +208,13 @@
     justify-content:space-between;
     font-size:.84rem;
     color:var(--text-main);
-    transition:background .18s ease, border-color .18s ease, box-shadow .18s ease;
   }
-  .page-header.active{
+  .page span.title{font-weight:600;}
+  .page span.slug{font-size:.7rem;color:#6b7280;}
+  .page.active{
     background:var(--accent-soft-bg);
     border-color:var(--accent);
     box-shadow:0 0 0 1px rgba(56,189,248,.4);
-  }
-  .page-main{
-    display:flex;
-    align-items:center;
-    gap:7px;
-    min-width:0;
-  }
-  .page-caret{
-    font-size:.7rem;
-    opacity:.8;
-    transition:transform .18s ease;
-  }
-  /* caret “up” by default (collapsed) */
-  .page-caret{
-    transform:rotate(-90deg);
-  }
-  .page-accordion.open .page-caret{
-    transform:rotate(0deg); /* points down when open */
-  }
-
-  .page-text{
-    display:flex;
-    flex-direction:column;
-    gap:2px;
-    min-width:0;
-  }
-  .page-text .title{
-    font-weight:600;
-    white-space:nowrap;
-    text-overflow:ellipsis;
-    overflow:hidden;
-  }
-  .page-text .slug{
-    font-size:.7rem;
-    color:#6b7280;
-  }
-
-  .page-delete{
-    border:none;
-    background:#0f172a;
-    color:#9ca3af;
-    border-radius:999px;
-    padding:2px 7px;
-    font-size:.7rem;
-    cursor:pointer;
-  }
-  .page-delete:hover{
-    color:#fecaca;
-    background:#450a0a;
-  }
-
-  .page-panel{
-    max-height:0;
-    overflow:hidden;
-    transition:max-height .18s ease;
-    padding-left:20px;
-    padding-right:6px;
-  }
-  .page-accordion.open .page-panel{
-    max-height:80px;
-  }
-  .page-panel-inner{
-    border-left:1px dashed rgba(55,65,81,.9);
-    margin-top:5px;
-    padding-left:8px;
-    padding-bottom:6px;
-    display:flex;
-    flex-direction:column;
-    gap:4px;
-  }
-  .page-panel-label{
-    font-size:.72rem;
-    color:#6b7280;
-  }
-  .page-panel-btn{
-    border:none;
-    background:rgba(15,23,42,.9);
-    color:#e5e7eb;
-    border-radius:999px;
-    padding:4px 9px;
-    font-size:.74rem;
-    cursor:pointer;
-    display:inline-flex;
-    align-items:center;
-    gap:5px;
-  }
-  .page-panel-btn:hover{
-    background:#020617;
   }
 
   .textarea-small{
@@ -305,6 +228,11 @@
     font-family:inherit;
     resize:vertical;
     min-height:70px;
+  }
+
+  .field-hint{
+    font-size:.72rem;
+    color:#9ca3af;
   }
 
   /* PREVIEW AREA */
@@ -561,10 +489,7 @@
     color:#e5e7eb;
     margin-bottom:2px;
   }
-  .field-hint{
-    font-size:.72rem;
-    color:#9ca3af;
-  }
+
   input,select,textarea{
     font-family:inherit;
   }
@@ -677,10 +602,9 @@
     <span class="title">Welcome back, Joseph</span>
   </div>
   <div class="top-actions">
-    <!-- You can delete this pill visually later if you want even more space -->
     <span class="pill-badge">
       <i class="fa-regular fa-circle-dot"></i>
-      Cloud save: Render &amp; GitHub
+      Cloud save: Render & GitHub
     </span>
     <button class="logout-btn"
             onclick="localStorage.removeItem('hn_logged');location.href='admin.html'">
@@ -692,21 +616,35 @@
 <div class="main">
   <!-- SIDEBAR -->
   <aside class="sidebar">
-    <div>
-      <h3>Pages</h3>
-      <div class="sidebar-inner" id="pages"></div>
-      <button class="btn secondary" style="width:100%;margin-top:8px;" onclick="newPage()">
-        + New Page
+
+    <!-- PAGES SECTION (accordion, default closed) -->
+    <div class="sidebar-section">
+      <button class="sidebar-section-header" type="button" onclick="toggleSidebarSection('pages')">
+        <span class="label">Pages</span>
+        <i class="fa-solid fa-chevron-down sidebar-chevron rotated" id="pagesChevron"></i>
       </button>
+      <div class="sidebar-section-body closed" id="pagesSection">
+        <div class="sidebar-inner" id="pages"></div>
+        <button class="btn secondary" style="width:100%;margin-top:8px;" onclick="newPage()">
+          + New Page
+        </button>
+      </div>
     </div>
 
-    <div style="margin-top:16px;">
-      <h3>Navigation</h3>
-      <p class="field-hint" style="margin-top:4px;">
-        One per line: <code>Title | URL</code>
-      </p>
-      <textarea id="menuRaw" class="textarea-small" oninput="menuFromRaw(this.value)"></textarea>
+    <!-- NAVIGATION SECTION (accordion, default closed) -->
+    <div class="sidebar-section">
+      <button class="sidebar-section-header" type="button" onclick="toggleSidebarSection('nav')">
+        <span class="label">Navigation</span>
+        <i class="fa-solid fa-chevron-down sidebar-chevron rotated" id="navChevron"></i>
+      </button>
+      <div class="sidebar-section-body closed" id="navSection">
+        <p class="field-hint" style="margin-top:4px;">
+          One per line: <code>Title | URL</code>
+        </p>
+        <textarea id="menuRaw" class="textarea-small" oninput="menuFromRaw(this.value)"></textarea>
+      </div>
     </div>
+
   </aside>
 
   <!-- PREVIEW ONLY -->
@@ -791,23 +729,70 @@
 ======================= */
 let site = {
   menu: [
-    { id:"home", label:"Home", url:"index.html",   type:"link", showOn:"both", subItems:[] },
-    { id:"podcast", label:"Podcast", url:"podcast.html", type:"link", showOn:"both", subItems:[] },
-    { id:"shop", label:"Shop", url:"shop.html",   type:"link", showOn:"both", subItems:[] },
     {
-      id:"resources",
-      label:"Resources",
-      url:"#",
-      type:"mega",
-      showOn:"desktop",
-      subItems:[
-        { label:"Getting started", url:"getting-started.html", description:"How Honest News + podcast + YouTube fit together." },
-        { label:"For Pastors", url:"pastors.html", description:"Tools and workflows to preach, record, and publish." },
-        { label:"For Listeners", url:"listeners.html", description:"Where to listen, how to subscribe, how to support." }
+      id: "home",
+      label: "Home",
+      url: "index.html",
+      type: "link",
+      showOn: "both",
+      subItems: []
+    },
+    {
+      id: "podcast",
+      label: "Podcast",
+      url: "podcast.html",
+      type: "link",
+      showOn: "both",
+      subItems: []
+    },
+    {
+      id: "shop",
+      label: "Shop",
+      url: "shop.html",
+      type: "link",
+      showOn: "both",
+      subItems: []
+    },
+    {
+      id: "resources",
+      label: "Resources",
+      url: "#",
+      type: "mega",
+      showOn: "desktop",
+      subItems: [
+        {
+          label: "Getting started",
+          url: "getting-started.html",
+          description: "How Honest News + podcast + YouTube fit together."
+        },
+        {
+          label: "For Pastors",
+          url: "pastors.html",
+          description: "Tools and workflows to preach, record, and publish."
+        },
+        {
+          label: "For Listeners",
+          url: "listeners.html",
+          description: "Where to listen, how to subscribe, how to support."
+        }
       ]
     },
-    { id:"support", label:"Support", url:"support.html", type:"link", showOn:"both", subItems:[] },
-    { id:"contact", label:"Contact", url:"contact.html", type:"link", showOn:"both", subItems:[] }
+    {
+      id: "support",
+      label: "Support",
+      url: "support.html",
+      type: "link",
+      showOn: "both",
+      subItems: []
+    },
+    {
+      id: "contact",
+      label: "Contact",
+      url: "contact.html",
+      type: "link",
+      showOn: "both",
+      subItems: []
+    }
   ],
   pages: [
     {
@@ -818,7 +803,7 @@ let site = {
         bg:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80",
         overlay:"Honest News Network",
         sub:"Everything You Need for Biblical Truth",
-        transparentMenu:true,
+        transparentMenu:false,
         behavior:"parallax-medium",
         size:"full",
         customHeight:""
@@ -890,11 +875,10 @@ let site = {
   heroSlides: []
 };
 
-let current       = null;
-let currentIndex  = null;
-let isDirty       = false;
+let current = null;
+let isDirty = false;
 let activeInspectorTab = "page";
-const DRAFT_KEY   = "hn_cms_draft_v1";
+const DRAFT_KEY = "hn_cms_draft_v1";
 
 /* panel behavior: auto | manual | pinned | smart */
 let panelBehavior = localStorage.getItem("hn_panel_behavior") || "auto";
@@ -951,6 +935,39 @@ function markSavedLocal(){
 }
 
 /* =======================
+   LEFT SIDEBAR ACCORDION
+======================= */
+function toggleSidebarSection(which){
+  const body    = document.getElementById(which + "Section");
+  const chevron = document.getElementById(which + "Chevron");
+  if (!body) return;
+
+  const willBeClosed = !body.classList.contains("closed");
+
+  // close all sections (accordion behavior)
+  document.querySelectorAll(".sidebar-section-body").forEach(el=>{
+    el.classList.add("closed");
+  });
+  document.querySelectorAll(".sidebar-chevron").forEach(el=>{
+    el.classList.add("rotated");
+  });
+
+  // open this one if it was closed
+  if (willBeClosed){
+    body.classList.remove("closed");
+    if (chevron) chevron.classList.remove("rotated");
+  }
+}
+
+function openSidebarSection(which){
+  const body    = document.getElementById(which + "Section");
+  const chevron = document.getElementById(which + "Chevron");
+  if (!body) return;
+  body.classList.remove("closed");
+  if (chevron) chevron.classList.remove("rotated");
+}
+
+/* =======================
    PANEL BEHAVIOR + OPEN/CLOSE
 ======================= */
 function isPanelOpen(){
@@ -995,81 +1012,17 @@ document.addEventListener("keydown", (e)=>{
 });
 
 /* =======================
-   SIDEBAR / PAGES (ACCORDION)
+   SIDEBAR / PAGES
 ======================= */
 function renderPages(){
   const container = document.getElementById("pages");
-  const pages = site.pages || [];
-  container.innerHTML = pages.map((p,i)=>`
-    <div class="page-accordion" data-index="${i}">
-      <div class="page-header ${i===currentIndex ? 'active' : ''}">
-        <div class="page-main">
-          <span class="page-caret" aria-hidden="true">▾</span>
-          <div class="page-text">
-            <span class="title">${p.title || 'Untitled'}</span>
-            <span class="slug">${p.slug || ''}</span>
-          </div>
-        </div>
-        <button class="page-delete" type="button"
-          title="Delete page"
-          onclick="event.stopPropagation(); deletePage(${i});">
-          ×
-        </button>
-      </div>
-      <div class="page-panel">
-        <div class="page-panel-inner">
-          <div class="page-panel-label">Page actions</div>
-          <button type="button" class="page-panel-btn"
-            onclick="selectPage(${i}); openPanel('auto');">
-            <i class="fa-solid fa-pen"></i> Edit in inspector
-          </button>
-        </div>
-      </div>
+  container.innerHTML = (site.pages || []).map((p,i)=>`
+    <div class="page ${p===current?'active':''}" onclick="selectPage(${i})">
+      <span class="title">${p.title || 'Untitled'}</span>
+      <span class="slug">${p.slug || ''}</span>
     </div>
   `).join("");
-
-  // Accordion behaviour: all collapsed by default
-  const accordions = container.querySelectorAll(".page-accordion");
-  accordions.forEach(acc => {
-    const header = acc.querySelector(".page-header");
-    header.addEventListener("click", () => {
-      const idx = parseInt(acc.dataset.index,10);
-      // open this accordion and close others
-      accordions.forEach(a=>{
-        if (a === acc) {
-          a.classList.toggle("open");
-        } else {
-          a.classList.remove("open");
-        }
-      });
-      selectPage(idx, { fromAccordion:true });
-    });
-  });
-
-  // update raw menu text
   rawFromMenu();
-}
-
-function deletePage(index){
-  const p = site.pages[index];
-  if (!p) return;
-  if (!confirm(`Delete page "${p.title || p.slug || 'Untitled'}"? This cannot be undone.`)) return;
-  site.pages.splice(index,1);
-  if (site.pages.length === 0){
-    current = null;
-    currentIndex = null;
-  } else if (currentIndex === index){
-    currentIndex = 0;
-    current = site.pages[0];
-  } else if (currentIndex > index){
-    currentIndex -= 1;
-    current = site.pages[currentIndex];
-  }
-  markDirty();
-  renderPages();
-  updatePreviewHeader();
-  renderPreview();
-  renderInspectorTab();
 }
 
 function newPage(){
@@ -1094,6 +1047,7 @@ function newPage(){
   });
   markDirty();
   renderPages();
+  openSidebarSection("pages");
 }
 
 /* =======================
@@ -1125,24 +1079,15 @@ function menuFromRaw(text){
 /* =======================
    SELECT PAGE
 ======================= */
-function selectPage(i, opts){
-  const pages = site.pages || [];
-  currentIndex = i;
-  current = pages[i] || null;
-
-  // highlight active header
-  const headers = document.querySelectorAll(".page-header");
-  headers.forEach((h,idx)=>{
-    h.classList.toggle("active", idx === currentIndex);
-  });
-
+function selectPage(i){
+  current = site.pages[i];
+  renderPages();
   updatePreviewHeader();
   renderPreview();
-  renderInspectorTab();
+  renderInspectorTab(); // refresh panel content
+  // When you pick a page, auto-open inspector (unless manual mode)
   if (panelBehavior === "auto" || panelBehavior === "pinned" || panelBehavior === "smart"){
-    if (!opts || !opts.silent){
-      openPanel("auto");
-    }
+    openPanel("auto");
   }
 }
 
@@ -1235,7 +1180,7 @@ function renderPreview(){
       const m = id.match(/v=([^&]+)/);
       if(m) id = m[1];
       html += `
-        <div style="margin:1.2rem 0%;">
+        <div style="margin:1.2rem 0;">
           <h3 style="margin:0 0 .3rem;color:#e5e7eb;">${escapeHtml(b.title || "")}</h3>
           <div style="position:relative;padding-bottom:56.25%;height:0;border-radius:12px;overflow:hidden;">
             <iframe src="https://www.youtube.com/embed/${escapeHtml(id)}"
@@ -1716,7 +1661,8 @@ async function backupAll(){
 document.getElementById("saveLocalBtn").addEventListener("click", saveToCloud);
 
 async function saveToCloud(){
-  // No confirm popup anymore – direct save
+  if(!confirm("Save your changes to GitHub via Honest News Cloud CMS (Render)?")) return;
+
   try{
     const res = await fetch(SAVE_ENDPOINT,{
       method:"POST",
@@ -1769,15 +1715,15 @@ function renderSiteTabHtml(){
       </label>
       <p class="field-hint" style="margin-top:6px;">
         Your choice is saved per browser. “Smart” behaves like auto-open for now,
-        but we can later hook it to more advanced logic (dragging, focus, etc.).
+        but we can later hook it to more advanced logic.
       </p>
     </div>
     <div class="panelSection">
-      <div class="panelLabel">Data &amp; safety</div>
+      <div class="panelLabel">Data & safety</div>
       <p class="field-hint">
         • “Save to Cloud” sends <code>site-data.json</code> to your Honest-News repo via Render (GitHub API).<br>
         • Drafts stay only in this browser’s local storage.<br>
-        • Use GitHub Desktop to Commit &amp; Push when you’re ready to publish.
+        • Use GitHub Desktop to Commit & Push when you’re ready to publish.
       </p>
     </div>
   `;
@@ -1798,6 +1744,7 @@ renderInspectorTab();
 </script>
 </body>
 </html>
+
 
 
 
