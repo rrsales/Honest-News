@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const body = document.body;
   const slug = body.getAttribute("data-page") || "home";
 
-  // Try to find the hero and header in a flexible way
+  // Flexible hero + header selection
   const hero =
     document.querySelector(".hero") ||
     document.querySelector(".hero-carousel") ||
@@ -11,53 +11,69 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const header = document.querySelector("header");
 
-  // Where to render dynamic blocks (optional)
+  // Where to render dynamic blocks on the page
   const blocksTarget = document.querySelector("[data-blocks-target]");
 
-  fetch("site-data.json", { cache: "no-store" })
-    .then(r => r.json())
-    .then(site => {
+  /* =============================================================
+     HYBRID LOADER — ALWAYS GET MOST RECENT site-data.json
+     1) RAW GitHub (always fresh)
+     2) Fallback: Local GitHub Pages copy
+  ============================================================= */
+  async function loadSiteData() {
+    const RAW =
+      "https://raw.githubusercontent.com/rrsales/Honest-News/main/site-data.json?cb=" +
+      Date.now();
+    const LOCAL = "site-data.json?cb=" + Date.now();
+
+    // Attempt LIVE GitHub
+    try {
+      const r = await fetch(RAW, { cache: "no-store" });
+      if (r.ok) {
+        console.log("%cLoaded site-data.json from RAW GitHub (fresh)", "color:#22c55e");
+        return await r.json();
+      }
+    } catch (e) {
+      console.warn("RAW GitHub failed → fallback to local", e);
+    }
+
+    // Fallback to GitHub Pages
+    const r2 = await fetch(LOCAL, { cache: "no-store" });
+    console.log("%cLoaded site-data.json from GitHub Pages copy", "color:#38bdf8");
+    return await r2.json();
+  }
+
+  /* =============================================================
+     Fetch + render site data
+  ============================================================= */
+  loadSiteData()
+    .then((site) => {
       if (!site || !site.pages) return;
 
-      // Pick page by slug (fallback = first page)
-      let page = site.pages.find(p => p.slug === slug);
+      let page = site.pages.find((p) => p.slug === slug);
       if (!page) page = site.pages[0];
 
-      // THEME (light / dark)
       applyTheme(body, page);
-
-      // MENU
       buildMenu(site.menu || [], slug);
-
-      // HERO
       applyHero(hero, header, page.hero || {});
-
-      // BLOCKS
-      if (blocksTarget) {
-        renderBlocks(blocksTarget, page.blocks || []);
-      }
+      if (blocksTarget) renderBlocks(blocksTarget, page.blocks || []);
     })
-    .catch(err => {
+    .catch((err) => {
       console.log("live.js error:", err);
     });
 
-  /* =======================
+  /* =============================================================
      THEME
-  ======================== */
+  ============================================================= */
   function applyTheme(body, page) {
     body.classList.remove("theme-light", "theme-dark");
-    if (page.theme === "light") {
-      body.classList.add("theme-light");
-    } else {
-      body.classList.add("theme-dark");
-    }
+    if (page.theme === "light") body.classList.add("theme-light");
+    else body.classList.add("theme-dark");
   }
 
-  /* =======================
-     MENU
-  ======================== */
+  /* =============================================================
+     MENU BUILDER
+  ============================================================= */
   function buildMenu(items, currentSlug) {
-    // Support both: <ul id="menuList"> and <ul id="nav-menu">
     const menuList =
       document.getElementById("menuList") ||
       document.getElementById("nav-menu");
@@ -67,18 +83,18 @@ document.addEventListener("DOMContentLoaded", () => {
     const currentFile = location.pathname.split("/").pop() || "index.html";
 
     menuList.innerHTML = items
-      .map(item => {
+      .map((item) => {
         const isHomeSlug = currentSlug === "home";
         const isHomeFile =
-          item.url === "index.html" && (currentFile === "" || currentFile === "index.html");
-
+          item.url === "index.html" &&
+          (currentFile === "" || currentFile === "index.html");
         const isActive =
           currentFile === item.url || (isHomeSlug && isHomeFile);
 
         return `
           <li>
             <a href="${item.url}" class="${isActive ? "active" : ""}">
-              ${item.title}
+              ${item.label || item.title}
             </a>
           </li>
         `;
@@ -86,13 +102,13 @@ document.addEventListener("DOMContentLoaded", () => {
       .join("");
   }
 
-  /* =======================
-     HERO
-  ======================== */
+  /* =============================================================
+     HERO SETUP
+  ============================================================= */
   function applyHero(heroEl, headerEl, h) {
     if (!heroEl) return;
 
-    // Background
+    // Background image
     if (h.bg) {
       heroEl.style.backgroundImage =
         `linear-gradient(rgba(0,0,0,0.55),rgba(0,0,0,0.55)), url('${h.bg}')`;
@@ -101,7 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
       heroEl.style.backgroundAttachment = "fixed";
     }
 
-    // Height
+    // Height behavior
     let height = "100vh";
     switch (h.size) {
       case "small":
@@ -119,28 +135,24 @@ document.addEventListener("DOMContentLoaded", () => {
       case "custom":
         height = h.customHeight || "100vh";
         break;
-      default:
-        height = "100vh";
     }
     heroEl.style.height = height;
 
-    // Text
+    // Text content
     const title = heroEl.querySelector("h1");
     const sub = heroEl.querySelector("p");
 
     if (title && h.overlay) title.textContent = h.overlay;
     if (sub && typeof h.sub === "string") sub.textContent = h.sub;
 
-    // Header transparency
+    // Transparent header
     if (headerEl) {
-      if (h.transparentMenu) {
+      if (h.transparentMenu)
         headerEl.classList.add("header--transparent");
-      } else {
-        headerEl.classList.remove("header--transparent");
-      }
+      else headerEl.classList.remove("header--transparent");
     }
 
-    // Parallax / float / still
+    // Behavior animations
     if (h.behavior === "parallax-medium" || h.behavior === "parallax-slow") {
       const rate = h.behavior === "parallax-slow" ? 0.15 : 0.3;
       window.addEventListener("scroll", () => {
@@ -148,7 +160,8 @@ document.addEventListener("DOMContentLoaded", () => {
         heroEl.style.transform = `translateY(${offset}px)`;
       });
     } else if (h.behavior === "float-up") {
-      heroEl.style.transition = "transform 1.1s ease-out, opacity 1.1s ease-out";
+      heroEl.style.transition =
+        "transform 1.1s ease-out, opacity 1.1s ease-out";
       heroEl.style.transform = "translateY(40px)";
       heroEl.style.opacity = "0";
       requestAnimationFrame(() => {
@@ -158,14 +171,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 60);
       });
     } else {
-      // still
       heroEl.style.transform = "none";
     }
   }
 
-  /* =======================
+  /* =============================================================
      BLOCK RENDERING
-  ======================== */
+  ============================================================= */
   function renderBlocks(target, blocks) {
     if (!blocks || !blocks.length) {
       target.innerHTML = "";
@@ -173,39 +185,35 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     let html = "";
-    blocks.forEach(b => {
+    blocks.forEach((b) => {
       if (b.type === "heading") {
         html += `
           <section class="block block-heading">
             <h2>${escapeHtml(b.content || "")}</h2>
-          </section>
-        `;
+          </section>`;
       } else if (b.type === "paragraph") {
         const text = (b.content || "").replace(/\n/g, "<br>");
         html += `
           <section class="block block-paragraph">
             <p>${text}</p>
-          </section>
-        `;
+          </section>`;
       } else if (b.type === "image" && b.content) {
         html += `
           <section class="block block-image">
             <img src="${escapeHtml(b.content)}" alt="" />
-          </section>
-        `;
+          </section>`;
       } else if (b.type === "button") {
         html += `
           <section class="block block-button">
             <a href="${escapeHtml(b.url || "#")}" class="btn-block">
               ${escapeHtml(b.text || "Learn more")}
             </a>
-          </section>
-        `;
+          </section>`;
       } else if (b.type === "product") {
         html += `
           <section class="block block-product">
             <div class="product-card">
-              ${b.image ? `<img src="${escapeHtml(b.image)}" alt="" class="product-image" />` : ""}
+              ${b.image ? `<img src="${escapeHtml(b.image)}" class="product-image" />` : ""}
               <div class="product-info">
                 <h3>${escapeHtml(b.title || "")}</h3>
                 <p>${escapeHtml(b.text || "")}</p>
@@ -213,24 +221,18 @@ document.addEventListener("DOMContentLoaded", () => {
                   b.url
                     ? `<a href="${escapeHtml(
                         b.url
-                      )}" target="_blank" rel="noopener noreferrer" class="product-btn">
-                         Buy on Amazon
-                       </a>`
+                      )}" target="_blank" class="product-btn">Buy on Amazon</a>`
                     : ""
                 }
               </div>
             </div>
-          </section>
-        `;
+          </section>`;
       } else if (b.type === "podcast" && b.embed) {
         html += `
           <section class="block block-podcast">
             <h3>${escapeHtml(b.title || "")}</h3>
-            <iframe src="${escapeHtml(
-              b.embed
-            )}" allow="autoplay" loading="lazy"></iframe>
-          </section>
-        `;
+            <iframe src="${escapeHtml(b.embed)}" allow="autoplay"></iframe>
+          </section>`;
       } else if (b.type === "youtube" && b.videoId) {
         let id = b.videoId.trim();
         const m = id.match(/v=([^&]+)/);
@@ -240,12 +242,9 @@ document.addEventListener("DOMContentLoaded", () => {
           <section class="block block-youtube">
             <h3>${escapeHtml(b.title || "")}</h3>
             <div class="video-wrap">
-              <iframe src="https://www.youtube.com/embed/${escapeHtml(
-                id
-              )}" allowfullscreen loading="lazy"></iframe>
+              <iframe src="https://www.youtube.com/embed/${escapeHtml(id)}" allowfullscreen></iframe>
             </div>
-          </section>
-        `;
+          </section>`;
       }
     });
 
@@ -259,5 +258,3 @@ document.addEventListener("DOMContentLoaded", () => {
       .replace(/>/g, "&gt;");
   }
 });
-
-
