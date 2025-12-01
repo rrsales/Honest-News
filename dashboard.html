@@ -39,11 +39,11 @@
     background:
       radial-gradient(circle at top, #1e293b 0, #020617 48%, #000 100%);
     color:var(--text-main);
-    min-height:100vh; /* was height:100vh */
+    height:100vh;
     display:flex;
     flex-direction:column;
     -webkit-font-smoothing: antialiased;
-    /* allow scrolling on mobile */
+    overflow:hidden;
   }
 
   /* TOP GLOSSY APPLE-STYLE BAR */
@@ -136,7 +136,6 @@
     padding:16px;
     gap:16px;
     min-height:0;
-    overflow:auto; /* allow scroll */
   }
 
   /* LEFT SIDEBAR */
@@ -165,60 +164,79 @@
     padding-right:4px;
   }
 
-  .page-row{
+  /* Accordion-style pages list */
+  .page-acc{
     margin-top:6px;
     border-radius:12px;
     background:#020617;
     border:1px solid transparent;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    font-size:.84rem;
-    color:var(--text-main);
-    padding:4px 4px 4px 8px;
+    box-shadow:none;
+    overflow:hidden;
   }
-  .page-row.active{
-    background:var(--accent-soft-bg);
+  .page-acc[open]{
+    border-color:rgba(148,163,184,.5);
+  }
+  .page-acc.active{
     border-color:var(--accent);
     box-shadow:0 0 0 1px rgba(56,189,248,.4);
   }
 
-  .page-main{
-    flex:1;
-    padding:5px 4px;
+  .page-acc summary{
+    list-style:none;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    padding:8px 9px;
     cursor:pointer;
+  }
+  .page-acc summary::-webkit-details-marker{display:none;}
+
+  .page-header-main{
     display:flex;
     flex-direction:column;
   }
-
-  .page-main span.title{
+  .page-title{
     font-weight:600;
+    font-size:.84rem;
   }
-  .page-main span.slug{
+  .page-slug{
     font-size:.7rem;
     color:#6b7280;
   }
-
-  .page-actions{
+  .page-acc-right{
     display:flex;
     align-items:center;
     gap:4px;
-    padding-left:4px;
+    margin-left:6px;
   }
-  .page-actions button{
+
+  .page-chevron{
+    font-size:.75rem;
+    color:#6b7280;
+  }
+
+  .page-delete-btn{
     border:none;
-    background:#0f172a;
-    color:#e5e7eb;
-    border-radius:999px;
-    padding:4px 7px;
-    font-size:.7rem;
+    background:transparent;
+    color:#6b7280;
     cursor:pointer;
+    padding:2px 6px;
+    border-radius:8px;
+    flex-shrink:0;
   }
-  .page-actions button.delete{
-    background:#7f1d1d;
+  .page-delete-btn:hover{
+    color:#fecaca;
+    background:rgba(127,29,29,0.35);
   }
-  .page-actions button.delete:hover{
-    background:#b91c1c;
+
+  .page-acc-body{
+    padding:6px 9px 9px;
+    border-top:1px solid rgba(31,41,55,.9);
+  }
+  .page-acc-body-row{
+    font-size:.72rem;
+    color:#9ca3af;
+    margin-bottom:3px;
   }
 
   .textarea-small{
@@ -590,6 +608,7 @@
   }
 
   @media (max-width:900px){
+    body{overflow:auto;}          /* allow scrolling on mobile */
     .main{flex-direction:column;}
     .sidebar{width:100%;}
     #panelHandle{top:auto;bottom:90px;}
@@ -715,150 +734,111 @@
 /* =======================
    STATE
 ======================= */
+const DRAFT_KEY = "hn_cms_draft_v1";
+
+/* default menu always safe */
+const defaultMenu = [
+  { id: "home",     label: "Home",     url: "index.html",   type: "link", showOn: "both", subItems: [] },
+  { id: "podcast",  label: "Podcast",  url: "podcast.html", type: "link", showOn: "both", subItems: [] },
+  { id: "shop",     label: "Shop",     url: "shop.html",    type: "link", showOn: "both", subItems: [] },
+  {
+    id: "resources",
+    label: "Resources",
+    url: "#",
+    type: "mega",
+    showOn: "desktop",
+    subItems: [
+      { label: "Getting started", url: "getting-started.html", description: "How Honest News + podcast + YouTube fit together." },
+      { label: "For Pastors",     url: "pastors.html",         description: "Tools and workflows to preach, record, and publish." },
+      { label: "For Listeners",   url: "listeners.html",       description: "Where to listen, how to subscribe, how to support." }
+    ]
+  },
+  { id: "support", label: "Support", url: "support.html", type: "link", showOn: "both", subItems: [] },
+  { id: "contact", label: "Contact", url: "contact.html", type: "link", showOn: "both", subItems: [] }
+];
+
+/* default pages used ONLY if site-data.json not found at all */
+const defaultPages = [
+  {
+    title:"Home",
+    slug:"home",
+    theme:"dark",
+    hero:{
+      bg:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80",
+      overlay:"Honest News Network",
+      sub:"Everything You Need for Biblical Truth",
+      transparentMenu:false,
+      behavior:"parallax-medium",
+      size:"full",
+      customHeight:""
+    },
+    blocks:[]
+  },
+  {
+    title:"Podcast",
+    slug:"podcast",
+    theme:"dark",
+    hero:{
+      bg:"",
+      overlay:"Latest Episodes",
+      sub:"New episodes every Sunday",
+      transparentMenu:true,
+      behavior:"parallax-slow",
+      size:"full",
+      customHeight:""
+    },
+    blocks:[]
+  },
+  {
+    title:"Shop",
+    slug:"shop",
+    theme:"dark",
+    hero:{
+      bg:"",
+      overlay:"Recommended Resources",
+      sub:"Support your walk and support the ministry",
+      transparentMenu:true,
+      behavior:"still",
+      size:"medium",
+      customHeight:""
+    },
+    blocks:[]
+  },
+  {
+    title:"Support",
+    slug:"support",
+    theme:"dark",
+    hero:{
+      bg:"",
+      overlay:"Support Honest News",
+      sub:"Partner with the work of Biblical Truth",
+      transparentMenu:true,
+      behavior:"still",
+      size:"medium",
+      customHeight:""
+    },
+    blocks:[]
+  },
+  {
+    title:"Contact",
+    slug:"contact",
+    theme:"dark",
+    hero:{
+      bg:"",
+      overlay:"Contact",
+      sub:"Reach out with questions, prayer requests, or ideas.",
+      transparentMenu:false,
+      behavior:"still",
+      size:"medium",
+      customHeight:""
+    },
+    blocks:[]
+  }
+];
+
 let site = {
-  menu: [
-    {
-      id: "home",
-      label: "Home",
-      url: "index.html",
-      type: "link",
-      showOn: "both",
-      subItems: []
-    },
-    {
-      id: "podcast",
-      label: "Podcast",
-      url: "podcast.html",
-      type: "link",
-      showOn: "both",
-      subItems: []
-    },
-    {
-      id: "shop",
-      label: "Shop",
-      url: "shop.html",
-      type: "link",
-      showOn: "both",
-      subItems: []
-    },
-    {
-      id: "resources",
-      label: "Resources",
-      url: "#",
-      type: "mega",
-      showOn: "desktop",
-      subItems: [
-        {
-          label: "Getting started",
-          url: "getting-started.html",
-          description: "How Honest News + podcast + YouTube fit together."
-        },
-        {
-          label: "For Pastors",
-          url: "pastors.html",
-          description: "Tools and workflows to preach, record, and publish."
-        },
-        {
-          label: "For Listeners",
-          url: "listeners.html",
-          description: "Where to listen, how to subscribe, how to support."
-        }
-      ]
-    },
-    {
-      id: "support",
-      label: "Support",
-      url: "support.html",
-      type: "link",
-      showOn: "both",
-      subItems: []
-    },
-    {
-      id: "contact",
-      label: "Contact",
-      url: "contact.html",
-      type: "link",
-      showOn: "both",
-      subItems: []
-    }
-  ],
-  pages: [
-    {
-      title:"Home",
-      slug:"home",
-      theme:"dark",
-      hero:{
-        bg:"https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80",
-        overlay:"Honest News Network",
-        sub:"Everything You Need for Biblical Truth",
-        transparentMenu:false,
-        behavior:"parallax-medium",
-        size:"full",
-        customHeight:""
-      },
-      blocks:[]
-    },
-    {
-      title:"Podcast",
-      slug:"podcast",
-      theme:"dark",
-      hero:{
-        bg:"",
-        overlay:"Latest Episodes",
-        sub:"New episodes every Sunday",
-        transparentMenu:true,
-        behavior:"parallax-slow",
-        size:"full",
-        customHeight:""
-      },
-      blocks:[]
-    },
-    {
-      title:"Shop",
-      slug:"shop",
-      theme:"dark",
-      hero:{
-        bg:"",
-        overlay:"Recommended Resources",
-        sub:"Support your walk and support the ministry",
-        transparentMenu:true,
-        behavior:"still",
-        size:"medium",
-        customHeight:""
-      },
-      blocks:[]
-    },
-    {
-      title:"Support",
-      slug:"support",
-      theme:"dark",
-      hero:{
-        bg:"",
-        overlay:"Support Honest News",
-        sub:"Partner with the work of Biblical Truth",
-        transparentMenu:true,
-        behavior:"still",
-        size:"medium",
-        customHeight:""
-      },
-      blocks:[]
-    },
-    {
-      title:"Contact",
-      slug:"contact",
-      theme:"dark",
-      hero:{
-        bg:"",
-        overlay:"Contact",
-        sub:"Reach out with questions, prayer requests, or ideas.",
-        transparentMenu:false,
-        behavior:"still",
-        size:"medium",
-        customHeight:""
-      },
-      blocks:[]
-    }
-  ],
+  menu: defaultMenu.slice(),
+  pages: [],
   theme: {},
   heroSlides: []
 };
@@ -866,7 +846,6 @@ let site = {
 let current = null;
 let isDirty = false;
 let activeInspectorTab = "page";
-const DRAFT_KEY = "hn_cms_draft_v1";
 
 /* panel behavior: auto | manual | pinned | smart */
 let panelBehavior = localStorage.getItem("hn_panel_behavior") || "auto";
@@ -883,23 +862,41 @@ const SAVE_ENDPOINT = "https://honest-news.onrender.com/save";
    LOAD site-data.json
 ======================= */
 (async function loadSiteData() {
+  let loadedFromServer = false;
+
   try {
     const res = await fetch("site-data.json?cache-bust=" + Date.now());
     if (res.ok) {
       const data = await res.json();
       if (data && typeof data === "object") {
-        // merge so defaults stay if missing
-        site = Object.assign({}, site, data);
+        loadedFromServer = true;
+        site = {
+          menu: Array.isArray(data.menu) ? data.menu : defaultMenu.slice(),
+          pages: Array.isArray(data.pages) ? data.pages : defaultPages.slice(),
+          theme: data.theme || {},
+          heroSlides: Array.isArray(data.heroSlides) ? data.heroSlides : []
+        };
       }
     }
   } catch (e) {
-    console.warn("Could not load site-data.json, using defaults", e);
+    console.warn("Could not load site-data.json, will use defaults if no draft", e);
   }
+
+  /* If no site-data.json yet, seed with defaults ONLY once */
+  if (!loadedFromServer && !site.pages.length) {
+    site.pages = defaultPages.slice();
+  }
+
   restoreDraftIfAny();
+
+  /* auto-select first page */
+  current = site.pages[0] || null;
+
   renderPages();
   updatePreviewHeader();
   renderPreview();
   applyPanelBehavior();
+  renderInspectorTab();
 })();
 
 /* =======================
@@ -967,36 +964,57 @@ document.addEventListener("keydown", (e)=>{
 });
 
 /* =======================
-   SIDEBAR / PAGES
+   SIDEBAR / PAGES (ACCORDION)
 ======================= */
 function renderPages(){
   const container = document.getElementById("pages");
-  const pages = site.pages || [];
-  container.innerHTML = pages.map((p,i)=>`
-    <div class="page-row ${p===current ? 'active' : ''}">
-      <div class="page-main" onclick="selectPage(${i})">
-        <span class="title">${p.title || 'Untitled'}</span>
-        <span class="slug">${p.slug || ''}</span>
-      </div>
-      <div class="page-actions">
-        <button title="Select" onclick="selectPage(${i});event.stopPropagation();">
-          <i class="fa-regular fa-pen-to-square"></i>
-        </button>
-        <button class="delete" title="Delete page" onclick="deletePage(${i});event.stopPropagation();">
-          <i class="fa-regular fa-trash-can"></i>
-        </button>
-      </div>
-    </div>
-  `).join("");
+  const pagesArr = site.pages || [];
+  container.innerHTML = pagesArr.map((p,i)=>{
+    const isActive = (p === current);
+    const hero = p.hero || {};
+    const heroSize = hero.size || "full";
+    const blockCount = (p.blocks || []).length;
+
+    return `
+      <details class="page-acc ${isActive ? "active" : ""}" ${isActive ? "open" : ""} data-index="${i}">
+        <summary onclick="selectPage(${i})">
+          <div class="page-header-main">
+            <span class="page-title">${p.title || 'Untitled'}</span>
+            <span class="page-slug">${p.slug || ''}</span>
+          </div>
+          <div class="page-acc-right">
+            <span class="page-chevron">
+              <i class="fa-solid fa-chevron-down"></i>
+            </span>
+            <button class="page-delete-btn"
+                    title="Delete page"
+                    onclick="deletePage(${i}, event)">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+        </summary>
+        <div class="page-acc-body">
+          <div class="page-acc-body-row">
+            Hero: ${hero.overlay || "—"} (${heroSize})
+          </div>
+          <div class="page-acc-body-row">
+            Blocks: ${blockCount}
+          </div>
+        </div>
+      </details>
+    `;
+  }).join("");
+
   rawFromMenu();
 }
 
+/* Create a new page */
 function newPage(){
   const t = prompt("Page title?");
   if (!t) return;
   const slug = t.toLowerCase().replace(/\s+/g,"-");
   if (!site.pages) site.pages = [];
-  site.pages.push({
+  const newPage = {
     title:t,
     slug,
     theme:"dark",
@@ -1010,29 +1028,38 @@ function newPage(){
       customHeight:""
     },
     blocks:[]
-  });
+  };
+  site.pages.push(newPage);
+  current = newPage;
   markDirty();
   renderPages();
+  updatePreviewHeader();
+  renderPreview();
+  renderInspectorTab();
 }
 
-function deletePage(index){
-  const pages = site.pages || [];
-  if (pages.length <= 1){
-    alert("You must keep at least one page.");
-    return;
-  }
-  const page = pages[index];
-  const name = page.title || page.slug || ("page " + (index+1));
-  if (!confirm(`Delete page “${name}”? This removes it from CMS data (you will still have the raw HTML file until you edit it manually).`)){
+/* Delete page (from CMS data) */
+function deletePage(index, evt){
+  if (evt) evt.stopPropagation();
+  if (!site.pages || !site.pages[index]) return;
+
+  const p = site.pages[index];
+
+  if (site.pages.length === 1) {
+    alert("You must keep at least one page in the site.");
     return;
   }
 
-  // Remove the page
-  pages.splice(index,1);
+  const label = p.title || p.slug || "Untitled";
 
-  // If current was deleted, clear or select first
-  if (current === page){
-    current = pages[0] || null;
+  if (!confirm(`Delete page "${label}" from CMS?\n\nThis does NOT delete the .html file, only the CMS entry.\n\nRemember to click "Save to Cloud" afterwards so it stays deleted.`)) {
+    return;
+  }
+
+  site.pages.splice(index, 1);
+
+  if (current === p) {
+    current = site.pages[0] || null;
   }
 
   markDirty();
@@ -1076,7 +1103,7 @@ function selectPage(i){
   renderPages();
   updatePreviewHeader();
   renderPreview();
-  renderInspectorTab(); // refresh panel content
+  renderInspectorTab();
   if (panelBehavior === "auto" || panelBehavior === "pinned" || panelBehavior === "smart"){
     openPanel("auto");
   }
@@ -1668,7 +1695,7 @@ async function saveToCloud(){
     }
 
     markSavedLocal();
-    alert("✔ Saved to cloud.\nRender → GitHub site-data.json updated.");
+    alert("✔ Saved to cloud.\nRender → GitHub site-data.json updated.\n\nYour page deletions and edits are now persisted.");
 
   }catch(e){
     console.error(e);
@@ -1735,6 +1762,7 @@ renderInspectorTab();
 </script>
 </body>
 </html>
+
 
 
 
