@@ -1,0 +1,454 @@
+/* ============================================================
+   Honest News – Global Styles (Apple / Webflow Style System)
+   FULL FILE — OVERWRITE COMPLETELY
+   ============================================================ */
+
+/* -------------------------------------
+   RESET
+-------------------------------------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  scroll-behavior: smooth;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #0f0f11;
+  color: #fff;
+}
+
+/* -------------------------------------
+   THEME SYSTEM
+-------------------------------------- */
+.theme-light {
+  background: #f5f5f7;
+  color: #111;
+}
+
+.theme-dark {
+  background: #0f0f11;
+  color: #fff;
+}
+
+/* -------------------------------------
+   HEADER
+-------------------------------------- */
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  padding: 0 28px;
+  backdrop-filter: blur(14px);
+  background: rgba(0,0,0,0.82);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  z-index: 1000;
+  transition: background 0.3s ease;
+}
+
+header.header--transparent {
+  background: rgba(0,0,0,0.15);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+/* NAV MENU */
+
+header nav ul {
+  list-style: none;
+  display: flex;
+  gap: 32px;
+}
+
+header nav ul li a {
+  text-decoration: none;
+  font-weight: 500;
+  color: #dcdcdc;
+  transition: color 0.25s;
+}
+
+header nav ul li a:hover {
+  color: #fff;
+}
+
+header nav ul li a.active {
+  color: #4da6ff;
+}
+
+/* -------------------------------------
+   HERO SECTION
+-------------------------------------- */
+
+.hero {
+  width: 100%;
+  height: 100vh; /* dynamically overridden by live.js */
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 40px;
+  text-align: center;
+  overflow: hidden;
+}
+
+.hero-overlay-soft {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 1;
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+}
+
+.hero h1 {
+  font-size: 3.4rem;
+  font-weight: 700;
+  line-height: 1.15;
+  margin-bottom: 12px;
+}
+
+.hero p {
+  font-size: 1.4rem;
+  opacity: 0.9;
+}
+
+/* -------------------------------------
+   BLOCK SYSTEM
+-------------------------------------- */
+[data-blocks-target] {
+  width: 100%;
+  max-width: 1100px;
+  margin: 60px auto;
+  padding: 0 24px;
+}
+
+/* Heading Block */
+.block-heading h2 {
+  font-size: 2.4rem;
+  font-weight: 700;
+  margin-bottom: 32px;
+}
+
+/* Paragraph Block */
+.block-paragraph p {
+  font-size: 1.2rem;
+  line-height: 1.7;
+  margin-bottom: 28px;
+}
+
+/* Image Block */
+.block-image img {
+  width: 100%;
+  border-radius: 10px;
+  margin: 40px 0;
+}
+
+/* Button Block */
+.block-button .btn-block {
+  display: inline-block;
+  background: #007aff;
+  padding: 12px 26px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #fff;
+  font-weight: 600;
+  transition: background 0.2s ease;
+}
+
+.btn-block:hover {
+  background: #2094ff;
+}
+
+/* Product Block */
+.block-product {
+  margin: 40px 0;
+}
+
+.product-card {
+  display: flex;
+  flex-wrap: wrap;
+  background: #1a1a1d;
+  border-radius: 14px;
+  padding: 24px;
+  gap: 24px;
+}
+
+.product-image {
+  width: 240px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.product-info h3 {
+  font-size: 1.6rem;
+  margin-bottom: 10px;
+}
+
+.product-info p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  opacity: 0.85;
+  margin-bottom: 12px;
+}
+
+.product-btn {
+  background: #ff9900;
+  padding: 10px 18px;
+  border-radius: 6px;
+  color: #111;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+/* Podcast Block */
+.block-podcast {
+  margin: 40px 0;
+}
+
+.block-podcast iframe {
+  width: 100%;
+  height: 180px;
+  border-radius: 10px;
+  border: none;
+}
+
+/* YouTube Block */
+.block-youtube .video-wrap {
+  position: relative;
+  width: 100%;
+  padding-bottom: 56.3%;
+  margin: 40px 0;
+}
+
+.block-youtube iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 14px;
+  border: none;
+}
+
+/* -------------------------------------
+   PAGE SPACING BELOW HERO
+-------------------------------------- */
+main {
+  margin-top: 70px; /* header offset */
+}
+
+/* -------------------------------------
+   FOOTER
+-------------------------------------- */
+footer {
+  margin-top: 80px;
+  padding: 40px 20px;
+  text-align: center;
+  opacity: 0.7;
+  font-size: 0.9rem;
+}
+/* --- MOBILE MENU --- */
+.mobile-menu-btn {
+  display: none;
+  font-size: 28px;
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+@media(max-width: 900px) {
+  .mobile-menu-btn {
+    display: block;
+    position: absolute;
+    right: 20px;
+    top: 18px;
+    z-index: 999;
+  }
+
+  #mobileMenu {
+    position: fixed;
+    top: 0;
+    right: -280px;
+    width: 280px;
+    height: 100vh;
+    background: #111;
+    color: #fff;
+    padding: 30px 20px;
+    transition: right .35s ease;
+    z-index: 998;
+  }
+
+  #mobileMenu.open {
+    right: 0;
+  }
+
+  #mobileMenuList a {
+    display: block;
+    padding: 14px 0;
+    color: #fff;
+    font-size: 20px;
+    text-decoration: none;
+    border-bottom: 1px solid #222;
+  }
+
+  body.menu-open {
+    overflow: hidden;
+  }
+}
+/* ============================================
+   GLOBAL RESET + BODY
+============================================ */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body.theme-light { background: #fafafa; color: #111; }
+body.theme-dark  { background: #0b0b0c; color: #fff; }
+
+/* ============================================
+   HEADER (Apple style)
+============================================ */
+.site-header {
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  padding: 12px 0;
+  z-index: 999;
+  background: rgba(15,15,17,0.88);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  transition: background .3s ease;
+}
+
+.site-header.header--transparent {
+  background: transparent !important;
+  border-bottom: none;
+}
+
+.header-inner {
+  max-width: 1280px;
+  margin: auto;
+  padding: 0 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  color: #fff;
+  font-size: 22px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* Desktop Nav */
+.desktop-nav ul {
+  list-style: none;
+  display: flex;
+  gap: 24px;
+}
+
+.desktop-nav a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 16px;
+  padding-bottom: 3px;
+}
+
+.desktop-nav a.active {
+  border-bottom: 2px solid #0db3ff;
+}
+
+/* Hide desktop menu on mobile */
+@media(max-width:900px) {
+  .desktop-nav { display: none; }
+}
+
+/* ============================================
+   MOBILE HAMBURGER
+============================================ */
+.mobile-menu-btn {
+  display: none;
+  font-size: 32px;
+  background: transparent;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+}
+
+@media(max-width:900px) {
+  .mobile-menu-btn { display: block; }
+}
+
+/* ============================================
+   FULLSCREEN MOBILE MENU PANEL (Podbean style)
+============================================ */
+.mobile-menu-fullscreen {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: #0b0b0c;
+  padding: 30px 22px;
+  transition: left .35s ease;
+  z-index: 1002;
+  overflow-y: auto;
+}
+
+.mobile-menu-fullscreen.open {
+  left: 0;
+}
+
+.mobile-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 25px;
+  border-bottom: 1px solid #222;
+}
+
+#mobileMenuClose {
+  font-size: 28px;
+  cursor: pointer;
+  color: #fff;
+}
+
+#mobileMenuList a {
+  display: block;
+  padding: 22px 0;
+  font-size: 22px;
+  color: #fff;
+  border-bottom: 1px solid #222;
+  text-decoration: none;
+}
+
+/* Prevent scrolling when menu open */
+body.menu-open { overflow: hidden; }
+
+/* ============================================
+   HERO — now can appear UNDER header if transparentMenu=true
+============================================ */
+.hero, .hero-carousel, [data-hero] {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  margin-top: 0 !important; /* ensure top alignment */
+}
+
+body:not(.hero-transparent) .hero {
+  margin-top: 68px !important; /* normal spacing */
+}
+
+body.hero-transparent .hero {
+  margin-top: 0 !important;
+}
