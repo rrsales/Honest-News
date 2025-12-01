@@ -256,3 +256,52 @@ footer {
   opacity: 0.7;
   font-size: 0.9rem;
 }
+/* --- MOBILE MENU --- */
+.mobile-menu-btn {
+  display: none;
+  font-size: 28px;
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+}
+
+@media(max-width: 900px) {
+  .mobile-menu-btn {
+    display: block;
+    position: absolute;
+    right: 20px;
+    top: 18px;
+    z-index: 999;
+  }
+
+  #mobileMenu {
+    position: fixed;
+    top: 0;
+    right: -280px;
+    width: 280px;
+    height: 100vh;
+    background: #111;
+    color: #fff;
+    padding: 30px 20px;
+    transition: right .35s ease;
+    z-index: 998;
+  }
+
+  #mobileMenu.open {
+    right: 0;
+  }
+
+  #mobileMenuList a {
+    display: block;
+    padding: 14px 0;
+    color: #fff;
+    font-size: 20px;
+    text-decoration: none;
+    border-bottom: 1px solid #222;
+  }
+
+  body.menu-open {
+    overflow: hidden;
+  }
+}
