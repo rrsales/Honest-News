@@ -1,39 +1,45 @@
-// =====================================================
-// Honest News Mobile Framework (FULL OVERWRITE)
-// =====================================================
-
+// assets/js/mobile.js
 document.addEventListener("DOMContentLoaded", () => {
-  initMobileMenu();
+  const toggle = document.getElementById("mobileMenuToggle");
+  const menu = document.getElementById("mobileMenu");
+  const body = document.body;
+
+  if (!toggle || !menu) return;
+
+  function openMenu() {
+    body.classList.add("mobile-menu-open");
+    menu.classList.add("is-open");
+  }
+
+  function closeMenu() {
+    body.classList.remove("mobile-menu-open");
+    menu.classList.remove("is-open");
+  }
+
+  toggle.addEventListener("click", () => {
+    if (menu.classList.contains("is-open")) {
+      closeMenu();
+    } else {
+      openMenu();
+    }
+  });
+
+  // Close on X button
+  const closeBtn = document.getElementById("mobileMenuClose");
+  if (closeBtn) {
+    closeBtn.addEventListener("click", closeMenu);
+  }
+
+  // Close when clicking a link
+  menu.addEventListener("click", (e) => {
+    const link = e.target.closest("a");
+    if (link) {
+      closeMenu();
+    }
+  });
+
+  // Close on ESC
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") closeMenu();
+  });
 });
-
-/* ========================================
-   MOBILE MENU
-======================================== */
-function initMobileMenu() {
-  const openBtn = document.getElementById("mobileMenuBtn");
-  const closeBtn = document.getElementById("mobileCloseBtn");
-  const panel = document.getElementById("mobileMenu");
-
-  if (!openBtn || !closeBtn || !panel) return;
-
-  openBtn.addEventListener("click", () => {
-    document.body.classList.add("menu-open");
-    panel.classList.add("open");
-  });
-
-  closeBtn.addEventListener("click", () => {
-    document.body.classList.remove("menu-open");
-    panel.classList.remove("open");
-  });
-}
-// assets/js/mobile/mobile.js
-// Master mobile boot file – imports all modules
-
-import './mobile.menu.js';
-import './mobile.nav.js';
-import './mobile.hero.js';
-import './mobile.cards.js';
-import './mobile.swipe.js';
-import './mobile.player.js';
-
-// You can put global mobile-only logic here later if needed.
