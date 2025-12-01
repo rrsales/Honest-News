@@ -27,12 +27,12 @@
       "slug": "home",
       "theme": "light",
       "hero": {
-        "bg": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80",
+        "bg": "",
         "overlay": "Honest News Network",
         "sub": "Everything You Need for Biblical Truth",
         "transparentMenu": true,
-        "behavior": "parallax-slow",
-        "size": "full",
+        "behavior": "parallax-medium",
+        "size": "small",
         "customHeight": ""
       },
       "blocks": [
@@ -64,10 +64,17 @@
         "sub": "New episodes every Sunday",
         "transparentMenu": true,
         "behavior": "float-up",
-        "size": "medium",
+        "size": "full",
         "customHeight": ""
       },
-      "blocks": []
+      "blocks": [
+        {
+          "type": "youtube",
+          "motion": "fade",
+          "title": "Video title",
+          "videoId": "https://www.youtube.com/watch?v=Mdi5_PYFezU&list=RDMdi5_PYFezU&start_radio=1"
+        }
+      ]
     },
     {
       "title": "Shop",
