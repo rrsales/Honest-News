@@ -7,27 +7,11 @@
       "type": "link",
       "showOn": "both",
       "subItems": []
-    },
-    {
-      "id": "test",
-      "label": "Test",
-      "url": "test.html",
-      "type": "link",
-      "showOn": "both",
-      "subItems": []
-    },
-    {
-      "id": "contact",
-      "label": "Contact",
-      "url": "contact.html",
-      "type": "link",
-      "showOn": "both",
-      "subItems": []
     }
   ],
   "pages": [
     {
-      "title": "Home | index.html",
+      "title": "Home",
       "slug": "home",
       "theme": "light",
       "hero": {
@@ -41,6 +25,12 @@
       },
       "blocks": [
         {
+          "type": "youtube",
+          "motion": "fade",
+          "title": "",
+          "videoId": ""
+        },
+        {
           "type": "heading",
           "motion": "float",
           "content": "About Us"
@@ -53,16 +43,16 @@
       ]
     },
     {
-      "title": "Podcast | podcast.html",
+      "title": "Podcast",
       "slug": "podcast",
       "theme": "light",
       "hero": {
         "bg": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80",
-        "overlay": "Podcast Test",
+        "overlay": "Latest Episodes",
         "sub": "New episodes every Sunday",
         "transparentMenu": true,
         "behavior": "float-up",
-        "size": "small",
+        "size": "medium",
         "customHeight": ""
       },
       "blocks": []
@@ -83,9 +73,9 @@
       "blocks": []
     },
     {
-      "title": "Test | test.html",
+      "title": "Test",
       "slug": "test",
-      "theme": "light",
+      "theme": "dark",
       "hero": {
         "bg": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80",
         "overlay": "Test",
