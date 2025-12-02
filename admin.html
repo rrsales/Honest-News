@@ -12,200 +12,60 @@
     }
   </script>
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-  <style>
-    :root{
-      --bg: #020617;
-      --card-bg: #020617;
-      --accent: #0ea5e9;
-      --text-main: #e5e7eb;
-      --text-soft: #9ca3af;
-      --radius-lg: 20px;
-      --radius-md: 12px;
-    }
-
-    *{box-sizing:border-box;}
-
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background:
-        radial-gradient(circle at top, #1e293b 0, #020617 48%, #000 100%);
-      color:var(--text-main);
-      -webkit-font-smoothing:antialiased;
-    }
-
-    .login-wrapper{
-      width:100%;
-      max-width:380px;
-      padding:24px;
-    }
-
-    .login-card{
-      background:radial-gradient(circle at top left,#0b1120 0,#020617 60%);
-      border-radius:var(--radius-lg);
-      padding:24px 22px 22px;
-      border:1px solid rgba(148,163,184,0.5);
-      box-shadow:0 20px 45px rgba(0,0,0,0.85);
-    }
-
-    .login-header{
-      text-align:center;
-      margin-bottom:18px;
-    }
-    .login-header .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      font-size:.7rem;
-      text-transform:uppercase;
-      letter-spacing:.16em;
-      color:var(--text-soft);
-    }
-    .login-header h1{
-      margin:8px 0 4px;
-      font-size:1.15rem;
-    }
-    .login-header p{
-      margin:0;
-      font-size:.8rem;
-      color:var(--text-soft);
-    }
-
-    label{
-      display:block;
-      font-size:.8rem;
-      margin-bottom:4px;
-    }
-
-    input[type="password"]{
-      width:100%;
-      padding:9px 11px;
-      border-radius:var(--radius-md);
-      border:1px solid rgba(55,65,81,.9);
-      background:#020617;
-      color:#e5e7eb;
-      font-size:.85rem;
-    }
-
-    input[type="password"]:focus{
-      outline:none;
-      border-color:var(--accent);
-      box-shadow:0 0 0 1px rgba(56,189,248,.5);
-    }
-
-    .btn{
-      width:100%;
-      margin-top:12px;
-      border:none;
-      border-radius:999px;
-      padding:9px 14px;
-      font-size:.85rem;
-      font-weight:600;
-      cursor:pointer;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      background:#22c55e;
-      color:#022c22;
-      border:1px solid #16a34a;
-    }
-    .btn:hover{
-      background:#16a34a;
-    }
-
-    .msg{
-      margin-top:10px;
-      font-size:.78rem;
-      min-height:1.1em;
-    }
-    .msg.error{color:#f97373;}
-    .msg.ok{color:#4ade80;}
-
-    .footer-note{
-      margin-top:12px;
-      text-align:center;
-      font-size:.7rem;
-      color:#6b7280;
-    }
-  </style>
+  <link rel="stylesheet" href="assets/css/admin.css">
 </head>
 <body>
 
-<div class="login-wrapper">
-  <div class="login-card">
-    <div class="login-header">
-      <div class="badge">
-        <i class="fa-solid fa-shield-halved"></i>
-        Honest News · Admin
-      </div>
-      <h1>Enter access password</h1>
-      <p>Protected dashboard for managing pages and heroes.</p>
-    </div>
-
-    <div>
-      <label for="adminPassword">Password</label>
-      <input type="password"
-             id="adminPassword"
-             placeholder="Enter password"
-             autocomplete="current-password">
-      <button class="btn" id="loginBtn">
-        <i class="fa-solid fa-right-to-bracket"></i>
-        Log In
-      </button>
-      <div id="loginMsg" class="msg"></div>
-    </div>
-
-    <div class="footer-note">
-      Forgot the password? Update it directly in <code>admin.html</code>.
-    </div>
+  <!-- SIMPLE BLUE LOGIN -->
+  <div id="adminLogin">
+    <h2>Honest News Admin</h2>
+    <input
+      type="password"
+      id="adminPassword"
+      placeholder="Enter password"
+      autocomplete="current-password"
+    >
+    <button id="loginBtn">Log In</button>
+    <div id="loginMsg"></div>
   </div>
-</div>
 
-<script>
-  const ADMIN_PASSWORD = "jo5765"; // 🔑 set your password
+  <script>
+    // 🔑 SET YOUR REAL PASSWORD HERE
+    const ADMIN_PASSWORD = "hn2025!"; // change this to whatever you want
 
-  const passwordInput = document.getElementById("adminPassword");
-  const loginBtn      = document.getElementById("loginBtn");
-  const loginMsg      = document.getElementById("loginMsg");
+    const passwordInput = document.getElementById("adminPassword");
+    const loginBtn      = document.getElementById("loginBtn");
+    const loginMsg      = document.getElementById("loginMsg");
 
-  function doLogin(){
-    const value = passwordInput.value.trim();
+    function doLogin(){
+      const value = passwordInput.value.trim();
 
-    if(!value){
-      loginMsg.textContent = "Please enter the password.";
-      loginMsg.className = "msg error";
-      return;
+      if (!value) {
+        loginMsg.textContent = "Please enter the password.";
+        loginMsg.style.color = "#d9534f";
+        return;
+      }
+
+      if (value === ADMIN_PASSWORD) {
+        localStorage.setItem("hn_logged", "yes");
+        loginMsg.textContent = "Access granted. Loading dashboard…";
+        loginMsg.style.color = "#28a745"; // green for success
+        location.href = "dashboard.html";
+      } else {
+        loginMsg.textContent = "Incorrect password.";
+        loginMsg.style.color = "#d9534f";
+      }
     }
 
-    if(value === ADMIN_PASSWORD){
-      localStorage.setItem("hn_logged","yes");
-      loginMsg.textContent = "Access granted. Loading dashboard…";
-      loginMsg.className = "msg ok";
-      location.href = "dashboard.html";
-    } else {
-      loginMsg.textContent = "Incorrect password.";
-      loginMsg.className = "msg error";
-    }
-  }
-
-  loginBtn.addEventListener("click", doLogin);
-
-  passwordInput.addEventListener("keydown", (e)=>{
-    if(e.key === "Enter"){
-      doLogin();
-    }
-  });
-</script>
+    loginBtn.addEventListener("click", doLogin);
+    passwordInput.addEventListener("keydown", (e)=>{
+      if (e.key === "Enter") doLogin();
+    });
+  </script>
 
 </body>
 </html>
+
 
 
 
