@@ -50,7 +50,7 @@
           "type": "podcast",
           "motion": "fade",
           "title": "Episode title",
-          "embed": "https://www.podbean.com/pw/pbblog-c3yg4-1091ad6"
+          "embed": "<iframe title=\"Honest News Network\" allowtransparency=\"true\" height=\"315\" width=\"100%\" style=\"border: none; min-width: min(100%, 430px);height:315px;\" scrolling=\"no\" data-name=\"pb-iframe-player\" src=\"https://www.podbean.com/player-v2/?i=c3yg4-1091ad6-pbblog-playlist&share=1&download=1&fonts=Arial&skin=f6f6f6&font-color=auto&rtl=0&logo_link=episode_page&btn-skin=f6f6f6&size=315\" loading=\"lazy\" allowfullscreen=\"\"></iframe>"
         }
       ]
     },
