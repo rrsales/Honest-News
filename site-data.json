@@ -45,12 +45,6 @@
           "type": "paragraph",
           "motion": "fade",
           "content": "Honest News Network exists to cut through the noise and tell the truth—plain, unapologetic, and rooted in God’s Word. In a world of spin, censorship, and confusion, we examine world events, culture, and headlines through a biblical lens so believers can understand the times and stand firm in their faith. We are not here to entertain; we are here to warn, inform, and call God’s people back to truth.\n\nWe expose the stories the mainstream ignores, the agendas they hide, and the spiritual battle behind the headlines. From politics and global crises to attacks on faith and family, Honest News Network connects the dots and shows how it all aligns with Scripture and end-time prophecy. Our goal is to help you see clearly so you are not deceived by the systems of this world.\n\nThis is more than a news outlet—it’s a watchman on the wall. Honest News Network exists to equip the body of Christ with discernment, courage, and hope as darkness grows and persecution increases. We invite you to stand with us, stay informed, and stay grounded in the only source of unshakable truth: the Word of God."
-        },
-        {
-          "type": "podcast",
-          "motion": "fade",
-          "title": "Episode title",
-          "embed": "<iframe title=\"Honest News Network\" allowtransparency=\"true\" height=\"315\" width=\"100%\" style=\"border: none; min-width: min(100%, 430px);height:315px;\" scrolling=\"no\" data-name=\"pb-iframe-player\" src=\"https://www.podbean.com/player-v2/?i=c3yg4-1091ad6-pbblog-playlist&share=1&download=1&fonts=Arial&skin=f6f6f6&font-color=auto&rtl=0&logo_link=episode_page&btn-skin=f6f6f6&size=315\" loading=\"lazy\" allowfullscreen=\"\"></iframe>"
         }
       ]
     },
