@@ -55,7 +55,7 @@
       </div>
     </div>
 
-    <!-- NAVIGATION SECTION (closed by default) -->
+    <!-- NAVIGATION SECTION (closed by default, now auto-synced with pages) -->
     <div class="sidebar-section">
       <button class="sidebar-section-header" type="button" onclick="toggleSidebarSection('nav')">
         <span class="label">Navigation</span>
@@ -63,8 +63,8 @@
       </button>
       <div class="sidebar-section-body closed" id="navSection">
         <p class="field-hint" style="margin-top:4px;">
-          Menu now follows your Pages automatically.<br>
-          (Advanced: edit text below if you really want custom items.)
+          Auto-synced with Pages. Advanced override:<br>
+          <code>Title | URL</code> (one per line).
         </p>
         <textarea id="menuRaw" class="textarea-small" oninput="menuFromRaw(this.value)"></textarea>
       </div>
@@ -154,9 +154,9 @@
 ======================= */
 let site = {
   menu: [
-    { id:"home", label:"Home", url:"index.html", type:"link", showOn:"both", subItems:[] },
+    { id:"home",    label:"Home",    url:"index.html",   type:"link", showOn:"both", subItems:[] },
     { id:"podcast", label:"Podcast", url:"podcast.html", type:"link", showOn:"both", subItems:[] },
-    { id:"shop", label:"Shop", url:"shop.html", type:"link", showOn:"both", subItems:[] },
+    { id:"shop",    label:"Shop",    url:"shop.html",    type:"link", showOn:"both", subItems:[] },
     {
       id:"resources",
       label:"Resources",
@@ -165,8 +165,8 @@ let site = {
       showOn:"desktop",
       subItems:[
         { label:"Getting started", url:"getting-started.html", description:"How Honest News + podcast + YouTube fit together." },
-        { label:"For Pastors", url:"pastors.html", description:"Tools and workflows to preach, record, and publish." },
-        { label:"For Listeners", url:"listeners.html", description:"Where to listen, how to subscribe, how to support." }
+        { label:"For Pastors",     url:"pastors.html",         description:"Tools and workflows to preach, record, and publish." },
+        { label:"For Listeners",   url:"listeners.html",       description:"Where to listen, how to subscribe, how to support." }
       ]
     },
     { id:"support", label:"Support", url:"support.html", type:"link", showOn:"both", subItems:[] },
@@ -270,57 +270,65 @@ const saveStatusRight = document.getElementById("saveStatusRight");
 const SAVE_ENDPOINT = "https://honest-news.onrender.com/save";
 
 /* =======================
-   MENU <-> PAGES HELPERS
-   (auto add menu links when pages are added)
+   MENU <-> PAGE SYNC HELPERS
 ======================= */
-function pageSlug(p){
-  const rawSlug = (p.slug || "").trim();
-  if (rawSlug) return rawSlug;
-  const title = (p.title || "").toLowerCase().trim();
-  return title ? title.replace(/[^\w\s-]/g,"").replace(/\s+/g,"-") : "page";
+function pageToUrl(page){
+  if (!page || !page.slug) return "#";
+  return page.slug === "home" ? "index.html" : page.slug + ".html";
 }
-function pageUrlFromSlug(slug){
-  return slug === "home" ? "index.html" : (slug + ".html");
-}
-function ensureMenuForExistingPages(){
-  if (!site.pages) return;
+
+/**
+ * Ensure there is a menu item for this page.
+ * If it exists, keep label/url in sync.
+ */
+function ensureMenuEntryForPage(page){
+  if (!page) return;
   if (!site.menu) site.menu = [];
-  site.pages.forEach(p=>{
-    const slug = pageSlug(p);
-    const url = pageUrlFromSlug(slug);
-    const exists = site.menu.some(m => m.id === slug || m.url === url);
-    if (!exists){
-      site.menu.push({
-        id: slug,
-        label: p.title || slug,
-        url,
-        type:"link",
-        showOn:"both",
-        subItems:[]
-      });
-    }
-  });
+  const url = pageToUrl(page);
+  let item = site.menu.find(m => m.id === page.slug || m.url === url);
+  if (!item){
+    item = {
+      id: page.slug,
+      label: page.title || page.slug || "Page",
+      url,
+      type:"link",
+      showOn:"both",
+      subItems:[]
+    };
+    site.menu.push(item);
+  } else {
+    item.id    = page.slug;
+    item.label = page.title || page.slug || item.label;
+    item.url   = url;
+  }
 }
-function addMenuItemForPage(p){
-  if (!p) return;
+
+/**
+ * Remove any menu entry that matches this page's slug/url.
+ */
+function removeMenuEntryForPage(page){
+  if (!page || !site.menu) return;
+  const url = pageToUrl(page);
+  site.menu = site.menu.filter(m => m.id !== page.slug && m.url !== url);
+}
+
+/**
+ * On load, make sure all pages at least have a menu item.
+ * (We DO NOT delete extra custom menu items.)
+ */
+function syncMenuWithPages(){
+  if (!site.pages) site.pages = [];
   if (!site.menu) site.menu = [];
-  const slug = pageSlug(p);
-  const url  = pageUrlFromSlug(slug);
-  const exists = site.menu.some(m => m.id === slug || m.url === url);
-  if (exists) return;
-  site.menu.push({
-    id: slug,
-    label: p.title || slug,
-    url,
-    type:"link",
-    showOn:"both",
-    subItems:[]
-  });
+  site.pages.forEach(p => ensureMenuEntryForPage(p));
 }
-function removeMenuItemForSlug(slug){
-  if (!site.menu || !slug) return;
-  const url = pageUrlFromSlug(slug);
-  site.menu = site.menu.filter(m => m.id !== slug && m.url !== url);
+
+/**
+ * Called when you edit title/slug of the current page.
+ */
+function syncMenuForCurrent(){
+  if (!current) return;
+  ensureMenuEntryForPage(current);
+  rawFromMenu();
 }
 
 /* =======================
@@ -339,9 +347,9 @@ function removeMenuItemForSlug(slug){
     console.warn("Could not load site-data.json, using defaults", e);
   }
   restoreDraftIfAny();
-  // make sure every page has a menu link once
-  ensureMenuForExistingPages();
+  syncMenuWithPages();       // <-- keep menu and pages cohesive
   renderPages();
+  rawFromMenu();
   updatePreviewHeader();
   renderPreview();
   applyPanelBehavior();
@@ -460,7 +468,6 @@ function renderPages(){
            </button>`}
     </div>
   `).join("");
-  rawFromMenu();
 }
 
 function newPage(){
@@ -484,8 +491,11 @@ function newPage(){
     blocks:[]
   };
   site.pages.push(pageObj);
-  // auto add a matching menu link
-  addMenuItemForPage(pageObj);
+
+  // NEW: tie this page to the menu automatically
+  ensureMenuEntryForPage(pageObj);
+  rawFromMenu();
+
   markDirty();
   renderPages();
   openSidebarSection("pages");
@@ -500,15 +510,16 @@ function deletePage(i){
   }
   if (!confirm(`Delete page "${p.title || p.slug}"? This cannot be undone (except via backup).`)) return;
 
-  site.pages.splice(i,1);
-  // remove its menu link too
-  if (p.slug) removeMenuItemForSlug(p.slug);
+  // NEW: remove matching menu entry
+  removeMenuEntryForPage(p);
 
+  site.pages.splice(i,1);
   if (current === p){
     current = site.pages[0] || null;
   }
   markDirty();
   renderPages();
+  rawFromMenu();
   updatePreviewHeader();
   renderPreview();
   renderInspectorTab();
@@ -521,16 +532,21 @@ function rawFromMenu(){
   const ta = document.getElementById("menuRaw");
   if(!ta) return;
   const menuArr = site.menu || [];
-  ta.value = menuArr.map(m=>`${m.label || m.title || 'Item'} | ${m.url || "#"}`).join("\n");
+  ta.value = menuArr
+    .filter(m => m.type === "link" || m.type === "mega" || !m.type)
+    .map(m=>`${m.label || m.title || 'Item'} | ${m.url || "#"}`)
+    .join("\n");
 }
 
 function menuFromRaw(text){
-  // Advanced override: if you really want to hand-edit menu, this still works.
   const lines = text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
   site.menu = lines.map((l,idx)=>{
     const [title,url] = l.split("|").map(s=>(s||"").trim());
+    const slug = (url && url.endsWith(".html"))
+      ? url.replace(".html","").replace(/\/+$/,"")
+      : (title || "item-"+idx).toLowerCase().replace(/\s+/g,"-");
     return {
-      id: (title || "item-"+idx).toLowerCase().replace(/\s+/g,"-"),
+      id: slug,
       label: title || "Item",
       url: url || "#",
       type:"link",
@@ -713,14 +729,14 @@ function renderPageTabHtml(c){
       <div class="field-group">
         <div class="field-label">Title</div>
         <input type="text" value="${c.title || ''}"
-          onchange="current.title=this.value;markDirty();renderPages();updatePreviewHeader();">
+          onchange="current.title=this.value;markDirty();renderPages();updatePreviewHeader();syncMenuForCurrent();">
       </div>
 
       <div class="field-group">
         <div class="field-label">Slug</div>
         <input type="text" value="${c.slug || ''}"
           placeholder="home, podcast, shop..."
-          onchange="current.slug=this.value;markDirty();renderPages();updatePreviewHeader();">
+          onchange="current.slug=this.value;markDirty();renderPages();updatePreviewHeader();syncMenuForCurrent();">
         <div class="field-hint">
           Used by <code>data-page="slug"</code> in your HTML &lt;body&gt;.
         </div>
@@ -1209,6 +1225,7 @@ renderInspectorTab(); // both sidebar sections stay closed on load
 
 </body>
 </html>
+
 
 
 
