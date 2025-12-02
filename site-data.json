@@ -37,6 +37,12 @@
       },
       "blocks": [
         {
+          "type": "youtube",
+          "motion": "fade",
+          "title": "Video title",
+          "videoId": "https://youtu.be/xK__rWplpxA?si=aH6JIUIijY_soTWZ"
+        },
+        {
           "type": "heading",
           "motion": "float",
           "content": "About Us"
