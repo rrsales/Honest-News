@@ -12,59 +12,51 @@
     }
   </script>
 
+  <!-- Login / admin styles -->
   <link rel="stylesheet" href="assets/css/admin.css">
 </head>
 <body>
 
-  <!-- SIMPLE BLUE LOGIN -->
+  <!-- LOGIN PANEL -->
   <div id="adminLogin">
-    <h2>Honest News Admin</h2>
-    <input
-      type="password"
-      id="adminPassword"
-      placeholder="Enter password"
-      autocomplete="current-password"
-    >
+    <h1>Honest News · Admin</h1>
+
+    <label for="adminPassword">Password</label>
+    <input type="password" id="adminPassword" placeholder="Enter password">
+
     <button id="loginBtn">Log In</button>
+
     <div id="loginMsg"></div>
   </div>
 
   <script>
-    // 🔑 SET YOUR REAL PASSWORD HERE
-    const ADMIN_PASSWORD = "jo5765"; // change this to whatever you want
+    // CHANGE THIS TO WHATEVER PASSWORD YOU WANT
+    const ADMIN_PASSWORD = "HonestNews2024!";
 
     const passwordInput = document.getElementById("adminPassword");
     const loginBtn      = document.getElementById("loginBtn");
     const loginMsg      = document.getElementById("loginMsg");
 
-    function doLogin(){
-      const value = passwordInput.value.trim();
-
-      if (!value) {
-        loginMsg.textContent = "Please enter the password.";
-        loginMsg.style.color = "#d9534f";
-        return;
-      }
-
-      if (value === ADMIN_PASSWORD) {
+    function doLogin() {
+      const val = passwordInput.value.trim();
+      if (val === ADMIN_PASSWORD) {
         localStorage.setItem("hn_logged", "yes");
-        loginMsg.textContent = "Access granted. Loading dashboard…";
-        loginMsg.style.color = "#28a745"; // green for success
+        loginMsg.textContent = "";
         location.href = "dashboard.html";
       } else {
-        loginMsg.textContent = "Incorrect password.";
-        loginMsg.style.color = "#d9534f";
+        loginMsg.textContent = "Incorrect password";
       }
     }
 
     loginBtn.addEventListener("click", doLogin);
-    passwordInput.addEventListener("keydown", (e)=>{
+    passwordInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") doLogin();
     });
   </script>
 
 </body>
 </html>
+
 
 
 
