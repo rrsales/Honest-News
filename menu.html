@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Honest News – Menu Builder</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- PROTECT MENU: only enter if logged in -->
+  <script>
+    if (localStorage.getItem("hn_logged") !== "yes") {
+      location.href = "admin.html";
+    }
+  </script>
+
+  <!-- Icons + JSZip (for backup) -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+
+  <!-- Use same Apple-black dashboard styles -->
+  <link rel="stylesheet" href="styles/dashboard.css">
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-welcome">
+  <div class="top-left">
+    <span class="label">Honest News · Menu Builder</span>
+    <span class="title">Navigation for your site</span>
+  </div>
+  <div class="top-actions">
+    <span class="pill-badge">
+      <i class="fa-regular fa-circle-dot"></i>
+      Menu · site-data.json
+    </span>
+    <a href="dashboard.html"
+       class="btn ghost"
+       style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;">
+      <i class="fa-solid fa-columns"></i> Dashboard
+    </a>
+    <button class="logout-btn"
+            onclick="localStorage.removeItem('hn_logged');location.href='admin.html'">
+      <i class="fa-solid fa-right-from-bracket"></i> Log Out
+    </button>
+  </div>
+</div>
+
+<div class="main">
+  <!-- LEFT SIDEBAR: MENU ITEMS -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <button class="sidebar-section-header" type="button">
+        <span class="label">Main menu</span>
+      </button>
+      <div class="sidebar-section-body" id="menuSectionBody">
+        <p class="field-hint">
+          Click an item to edit. This feeds the top navigation of your live site.
+        </p>
+        <div class="sidebar-inner" id="menuList"></div>
+        <button class="btn secondary" style="width:100%;margin-top:8px;"
+                onclick="addMenuItem()">
+          + New item
+        </button>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <button class="sidebar-section-header" type="button">
+        <span class="label">Children (dropdown / mega)</span>
+      </button>
+      <div class="sidebar-section-body" id="childInfoBody">
+        <p class="field-hint">
+          Children only show for <code>dropdown</code> or <code>mega</code> items.
+          Select a parent item, then add children on the right.
+        </p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- RIGHT: MENU EDITOR -->
+  <section class="content">
+    <div id="previewCard">
+      <div id="previewToolbar">
+        <div id="previewTitle">
+          <span id="currentItemLabel">No menu item selected</span>
+          <span class="slug" id="currentItemId"></span>
+        </div>
+        <span style="font-size:.78rem;color:var(--text-soft);">
+          This does not render a full nav preview yet; it edits the JSON that
+          <code>live.js</code> uses for your real menu.
+        </span>
+      </div>
+
+      <div id="previewInnerWrap">
+        <div id="previewFrame" class="desktop">
+          <div class="preview-wrap" style="border:none;">
+            <div id="inspectorBody" style="padding:16px;max-height:none;">
+              <!-- Dynamic inspector content goes here -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center;">
+        <div>
+          <span id="saveStatusRight" class="pill">Clean</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          <button id="saveCloudBtn" class="btn primary">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Save to Cloud
+          </button>
+          <button id="saveDraftBtn" class="btn secondary">
+            Save Draft (this browser)
+          </button>
+          <button id="downloadBtn" class="btn ghost">
+            Download JSON
+          </button>
+          <button id="backupBtn" class="btn ghost">
+            Full backup (.zip)
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+/* ============================
+   STATE
+============================ */
+let site = {
+  menu: [
+    { id:"home",     label:"Home",     url:"index.html",   type:"link",    showOn:"both",    subItems:[] },
+    { id:"podcast",  label:"Podcast",  url:"podcast.html", type:"link",    showOn:"both",    subItems:[] },
+    { id:"shop",     label:"Shop",     url:"shop.html",    type:"link",    showOn:"both",    subItems:[] },
+    {
+      id:"resources",
+      label:"Resources",
+      url:"#",
+      type:"mega",
+      showOn:"desktop",
+      subItems:[
+        { label:"Getting started", url:"getting-started.html", description:"How Honest News + podcast + YouTube fit together." },
+        { label:"For Pastors",     url:"pastors.html",         description:"Tools and workflows to preach, record, and publish." },
+        { label:"For Listeners",   url:"listeners.html",       description:"Where to listen, how to subscribe, how to support." }
+      ]
+    },
+    { id:"support",  label:"Support",  url:"support.html",  type:"link",    showOn:"both",    subItems:[] },
+    { id:"contact",  label:"Contact",  url:"contact.html",  type:"link",    showOn:"both",    subItems:[] }
+  ]
+};
+
+let currentIndex = null;
+let isDirty = false;
+const DRAFT_KEY = "hn_menu_draft_v1";
+const SAVE_ENDPOINT = "https://honest-news.onrender.com/save";
+
+/* ============================
+   LOAD site-data.json
+============================ */
+(async function initMenu(){
+  try{
+    const res = await fetch("site-data.json?cache-bust=" + Date.now());
+    if(res.ok){
+      const data = await res.json();
+      if(data && typeof data === "object" && Array.isArray(data.menu)){
+        site.menu = data.menu;
+      }
+    }
+  }catch(e){
+    console.warn("Could not load site-data.json menu, using defaults", e);
+  }
+
+  restoreDraftIfAny();
+  renderMenuList();
+  renderInspector();
+})();
+
+/* ============================
+   SAVE STATUS
+============================ */
+const saveStatusRight = document.getElementById("saveStatusRight");
+
+function markDirty(){
+  isDirty = true;
+  if(saveStatusRight){
+    saveStatusRight.textContent = "Unsaved changes";
+    saveStatusRight.classList.add("dirty");
+    saveStatusRight.classList.remove("saved");
+  }
+}
+function markSaved(){
+  isDirty = false;
+  if(saveStatusRight){
+    saveStatusRight.textContent = "Saved to cloud";
+    saveStatusRight.classList.remove("dirty");
+    saveStatusRight.classList.add("saved");
+  }
+}
+
+/* ============================
+   LEFT LIST – MENU ITEMS
+============================ */
+function renderMenuList(){
+  const container = document.getElementById("menuList");
+  if(!container) return;
+
+  const items = site.menu || [];
+  container.innerHTML = items.map((item, i) => {
+    const isActive = i === currentIndex;
+    return `
+      <div class="page ${isActive ? "active" : ""}">
+        <div class="page-main" onclick="selectMenuItem(${i})">
+          <span class="title">${escapeHtml(item.label || "Untitled")}</span>
+          <span class="slug">${escapeHtml(item.url || "")}</span>
+        </div>
+        ${
+          item.id === "home"
+          ? ""
+          : `<button class="page-delete-btn" title="Delete item"
+                     onclick="event.stopPropagation();deleteMenuItem(${i});">
+               <i class="fa-regular fa-trash-can"></i>
+             </button>`
+        }
+      </div>
+    `;
+  }).join("");
+}
+
+function selectMenuItem(index){
+  currentIndex = index;
+  renderMenuList();
+  renderInspector();
+}
+
+function addMenuItem(){
+  if(!site.menu) site.menu = [];
+  const label = prompt("Menu label? (e.g. 'Blog')");
+  if(!label) return;
+  const slugId = label.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9\-]/g, "");
+  site.menu.push({
+    id: slugId || ("item-" + (site.menu.length + 1)),
+    label: label,
+    url: "#",
+    type: "link",
+    showOn: "both",
+    subItems: []
+  });
+  currentIndex = site.menu.length - 1;
+  markDirty();
+  renderMenuList();
+  renderInspector();
+}
+
+function deleteMenuItem(index){
+  const item = site.menu[index];
+  if(!item) return;
+  if(item.id === "home"){
+    alert("You cannot delete the Home item.");
+    return;
+  }
+  if(!confirm(`Delete menu item "${item.label || item.id}"?`)) return;
+  site.menu.splice(index, 1);
+  if(currentIndex === index){
+    currentIndex = site.menu.length ? 0 : null;
+  } else if(currentIndex > index){
+    currentIndex--;
+  }
+  markDirty();
+  renderMenuList();
+  renderInspector();
+}
+
+/* ============================
+   INSPECTOR (RIGHT SIDE)
+============================ */
+function renderInspector(){
+  const body = document.getElementById("inspectorBody");
+  const labelEl = document.getElementById("currentItemLabel");
+  const idEl    = document.getElementById("currentItemId");
+
+  if(currentIndex === null || !site.menu || !site.menu[currentIndex]){
+    if(body) body.innerHTML = `<p class="field-hint">Select a menu item on the left to edit its settings.</p>`;
+    if(labelEl) labelEl.textContent = "No menu item selected";
+    if(idEl) idEl.textContent = "";
+    return;
+  }
+
+  const item = site.menu[currentIndex];
+  if(labelEl) labelEl.textContent = item.label || "Untitled item";
+  if(idEl)    idEl.textContent    = item.id ? ("#" + item.id) : "";
+
+  const type    = item.type || "link";
+  const showOn  = item.showOn || "both";
+  const childs  = Array.isArray(item.subItems) ? item.subItems : [];
+
+  body.innerHTML = `
+    <div class="section">
+      <div class="field-group">
+        <div class="field-label">Label</div>
+        <input type="text"
+               value="${escapeAttr(item.label || "")}"
+               onchange="updateCurrentField('label', this.value)">
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">URL</div>
+        <input type="text"
+               value="${escapeAttr(item.url || "")}"
+               placeholder="index.html, /about, #section-id"
+               onchange="updateCurrentField('url', this.value)">
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">ID (for internal use)</div>
+        <input type="text"
+               value="${escapeAttr(item.id || "")}"
+               placeholder="home, podcast, shop..."
+               onchange="updateCurrentField('id', this.value)">
+        <div class="field-hint">
+          This can be used by your HTML and <code>live.js</code> if needed.
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Type</div>
+        <select onchange="updateCurrentField('type', this.value)">
+          <option value="link"     ${type === "link"     ? "selected" : ""}>Single link</option>
+          <option value="dropdown" ${type === "dropdown" ? "selected" : ""}>Dropdown</option>
+          <option value="mega"     ${type === "mega"     ? "selected" : ""}>Mega menu</option>
+        </select>
+        <div class="field-hint">
+          <strong>link</strong> = simple nav item ·
+          <strong>dropdown</strong> = hover/tap children ·
+          <strong>mega</strong> = larger panel of links.
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Show on</div>
+        <label class="inline">
+          <input type="radio" name="showOn" value="both"    ${showOn === "both"    ? "checked" : ""} onchange="updateCurrentField('showOn', 'both')">
+          Both (desktop & mobile)
+        </label><br>
+        <label class="inline">
+          <input type="radio" name="showOn" value="desktop" ${showOn === "desktop" ? "checked" : ""} onchange="updateCurrentField('showOn', 'desktop')">
+          Desktop only
+        </label><br>
+        <label class="inline">
+          <input type="radio" name="showOn" value="mobile"  ${showOn === "mobile"  ? "checked" : ""} onchange="updateCurrentField('showOn', 'mobile')">
+          Mobile only
+        </label>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="panelLabel">Children (for dropdown / mega)</div>
+      <p class="field-hint">
+        Children are used only when type is <code>dropdown</code> or <code>mega</code>.
+      </p>
+      <div id="childrenList">
+        ${renderChildrenHtml(childs)}
+      </div>
+      <button class="btn secondary" type="button" onclick="addChild()"
+              style="margin-top:8px;">
+        + Add child link
+      </button>
+    </div>
+  `;
+}
+
+function updateCurrentField(field, value){
+  if(currentIndex === null || !site.menu[currentIndex]) return;
+  site.menu[currentIndex][field] = value;
+  markDirty();
+  renderMenuList();
+  renderInspector();
+}
+
+function renderChildrenHtml(children){
+  if(!children.length){
+    return `<p class="field-hint">No child links yet. Add one below.</p>`;
+  }
+  return children.map((c, idx) => `
+    <div class="block">
+      <div class="block-header-line">
+        <span class="block-type">CHILD #${idx + 1}</span>
+        <span class="tools">
+          <button type="button" onclick="moveChild(${idx}, -1)">↑</button>
+          <button type="button" onclick="moveChild(${idx}, 1)">↓</button>
+          <button type="button" onclick="deleteChild(${idx})">×</button>
+        </span>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Label</div>
+        <input type="text"
+               value="${escapeAttr(c.label || "")}"
+               onchange="updateChild(${idx}, 'label', this.value)">
+      </div>
+      <div class="field-group">
+        <div class="field-label">URL</div>
+        <input type="text"
+               value="${escapeAttr(c.url || "")}"
+               placeholder="/page.html or full URL"
+               onchange="updateChild(${idx}, 'url', this.value)">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Description (mega menu helper)</div>
+        <textarea rows="2"
+                  onchange="updateChild(${idx}, 'description', this.value)">${escapeTextArea(c.description || "")}</textarea>
+      </div>
+    </div>
+  `).join("");
+}
+
+function addChild(){
+  if(currentIndex === null || !site.menu[currentIndex]) return;
+  const item = site.menu[currentIndex];
+  if(!Array.isArray(item.subItems)) item.subItems = [];
+  item.subItems.push({
+    label: "New link",
+    url: "#",
+    description: ""
+  });
+  markDirty();
+  renderInspector();
+}
+
+function updateChild(index, field, value){
+  if(currentIndex === null || !site.menu[currentIndex]) return;
+  const item = site.menu[currentIndex];
+  if(!Array.isArray(item.subItems) || !item.subItems[index]) return;
+  item.subItems[index][field] = value;
+  markDirty();
+}
+
+function deleteChild(index){
+  if(currentIndex === null || !site.menu[currentIndex]) return;
+  const item = site.menu[currentIndex];
+  if(!Array.isArray(item.subItems) || !item.subItems[index]) return;
+  item.subItems.splice(index, 1);
+  markDirty();
+  renderInspector();
+}
+
+function moveChild(index, delta){
+  if(currentIndex === null || !site.menu[currentIndex]) return;
+  const item = site.menu[currentIndex];
+  if(!Array.isArray(item.subItems) || !item.subItems[index]) return;
+  const arr = item.subItems;
+  const [moved] = arr.splice(index, 1);
+  let newIndex = index + delta;
+  if(newIndex < 0) newIndex = 0;
+  if(newIndex > arr.length) newIndex = arr.length;
+  arr.splice(newIndex, 0, moved);
+  markDirty();
+  renderInspector();
+}
+
+/* ============================
+   UTIL
+============================ */
+function escapeHtml(str){
+  return String(str || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+function escapeAttr(str){
+  return String(str || "")
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;");
+}
+function escapeTextArea(str){
+  return String(str || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;");
+}
+
+/* ============================
+   DRAFT SAVE (LOCAL ONLY)
+============================ */
+function saveDraft(){
+  try{
+    const snap = JSON.stringify({ menu: site.menu }, null, 2);
+    localStorage.setItem(DRAFT_KEY, snap);
+    if(saveStatusRight){
+      saveStatusRight.textContent = "Draft saved locally";
+      saveStatusRight.classList.remove("dirty");
+      saveStatusRight.classList.remove("saved");
+    }
+  }catch(e){
+    alert("Could not save draft locally.");
+  }
+}
+
+function restoreDraftIfAny(){
+  try{
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if(!raw) return;
+    const parsed = JSON.parse(raw);
+    if(parsed && Array.isArray(parsed.menu)){
+      site.menu = parsed.menu;
+    }
+  }catch(e){
+    console.warn("No valid menu draft to restore");
+  }
+}
+
+/* ============================
+   DOWNLOAD / BACKUP
+============================ */
+function downloadJson(){
+  const blob = new Blob(
+    [ JSON.stringify({ menu: site.menu }, null, 2) ],
+    { type: "application/json" }
+  );
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "site-data-menu.json";
+  a.click();
+}
+
+async function backupAll(){
+  const zip = new JSZip();
+  zip.file("site-data.json", JSON.stringify({ menu: site.menu }, null, 2));
+
+  const files = [
+    "index.html",
+    "podcast.html",
+    "shop.html",
+    "contact.html",
+    "support.html",
+    "admin.html",
+    "dashboard.html",
+    "assets/js/live.js"
+  ];
+
+  for(const f of files){
+    try{
+      const res = await fetch(f, { cache: "no-store" });
+      if(res.ok){
+        const text = await res.text();
+        zip.file(f, text);
+      }
+    }catch(e){
+      console.warn("Could not add to backup:", f);
+    }
+  }
+
+  const blob = await zip.generateAsync({ type:"blob" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "honest-news-menu-backup.zip";
+  a.click();
+}
+
+/* ============================
+   CLOUD SAVE (Render → GitHub)
+============================ */
+async function saveToCloud(){
+  if(!confirm("Save menu changes to GitHub via Honest News Cloud CMS (Render)?"))
+    return;
+
+  // We send the whole site object, but only guarantee 'menu' if server merges.
+  const payload = { menu: site.menu };
+
+  try{
+    const res = await fetch(SAVE_ENDPOINT, {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify(payload)
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if(!res.ok || !data.ok){
+      throw new Error(data.error || ("HTTP " + res.status));
+    }
+
+    markSaved();
+    alert("✔ Menu saved to cloud.\nRender → GitHub site-data.json updated.");
+
+  }catch(e){
+    console.error(e);
+    alert("❌ Save failed.\n" + e.message);
+  }
+}
+
+/* ============================
+   WIRE BUTTONS
+============================ */
+document.getElementById("saveDraftBtn").addEventListener("click", saveDraft);
+document.getElementById("downloadBtn").addEventListener("click", downloadJson);
+document.getElementById("backupBtn").addEventListener("click", backupAll);
+document.getElementById("saveCloudBtn").addEventListener("click", saveToCloud);
+</script>
+
+</body>
+</html>
