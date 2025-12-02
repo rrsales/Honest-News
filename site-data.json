@@ -13,6 +13,14 @@
     {
       "title": "Contact",
       "url": "contact.html"
+    },
+    {
+      "id": "about",
+      "label": "About",
+      "url": "about.html",
+      "type": "link",
+      "showOn": "both",
+      "subItems": []
     }
   ],
   "pages": [
@@ -21,12 +29,12 @@
       "slug": "home",
       "theme": "light",
       "hero": {
-        "bg": "https://jornadadafoto.com.br/wp-content/uploads/2020/12/fotos-de-paisagens-melhores-12-1024x643.jpg.webp",
+        "bg": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80",
         "overlay": "Honest News Network",
         "sub": "Everything You Need for Biblical Truth",
         "transparentMenu": true,
         "behavior": "parallax-medium",
-        "size": "full",
+        "size": "small",
         "customHeight": ""
       },
       "blocks": [
@@ -47,6 +55,21 @@
           "content": "Honest News Network exists to cut through the noise and tell the truth—plain, unapologetic, and rooted in God’s Word. In a world of spin, censorship, and confusion, we examine world events, culture, and headlines through a biblical lens so believers can understand the times and stand firm in their faith. We are not here to entertain; we are here to warn, inform, and call God’s people back to truth.\n\nWe expose the stories the mainstream ignores, the agendas they hide, and the spiritual battle behind the headlines. From politics and global crises to attacks on faith and family, Honest News Network connects the dots and shows how it all aligns with Scripture and end-time prophecy. Our goal is to help you see clearly so you are not deceived by the systems of this world.\n\nThis is more than a news outlet—it’s a watchman on the wall. Honest News Network exists to equip the body of Christ with discernment, courage, and hope as darkness grows and persecution increases. We invite you to stand with us, stay informed, and stay grounded in the only source of unshakable truth: the Word of God."
         }
       ]
+    },
+    {
+      "title": "About",
+      "slug": "about",
+      "theme": "dark",
+      "hero": {
+        "bg": "https://images.pexels.com/photos/414061/pexels-photo-414061.jpeg",
+        "overlay": "About",
+        "sub": "",
+        "transparentMenu": false,
+        "behavior": "still",
+        "size": "small",
+        "customHeight": ""
+      },
+      "blocks": []
     }
   ],
   "theme": {},
