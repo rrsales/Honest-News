@@ -1,12 +1,13 @@
-/* assets/css/admin.css - admin panel styles (paste file exactly) */
+/* assets/css/admin.css - admin panel + login styles (paste file exactly) */
 
 :root{
-  --admin-bg:#020617;          /* Apple-black background */
-  --sidebar-bg:#020617;
-  --sidebar-contrast:#e5e7eb;
-  --accent:#0077ff;            /* Blue login button + primary accent */
-  --card-bg:#020617;
-  --muted:#9ca3af;
+  /* Apple-black style background for admin + login */
+  --admin-bg: radial-gradient(circle at top, #1e293b 0, #020617 48%, #000 100%);
+  --sidebar-bg:#111;
+  --sidebar-contrast:#fff;
+  --accent:#0077ff;  /* BLUE button / accents */
+  --card-bg:#fff;
+  --muted:#666;
 }
 
 *{box-sizing:border-box}
@@ -14,9 +15,8 @@
 body{
   margin:0;
   font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
-  background:
-    radial-gradient(circle at top, #1e293b 0, #020617 48%, #000 100%);
-  color:#e5e7eb;
+  background:var(--admin-bg);
+  color:#111;
 }
 
 /* LOGIN */
@@ -27,71 +27,43 @@ body{
   justify-content:center;
   flex-direction:column;
   gap:12px;
-  text-align:center;
 }
 
-#adminLogin h1{
-  margin:0 0 6px;
-  font-size:1.4rem;
-}
-
+/* Make label readable on dark Apple background */
 #adminLogin label{
-  font-weight:600;
-  font-size:0.95rem;
-  margin-top:4px;
+  color:#fff;
 }
 
 #adminLogin input{
   padding:10px;
   width:260px;
   font-size:1rem;
-  border-radius:8px;
-  border:1px solid #1f2937;
-  background:#020617;
-  color:#e5e7eb;
-  outline:none;
-}
-
-#adminLogin input::placeholder{
-  color:#6b7280;
-}
-
-#adminLogin input:focus{
-  border-color:var(--accent);
-  box-shadow:0 0 0 1px rgba(59,130,246,0.7);
 }
 
 #adminLogin button{
   padding:10px 18px;
-  margin-top:4px;
-  background:var(--accent);    /* BLUE */
+  background:var(--accent); /* solid blue */
   color:#fff;
   border:0;
-  border-radius:999px;
+  border-radius:6px;
   cursor:pointer;
-  font-weight:600;
-  font-size:0.95rem;
 }
 
+/* Slight darker hover, still solid (no gradient) */
 #adminLogin button:hover{
-  filter:brightness(1.08);
+  background:#005fd1;
 }
 
 #loginMsg{
-  color:#f97373;
+  color:#d9534f;
   font-weight:600;
-  font-size:0.9rem;
-  min-height:1.1em;
-  margin-top:4px;
 }
 
-/* ADMIN GRID (if you ever use it again) */
+/* ADMIN GRID (for any admin-panel layout that still uses this file) */
 .admin-grid{
   display:grid;
   grid-template-columns:260px 1fr;
   min-height:100vh;
-  background:
-    radial-gradient(circle at top, #1e293b 0, #020617 48%, #000 100%);
 }
 
 .admin-sidebar{
@@ -101,7 +73,6 @@ body{
   display:flex;
   flex-direction:column;
   gap:12px;
-  border-right:1px solid #111827;
 }
 
 .admin-sidebar h2{
@@ -115,15 +86,15 @@ body{
   border:0;
   padding:10px;
   text-align:left;
-  border-radius:8px;
+  border-radius:6px;
   cursor:pointer;
-  font-size:0.95rem;
 }
 
 .sidebar-btn:hover{
-  background:#111827;
+  background:#222;
 }
 
+/* WORKSPACE */
 .admin-content{
   padding:28px;
   overflow-y:auto;
@@ -132,10 +103,9 @@ body{
 .admin-section{
   background:var(--card-bg);
   padding:18px;
-  border-radius:12px;
-  box-shadow:0 18px 40px rgba(0,0,0,0.8);
+  border-radius:10px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.06);
   margin-bottom:18px;
-  border:1px solid #1f2937;
 }
 
 .admin-section h2{
@@ -146,7 +116,6 @@ label{
   display:block;
   margin-top:12px;
   font-weight:600;
-  font-size:0.92rem;
 }
 
 input[type="text"],
@@ -157,27 +126,10 @@ textarea{
   width:100%;
   padding:10px;
   margin-top:6px;
-  border:1px solid #1f2937;
+  border:1px solid #e6e6e6;
   border-radius:8px;
   font-size:0.95rem;
-  background:#020617;
-  color:#e5e7eb;
-  outline:none;
-}
-
-input[type="text"]::placeholder,
-input[type="url"]::placeholder,
-textarea::placeholder{
-  color:#6b7280;
-}
-
-input[type="text"]:focus,
-input[type="url"]:focus,
-input[type="color"]:focus,
-select:focus,
-textarea:focus{
-  border-color:var(--accent);
-  box-shadow:0 0 0 1px rgba(59,130,246,0.7);
+  background:#fff;
 }
 
 .preview-img{
@@ -190,35 +142,22 @@ textarea:focus{
 button.saveBtn,
 button#addPageBtn,
 button#uploadImageBtn{
-  background:var(--accent);
+  background:var(--accent); /* same solid blue */
   color:#fff;
   border:0;
   padding:10px 14px;
-  border-radius:999px;
+  border-radius:8px;
   cursor:pointer;
   margin-top:12px;
-  font-weight:600;
-}
-
-button.saveBtn:hover,
-button#addPageBtn:hover,
-button#uploadImageBtn:hover{
-  filter:brightness(1.08);
 }
 
 .small-btn{
   padding:6px 10px;
-  border-radius:999px;
-  border:1px solid #4b5563;
-  background:#020617;
+  border-radius:6px;
+  border:1px solid #ddd;
+  background:#f3f3f3;
   cursor:pointer;
   margin-left:8px;
-  color:#e5e7eb;
-  font-size:0.85rem;
-}
-
-.small-btn:hover{
-  background:#111827;
 }
 
 .grid-images{
@@ -246,4 +185,5 @@ button#uploadImageBtn:hover{
     padding:12px;
   }
 }
+
 
