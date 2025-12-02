@@ -1,24 +1,28 @@
 {
   "menu": [
     {
-      "title": "Home",
-      "url": "index.html"
+      "id": "home",
+      "label": "Home",
+      "url": "index.html",
+      "type": "link",
+      "showOn": "both",
+      "subItems": []
     },
     {
-      "title": "Podcast",
-      "url": "podcast.html"
+      "id": "test",
+      "label": "Test",
+      "url": "test.html",
+      "type": "link",
+      "showOn": "both",
+      "subItems": []
     },
     {
-      "title": "Shop",
-      "url": "shop.html"
-    },
-    {
-      "title": "Support",
-      "url": "support.html"
-    },
-    {
-      "title": "Contact",
-      "url": "contact.html"
+      "id": "contact",
+      "label": "Contact",
+      "url": "contact.html",
+      "type": "link",
+      "showOn": "both",
+      "subItems": []
     }
   ],
   "pages": [
