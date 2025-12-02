@@ -1,12 +1,30 @@
 {
   "menu": [
     {
-      "id": "home",
-      "label": "Home",
+      "title": "Home",
       "url": "index.html",
-      "type": "link",
-      "showOn": "both",
-      "subItems": []
+      "id": "home",
+      "label": "Home"
+    },
+    {
+      "title": "Podcast",
+      "url": "podcast.html",
+      "id": "podcast",
+      "label": "Podcast"
+    },
+    {
+      "title": "Shop",
+      "url": "shop.html",
+      "id": "shop",
+      "label": "Shop"
+    },
+    {
+      "title": "Support",
+      "url": "support.html"
+    },
+    {
+      "title": "Contact",
+      "url": "contact.html"
     },
     {
       "id": "test",
@@ -51,19 +69,78 @@
       ]
     },
     {
+      "title": "Podcast",
+      "slug": "podcast",
+      "theme": "light",
+      "hero": {
+        "bg": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80",
+        "overlay": "Latest Episodes",
+        "sub": "New episodes every Sunday",
+        "transparentMenu": true,
+        "behavior": "float-up",
+        "size": "medium",
+        "customHeight": ""
+      },
+      "blocks": []
+    },
+    {
+      "title": "Shop",
+      "slug": "shop",
+      "theme": "dark",
+      "hero": {
+        "bg": "",
+        "overlay": "Recommended Resources",
+        "sub": "Support your walk and support the ministry",
+        "transparentMenu": true,
+        "behavior": "still",
+        "size": "medium",
+        "customHeight": ""
+      },
+      "blocks": []
+    },
+    {
       "title": "Test",
       "slug": "test",
       "theme": "dark",
       "hero": {
         "bg": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?auto=format&fit=crop&w=1920&q=80",
         "overlay": "Test",
-        "sub": "This is a test",
-        "transparentMenu": false,
-        "behavior": "still",
-        "size": "full",
+        "sub": "",
+        "transparentMenu": true,
+        "behavior": "parallax-medium",
+        "size": "large",
         "customHeight": ""
       },
-      "blocks": []
+      "blocks": [
+        {
+          "type": "heading",
+          "motion": "fade",
+          "content": "test"
+        },
+        {
+          "type": "paragraph",
+          "motion": "fade",
+          "content": ""
+        },
+        {
+          "type": "image",
+          "motion": "fade",
+          "mode": "url",
+          "content": ""
+        },
+        {
+          "type": "image",
+          "motion": "fade",
+          "mode": "url",
+          "content": ""
+        },
+        {
+          "type": "youtube",
+          "motion": "float",
+          "title": "test",
+          "videoId": "https://www.youtube.com/watch?v=AQ-BzAWXutU&list=RDAQ-BzAWXutU&start_radio=1"
+        }
+      ]
     }
   ],
   "theme": {},
