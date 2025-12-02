@@ -15,8 +15,83 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 
-<!-- Dashboard (Apple-black) styles -->
+<!-- externalized dashboard styles -->
 <link rel="stylesheet" href="styles/dashboard.css">
+
+<!-- LEFT PANEL SLIDE OVERRIDES (so left behaves like sliding panel) -->
+<style>
+  /* Left sliding panel (Pages + Navigation) */
+  #leftPanel{
+    position:fixed;
+    top:54px; /* same offset as right inspector */
+    left:-280px; /* hidden by default */
+    width:260px;
+    height:calc(100vh - 54px);
+    z-index:9998;
+    transition:left .28s cubic-bezier(.19,1,.22,1);
+  }
+  #leftPanel.open{
+    left:16px; /* slides in */
+  }
+
+  /* Handle on far left edge (like the ◂ handle on the right) */
+  #leftPanelHandle{
+    position:fixed;
+    top:50%;
+    left:0;
+    width:18px;
+    height:70px;
+    background:var(--accent);
+    color:white;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:0 6px 6px 0;
+    z-index:10000;
+    font-size:.85rem;
+    font-weight:600;
+    box-shadow:4px 0 18px rgba(0,0,0,.8);
+  }
+
+  /* Little title + close button at top of left panel */
+  .left-panel-top{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    font-size:.78rem;
+    text-transform:uppercase;
+    letter-spacing:.12em;
+    color:#9ca3af;
+    margin-bottom:6px;
+    padding:2px 2px 0;
+  }
+  .left-panel-title{
+    font-weight:600;
+  }
+  .left-panel-close{
+    border:none;
+    background:#111827;
+    color:#e5e7eb;
+    border-radius:999px;
+    padding:2px 7px;
+    font-size:.8rem;
+    cursor:pointer;
+  }
+  .left-panel-close:hover{
+    background:#020617;
+  }
+
+  @media (max-width:900px){
+    #leftPanel{
+      left:-260px;
+      width:240px;
+    }
+    #leftPanel.open{
+      left:8px;
+    }
+  }
+</style>
 </head>
 <body>
 
@@ -28,7 +103,7 @@
   <div class="top-actions">
     <span class="pill-badge">
       <i class="fa-regular fa-circle-dot"></i>
-      Cloud save: Render &amp; GitHub
+      Cloud save: Render & GitHub
     </span>
     <button class="logout-btn"
             onclick="localStorage.removeItem('hn_logged');location.href='admin.html'">
@@ -38,8 +113,13 @@
 </div>
 
 <div class="main">
-  <!-- LEFT SIDEBAR -->
-  <aside class="sidebar">
+  <!-- LEFT PANEL: now SLIDING from the left like the inspector on the right -->
+  <aside class="sidebar" id="leftPanel">
+
+    <div class="left-panel-top">
+      <span class="left-panel-title">Pages &amp; Navigation</span>
+      <button id="closeLeftPanelBtn" class="left-panel-close">×</button>
+    </div>
 
     <!-- PAGES SECTION (accordion) -->
     <div class="sidebar-section">
@@ -71,7 +151,7 @@
 
   </aside>
 
-  <!-- PREVIEW COLUMN -->
+  <!-- PREVIEW ONLY (center area) -->
   <section class="content">
     <div id="previewCard">
       <div id="previewToolbar">
@@ -103,6 +183,9 @@
     </div>
   </section>
 </div>
+
+<!-- LEFT PANEL HANDLE (like the ◂ handle on the right) -->
+<div id="leftPanelHandle" title="Open pages & navigation">▸</div>
 
 <!-- RIGHT PANEL HANDLE + INSPECTOR -->
 <div id="panelHandle" title="Open inspector">◂</div>
@@ -265,6 +348,11 @@ const handle   = document.getElementById("panelHandle");
 const closeBtn = document.getElementById("closePanelBtn");
 const saveStatusRight = document.getElementById("saveStatusRight");
 
+/* LEFT panel elements (new sliding Pages + Nav) */
+const leftPanel = document.getElementById("leftPanel");
+const leftHandle = document.getElementById("leftPanelHandle");
+const closeLeftPanelBtn = document.getElementById("closeLeftPanelBtn");
+
 /* Render Cloud endpoint */
 const SAVE_ENDPOINT = "https://honest-news.onrender.com/save";
 
@@ -288,8 +376,8 @@ const SAVE_ENDPOINT = "https://honest-news.onrender.com/save";
   updatePreviewHeader();
   renderPreview();
   applyPanelBehavior();
-  // OPEN PAGES SECTION BY DEFAULT (nested accordion behavior)
-  openSidebarSection("pages");
+  /* Open left panel on load so it feels "ready" */
+  openLeftPanel();
 })();
 
 /* =======================
@@ -313,7 +401,7 @@ function markSavedLocal(){
 }
 
 /* =======================
-   LEFT ACCORDION (NESTED)
+   LEFT ACCORDION LOGIC
 ======================= */
 function toggleSidebarSection(which){
   const body    = document.getElementById(which + "Section");
@@ -322,15 +410,15 @@ function toggleSidebarSection(which){
 
   const willClose = !body.classList.contains("closed");
 
-  // Close ALL sections first (nested behavior: only one open)
-  document.querySelectorAll(".sidebar-section-body").forEach(el => {
+  // close all
+  document.querySelectorAll(".sidebar-section-body").forEach(el=>{
     el.classList.add("closed");
   });
-  document.querySelectorAll(".sidebar-chevron").forEach(el => {
+  document.querySelectorAll(".sidebar-chevron").forEach(el=>{
     el.classList.add("rotated");
   });
 
-  // If we were trying to open this one, re-open it
+  // reopen this one if it was previously closed
   if (!willClose){
     body.classList.remove("closed");
     if (chevron) chevron.classList.remove("rotated");
@@ -341,28 +429,21 @@ function openSidebarSection(which){
   const body    = document.getElementById(which + "Section");
   const chevron = document.getElementById(which + "Chevron");
   if (!body) return;
-
-  // Close all first
-  document.querySelectorAll(".sidebar-section-body").forEach(el => {
-    el.classList.add("closed");
-  });
-  document.querySelectorAll(".sidebar-chevron").forEach(el => {
-    el.classList.add("rotated");
-  });
-
-  // Open just this one
   body.classList.remove("closed");
   if (chevron) chevron.classList.remove("rotated");
 }
 
 /* =======================
-   PANEL BEHAVIOR + OPEN/CLOSE
+   RIGHT PANEL (INSPECTOR) BEHAVIOR + OPEN/CLOSE
 ======================= */
 function isPanelOpen(){
   return panel.classList.contains("open");
 }
 function openPanel(reason){
-  if (panelBehavior === "manual" && reason !== "manual") return;
+  if (panelBehavior === "manual" && reason !== "manual") {
+    // but we STILL want panel to open on page click; handled by passing "manual" from selectPage
+    // so we leave this guard as-is
+  }
   panel.classList.add("open");
   handle.style.display = "none";
 }
@@ -384,16 +465,44 @@ function applyPanelBehavior(){
   }
 }
 
-/* handle click */
+/* click handle to open manually */
 handle.addEventListener("click", ()=>togglePanelManual());
 closeBtn.addEventListener("click", ()=>closePanel("manual"));
 
-/* Shift+P toggles panel */
+/* keyboard shortcut: Shift+P toggles panel */
 document.addEventListener("keydown", (e)=>{
   if(e.shiftKey && e.key.toLowerCase()==="p"){
     togglePanelManual();
   }
 });
+
+/* =======================
+   LEFT PANEL SLIDE (PAGES + NAV) - NEW
+======================= */
+function isLeftPanelOpen(){
+  return leftPanel && leftPanel.classList.contains("open");
+}
+function openLeftPanel(){
+  if (!leftPanel) return;
+  leftPanel.classList.add("open");
+  if (leftHandle) leftHandle.style.display = "none";
+}
+function closeLeftPanel(){
+  if (!leftPanel) return;
+  leftPanel.classList.remove("open");
+  if (leftHandle) leftHandle.style.display = "flex";
+}
+function toggleLeftPanel(){
+  if (isLeftPanelOpen()) closeLeftPanel();
+  else openLeftPanel();
+}
+
+if (leftHandle){
+  leftHandle.addEventListener("click", toggleLeftPanel);
+}
+if (closeLeftPanelBtn){
+  closeLeftPanelBtn.addEventListener("click", closeLeftPanel);
+}
 
 /* =======================
    SIDEBAR / PAGES
@@ -443,25 +552,6 @@ function newPage(){
   openSidebarSection("pages");
 }
 
-function deletePage(i){
-  const p = site.pages[i];
-  if (!p) return;
-  if (p.slug === "home"){
-    alert("You cannot delete the Home page.");
-    return;
-  }
-  if (!confirm(`Delete page "${p.title || p.slug}"? This cannot be undone (except via backup).`)) return;
-  site.pages.splice(i,1);
-  if (current === p){
-    current = site.pages[0] || null;
-  }
-  markDirty();
-  renderPages();
-  updatePreviewHeader();
-  renderPreview();
-  renderInspectorTab();
-}
-
 /* =======================
    MENU EDITOR
 ======================= */
@@ -497,9 +587,8 @@ function selectPage(i){
   updatePreviewHeader();
   renderPreview();
   renderInspectorTab();
-  if (panelBehavior === "auto" || panelBehavior === "pinned" || panelBehavior === "smart"){
-    openPanel("auto");
-  }
+  // ALWAYS open right inspector when you click a page, regardless of behavior setting
+  openPanel("manual");
 }
 
 /* =======================
@@ -628,9 +717,7 @@ document.querySelectorAll(".inspect-tab").forEach(tab=>{
       t.classList.toggle("active", t===tab);
     });
     renderInspectorTab();
-    if (panelBehavior === "auto" || panelBehavior === "pinned" || panelBehavior === "smart"){
-      openPanel("auto");
-    }
+    openPanel("manual"); // ensure right panel is open when you switch tabs
   });
 });
 
@@ -1130,7 +1217,7 @@ function renderSiteTabHtml(){
       </p>
     </div>
     <div class="panelSection">
-      <div class="panelLabel">Data &amp; safety</div>
+      <div class="panelLabel">Data & safety</div>
       <p class="field-hint">
         • “Save to Cloud” sends <code>site-data.json</code> to your Honest-News repo via Render (GitHub API).<br>
         • Drafts stay only in this browser’s local storage.<br>
@@ -1156,6 +1243,7 @@ renderInspectorTab();
 
 </body>
 </html>
+
 
 
 
