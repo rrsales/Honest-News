@@ -1,467 +1,435 @@
 // assets/js/live.js
-// Front-end "live engine" for Honest News
-// - Loads site-data.json saved by your Dashboard
-// - Renders: brand, menu (including mega menu), hero, and blocks
+// Front-end "live engine": menu + mega menu + hero + blocks
+// Uses site-data.json that you edit from the Dashboard.
 
 (function () {
-  let site = {
+  const SITE_JSON = "site-data.json";
+
+  const FALLBACK_SITE = {
     menu: [],
     pages: [],
-    heroSlides: [],
-    brand: {}
+    theme: {},
+    heroSlides: []
   };
 
-  function ensureShape() {
-    if (!Array.isArray(site.menu)) site.menu = [];
-    if (!Array.isArray(site.pages)) site.pages = [];
-    if (!Array.isArray(site.heroSlides)) site.heroSlides = [];
-    if (!site.brand || typeof site.brand !== "object") site.brand = {};
+  let site = FALLBACK_SITE;
+
+  function escapeHtml(str) {
+    return String(str || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
   }
 
-  document.addEventListener("DOMContentLoaded", init);
+  function getCurrentSlug() {
+    const body = document.body;
+    return (body && body.getAttribute("data-page")) || "home";
+  }
 
-  async function init() {
-    // 1) Load site-data.json created by Dashboard
+  async function loadSiteData() {
     try {
-      const res = await fetch("site-data.json?cache-bust=" + Date.now());
+      const res = await fetch(SITE_JSON + "?v=" + Date.now());
       if (res.ok) {
         const data = await res.json();
         if (data && typeof data === "object") {
-          site = data;
+          site = Object.assign({}, FALLBACK_SITE, data);
         }
       }
     } catch (e) {
-      console.error("Could not load site-data.json; using defaults.", e);
+      console.warn("Could not load site-data.json, using defaults", e);
     }
-
-    ensureShape();
-
-    // 2) Find which page we're on (based on <body data-page="slug">)
-    const currentPage = pickCurrentPage(site.pages);
-
-    // 3) Apply theme + brand + menu + hero + blocks
-    applyTheme(currentPage);
-    renderBrand(site.brand);
-    renderMenu(site, currentPage);
-    renderHero(currentPage);
-    renderBlocks(currentPage);
   }
-
-  /* ============================
-     PAGE PICKING
-  ============================ */
-
-  function pickCurrentPage(pages) {
-    const body = document.body;
-    const slugAttr = body ? body.getAttribute("data-page") : null;
-
-    if (!Array.isArray(pages)) pages = [];
-
-    let found = null;
-    if (slugAttr) {
-      found = pages.find((p) => p.slug === slugAttr);
-    }
-
-    if (!found) {
-      // fall back to "home" or first page
-      found = pages.find((p) => p.slug === "home") || pages[0] || {
-        title: "Home",
-        slug: "home",
-        theme: "dark",
-        hero: {
-          overlay: "Honest News",
-          sub: "Biblical Truth.",
-          transparentMenu: false,
-          size: "full"
-        },
-        blocks: []
-      };
-    }
-    return found;
-  }
-
-  /* ============================
-     THEME & BRAND
-  ============================ */
 
   function applyTheme(page) {
     const body = document.body;
-    if (!body || !page) return;
+    if (!body) return;
 
     body.classList.remove("theme-light", "theme-dark");
 
-    const theme = page.theme === "light" ? "light" : "dark";
-    body.classList.add("theme-" + theme);
+    const theme = (page && page.theme) || "dark";
+    if (theme === "light") {
+      body.classList.add("theme-light");
+    } else {
+      body.classList.add("theme-dark");
+    }
   }
 
-  function renderBrand(brand) {
-    const titleEl = document.querySelector("[data-brand-title]");
-    const subEl = document.querySelector("[data-brand-sub]");
-    const footerEl = document.querySelector("[data-brand-footer]");
-    const ctaLabelEl = document.querySelector("[data-header-cta-label]");
+  /* =========================
+     MENU (DESKTOP + MOBILE)
+  ========================== */
 
-    const title =
-      (brand && brand.title) || "HONEST NEWS";
-    const sub =
-      (brand && brand.sub) || "Biblical Truth · Podcast · Resources";
-    const footer =
-      (brand && brand.footer) || "Honest News";
-    const ctaLabel =
-      (brand && brand.ctaLabel) || "Listen";
+  function urlsMatch(url, slug) {
+    if (!url) return false;
 
-    if (titleEl) titleEl.textContent = title;
-    if (subEl) subEl.textContent = sub;
-    if (footerEl) footerEl.textContent = footer;
-    if (ctaLabelEl) ctaLabelEl.textContent = ctaLabel;
+    // podcast.html -> slug "podcast"
+    const m = url.match(/^([^\.]+)\.html$/);
+    if (m && m[1] === slug) return true;
+
+    if (typeof window !== "undefined") {
+      if (window.location.pathname.endsWith(url)) return true;
+    }
+    return false;
   }
 
-  /* ============================
-     MENU (NORMAL + MEGA)
-  ============================ */
-
-  function renderMenu(site, currentPage) {
-    const desktopList = document.getElementById("menuList");
-    const mobileList = document.getElementById("mobileNavMenu");
-
-    if (!desktopList && !mobileList) return;
-
-    const menu = Array.isArray(site.menu) ? site.menu : [];
-    const currentSlug = (currentPage && currentPage.slug) || "home";
-    const currentFile = getCurrentFilename();
-
-    if (desktopList) desktopList.innerHTML = "";
-    if (mobileList) mobileList.innerHTML = "";
-
-    menu.forEach((item) => {
-      const showOn = item.showOn || "both";
-
-      if (desktopList && (showOn === "both" || showOn === "desktop")) {
-        desktopList.appendChild(
-          buildDesktopMenuItem(item, currentSlug, currentFile)
-        );
-      }
-
-      if (mobileList && (showOn === "both" || showOn === "mobile")) {
-        mobileList.appendChild(
-          buildMobileMenuItem(item, currentSlug, currentFile)
-        );
-      }
-    });
-  }
-
-  function getCurrentFilename() {
-    const path = window.location.pathname || "";
-    let file = path.split("/").pop();
-    if (!file) file = "index.html";
-    return file.toLowerCase();
-  }
-
-  function normalizeFilename(url) {
-    if (!url) return "";
-    const clean = url.split("#")[0].split("?")[0];
-    let file = clean.split("/").pop();
-    if (!file) file = "index.html";
-    return file.toLowerCase();
-  }
-
-  function isMenuItemActive(item, currentSlug, currentFile) {
+  function isItemActive(item, slug) {
     if (!item) return false;
+    const url = item.url || "";
 
-    if (item.id && item.id === currentSlug) return true;
-    if (item.slug && item.slug === currentSlug) return true;
+    if (!url && item.slug) {
+      return item.slug === slug;
+    }
 
-    if (item.url && normalizeFilename(item.url) === currentFile) return true;
+    if (urlsMatch(url, slug)) return true;
 
-    if (
-      (!item.url || item.url === "#" || item.url === "index.html") &&
-      (item.id === "home" || item.slug === "home") &&
-      currentFile === "index.html"
-    ) {
-      return true;
+    // for mega item: active if any child url matches current slug
+    if (item.type === "mega" && Array.isArray(item.subItems)) {
+      return item.subItems.some((s) => urlsMatch(s.url, slug));
     }
 
     return false;
   }
 
-  function buildDesktopMenuItem(item, currentSlug, currentFile) {
-    const li = document.createElement("li");
-    li.classList.add("nav-item");
+  function renderDesktopItem(item, currentSlug) {
+    const label = escapeHtml(item.label || item.title || "Item");
+    const isActive = isItemActive(item, currentSlug);
 
-    const type = item.type || "link";
-    const label = item.label || item.title || "Item";
-    const isActive = isMenuItemActive(item, currentSlug, currentFile);
+    // MEGA ITEM
+    if (item.type === "mega") {
+      const subItems = Array.isArray(item.subItems) ? item.subItems : [];
+      let subHtml = "";
 
-    if (type === "mega" && Array.isArray(item.subItems) && item.subItems.length) {
-      li.classList.add("nav-item--mega");
+      if (subItems.length) {
+        subHtml =
+          '<div class="mega-panel">' +
+          subItems
+            .map((s) => {
+              const sLabel = escapeHtml(s.label || s.title || "");
+              const sUrl = escapeHtml(s.url || "#");
+              const sDesc = s.description
+                ? `<div class="mega-link-desc">${escapeHtml(
+                    s.description
+                  )}</div>`
+                : "";
+              return `
+                <a class="mega-link" href="${sUrl}">
+                  <div class="mega-link-title">${sLabel}</div>
+                  ${sDesc}
+                </a>
+              `;
+            })
+            .join("") +
+          "</div>";
+      }
 
-      // Top trigger (no navigation, just opens mega panel)
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "nav-link nav-link--mega";
-      if (isActive) btn.classList.add("active");
-      btn.innerHTML = `
-        <span>${escapeHtml(label)}</span>
-        <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+      return `
+        <li class="nav-item nav-item--mega ${isActive ? "active" : ""}">
+          <button class="nav-link nav-link--mega" type="button">
+            <span>${label}</span>
+            <i class="fa-solid fa-chevron-down mega-caret"></i>
+          </button>
+          ${subHtml}
+        </li>
       `;
-      li.appendChild(btn);
+    }
 
-      // Mega panel
-      const panel = document.createElement("div");
-      panel.className = "mega-panel";
+    // NORMAL LINK
+    const href = escapeHtml(item.url || "#");
+    return `
+      <li class="nav-item">
+        <a class="${isActive ? "active" : ""}" href="${href}">
+          ${label}
+        </a>
+      </li>
+    `;
+  }
 
-      const grid = document.createElement("div");
-      grid.className = "mega-grid";
+  function renderMobileItem(item, currentSlug) {
+    const label = escapeHtml(item.label || item.title || "Item");
+    const isActive = isItemActive(item, currentSlug);
 
-      item.subItems.forEach((sub) => {
-        const a = document.createElement("a");
-        a.className = "mega-link";
-        a.href = sub.url || "#";
-        a.innerHTML = `
-          <span class="mega-link-title">${escapeHtml(sub.label || "Item")}</span>
-          ${
-            sub.description
-              ? `<span class="mega-link-desc">${escapeHtml(
-                  sub.description
-                )}</span>`
-              : ""
-          }
+    // MEGA ON MOBILE = section with children links stacked
+    if (item.type === "mega") {
+      const subs = Array.isArray(item.subItems) ? item.subItems : [];
+      let html = `
+        <li class="nav-mobile-item nav-mobile-item--mega">
+          <div class="nav-mobile-mega-label">${label}</div>
+      `;
+      subs.forEach((s) => {
+        const sLabel = escapeHtml(s.label || s.title || "");
+        const sUrl = escapeHtml(s.url || "#");
+        const sDesc = s.description
+          ? `<div class="nav-mobile-link-desc">${escapeHtml(
+              s.description
+            )}</div>`
+          : "";
+        html += `
+          <a class="nav-mobile-link" href="${sUrl}">
+            <div class="nav-mobile-link-title">${sLabel}</div>
+            ${sDesc}
+          </a>
         `;
-        grid.appendChild(a);
       });
-
-      panel.appendChild(grid);
-      li.appendChild(panel);
-    } else {
-      // Simple link item
-      const a = document.createElement("a");
-      a.href = item.url || "#";
-      a.textContent = label;
-      a.className = "nav-link";
-      if (isActive) a.classList.add("active");
-      li.appendChild(a);
+      html += "</li>";
+      return html;
     }
 
-    return li;
+    // NORMAL MOBILE LINK
+    const href = escapeHtml(item.url || "#");
+    return `
+      <li>
+        <a class="${isActive ? "active" : ""}" href="${href}">
+          ${label}
+        </a>
+      </li>
+    `;
   }
 
-  function buildMobileMenuItem(item, currentSlug, currentFile) {
-    const li = document.createElement("li");
-    const type = item.type || "link";
-    const label = item.label || item.title || "Item";
-    const isActive = isMenuItemActive(item, currentSlug, currentFile);
+  function buildMenus(currentSlug) {
+    const desktopUL = document.getElementById("menuList");
+    const mobileUL = document.getElementById("mobileNavMenu");
 
-    if (type === "mega" && Array.isArray(item.subItems) && item.subItems.length) {
-      // Label / section heading
-      const heading = document.createElement("div");
-      heading.className = "mobile-mega-label";
-      heading.textContent = label;
-      li.appendChild(heading);
+    const menu = Array.isArray(site.menu) ? site.menu : [];
 
-      const inner = document.createElement("ul");
-      inner.className = "mobile-mega-list";
-
-      item.subItems.forEach((sub) => {
-        const subLi = document.createElement("li");
-        const a = document.createElement("a");
-        a.href = sub.url || "#";
-        a.textContent = sub.label || "Item";
-        inner.appendChild(subLi);
-        subLi.appendChild(a);
-      });
-
-      li.appendChild(inner);
-    } else {
-      const a = document.createElement("a");
-      a.href = item.url || "#";
-      a.textContent = label;
-      if (isActive) a.classList.add("active");
-      li.appendChild(a);
+    if (desktopUL) {
+      desktopUL.innerHTML = menu
+        .filter((m) => m.showOn !== "mobile") // default: both/desktop
+        .map((m) => renderDesktopItem(m, currentSlug))
+        .join("");
+    }
+    if (mobileUL) {
+      mobileUL.innerHTML = menu
+        .filter((m) => m.showOn !== "desktop") // default: both/mobile
+        .map((m) => renderMobileItem(m, currentSlug))
+        .join("");
     }
 
-    return li;
+    setupMegaInteractions();
   }
 
-  /* ============================
+  function setupMegaInteractions() {
+    const nav = document.querySelector('nav[aria-label="Main"]');
+    if (!nav) return;
+
+    const megaItems = nav.querySelectorAll(".nav-item--mega");
+
+    megaItems.forEach((item) => {
+      const button = item.querySelector(".nav-link--mega");
+      const panel = item.querySelector(".mega-panel");
+      if (!button || !panel) return;
+
+      // Hover for desktop
+      item.addEventListener("mouseenter", () => {
+        item.classList.add("open");
+      });
+      item.addEventListener("mouseleave", () => {
+        item.classList.remove("open");
+      });
+
+      // Click toggle for tap / keyboard
+      button.addEventListener("click", (e) => {
+        e.preventDefault();
+        const isOpen = item.classList.contains("open");
+        // close others
+        megaItems.forEach((other) => other.classList.remove("open"));
+        if (!isOpen) {
+          item.classList.add("open");
+        }
+      });
+    });
+
+    // Close mega if click outside
+    document.addEventListener("click", (e) => {
+      if (!nav.contains(e.target)) {
+        megaItems.forEach((item) => item.classList.remove("open"));
+      }
+    });
+  }
+
+  /* =========================
      HERO
-  ============================ */
-
+  ========================== */
   function renderHero(page) {
-    const heroEl = document.querySelector("[data-hero]");
-    if (!heroEl || !page) return;
+    const heroSection = document.querySelector("section.hero[data-hero]");
+    if (!heroSection) return;
 
-    const h = page.hero || {};
-    const eyebrowEl = heroEl.querySelector("[data-hero-eyebrow]");
-    const titleEl = heroEl.querySelector("[data-hero-title]");
-    const subEl = heroEl.querySelector("[data-hero-sub]");
+    const h = (page && page.hero) || {};
+    const overlayTitle = h.overlay || page?.title || "Honest News";
+    const sub = h.sub || "Biblical Truth · Podcast · Resources";
 
-    // Background image
-    if (h.bg) {
-      heroEl.style.backgroundImage = `url('${h.bg}')`;
-      heroEl.style.backgroundSize = "cover";
-      heroEl.style.backgroundPosition = "center";
-    } else {
-      heroEl.style.backgroundImage = "";
+    const heroInner = heroSection.querySelector(".hero-inner");
+    if (!heroInner) return;
+
+    const eyebrowEl = heroInner.querySelector(".hero-eyebrow");
+    const h1 = heroInner.querySelector("h1");
+    const p = heroInner.querySelector("p");
+
+    if (eyebrowEl) {
+      eyebrowEl.textContent = "Honest News";
+    }
+    if (h1) {
+      h1.textContent = overlayTitle;
+    }
+    if (p) {
+      p.textContent = sub;
     }
 
-    // Height based on size
-    const size = h.size || "full";
+    // Background
+    if (h.bg) {
+      heroSection.style.backgroundImage = `url("${h.bg}")`;
+      heroSection.style.backgroundSize = "cover";
+      heroSection.style.backgroundPosition = "center";
+    } else {
+      heroSection.style.backgroundImage =
+        "radial-gradient(circle at top,#1f2937,#020617)";
+    }
+
+    // Height (size)
     let height = "70vh";
+    const size = h.size || "full";
     if (size === "small") height = "40vh";
     else if (size === "medium") height = "60vh";
     else if (size === "large") height = "80vh";
     else if (size === "full") height = "100vh";
-    else if (size === "custom" && h.customHeight) height = h.customHeight;
-    heroEl.style.minHeight = height;
-
-    // Optional behavior hint (for future parallax, etc.)
-    heroEl.dataset.behavior = h.behavior || "still";
-
-    // Content
-    if (eyebrowEl) {
-      eyebrowEl.textContent = h.eyebrow || page.title || "";
+    else if (size === "custom" && h.customHeight) {
+      height = h.customHeight;
     }
-    if (titleEl) {
-      titleEl.textContent = h.overlay || page.title || "";
-    }
-    if (subEl) {
-      subEl.textContent = h.sub || "";
-    }
+    heroSection.style.minHeight = height;
 
-    // Transparent menu toggle per-page
+    // Transparent header toggle
     const header = document.querySelector("header.site-header");
     if (header) {
-      if (h.transparentMenu) header.classList.add("header--transparent");
-      else header.classList.remove("header--transparent");
+      if (h.transparentMenu) {
+        header.classList.add("header--transparent");
+      } else {
+        header.classList.remove("header--transparent");
+      }
     }
+
+    // HERO MOTION (parallax / float)
+    const behavior = h.behavior || "still";
+    window.addEventListener("scroll", () => {
+      const y = window.scrollY || 0;
+
+      if (behavior === "parallax-slow") {
+        heroSection.style.backgroundPositionY = `${y * -0.15}px`;
+      } else if (behavior === "parallax-medium") {
+        heroSection.style.backgroundPositionY = `${y * -0.3}px`;
+      } else if (behavior === "float-up") {
+        heroInner.style.transform = `translate3d(0, ${y * -0.08}px, 0)`;
+      } else {
+        heroSection.style.backgroundPositionY = "";
+        heroInner.style.transform = "";
+      }
+    });
   }
 
-  /* ============================
-     BLOCKS
-  ============================ */
-
+  /* =========================
+     BLOCKS (content sections)
+  ========================== */
   function renderBlocks(page) {
     const container = document.querySelector("[data-blocks-target]");
-    if (!container || !page) return;
+    if (!container) return;
 
-    const blocks = Array.isArray(page.blocks) ? page.blocks : [];
+    const blocks = (page && Array.isArray(page.blocks) && page.blocks) || [];
     let html = "";
 
     blocks.forEach((b) => {
-      const type = b.type;
+      const motion = b.motion || "fade";
 
-      if (type === "heading") {
+      if (b.type === "heading") {
         html += `
-          <div class="block block-heading">
+          <section class="block block-heading block-motion-${motion}">
             <h2>${escapeHtml(b.content || "")}</h2>
-          </div>
+          </section>
         `;
-      } else if (type === "paragraph") {
+      } else if (b.type === "paragraph") {
         const text = (b.content || "").replace(/\n/g, "<br>");
         html += `
-          <div class="block block-paragraph">
+          <section class="block block-paragraph block-motion-${motion}">
             <p>${text}</p>
-          </div>
+          </section>
         `;
-      } else if (type === "image" && b.content) {
+      } else if (b.type === "image" && b.content) {
         html += `
-          <div class="block block-image">
-            <img src="${escapeHtml(b.content)}"
-                 alt=""
-                 style="max-width:100%;border-radius:14px;">
-          </div>
+          <section class="block block-image block-motion-${motion}">
+            <img src="${escapeHtml(
+              b.content
+            )}" alt="" style="max-width:100%;border-radius:16px;display:block;margin:0 auto;">
+          </section>
         `;
-      } else if (type === "button") {
+      } else if (b.type === "button") {
         html += `
-          <div class="block block-button">
+          <section class="block block-button block-motion-${motion}">
             <a href="${escapeHtml(b.url || "#")}"
-               target="_blank"
-               rel="noopener noreferrer"
-               style="
-                 display:inline-block;
-                 padding:0.6rem 1.6rem;
-                 border-radius:999px;
-                 background:#22c55e;
-                 color:#022c22;
-                 font-weight:600;
-                 font-size:.9rem;
-                 text-decoration:none;">
+               class="hn-btn-primary">
               ${escapeHtml(b.text || "Learn more")}
             </a>
-          </div>
+          </section>
         `;
-      } else if (type === "product") {
+      } else if (b.type === "product") {
         html += `
-          <div class="block block-product"
-               style="
-                 background:#020617;
-                 border-radius:14px;
-                 padding:0.9rem;
-                 border:1px solid rgba(55,65,81,.9);
-                 display:flex;
-                 gap:0.9rem;
-                 align-items:flex-start;">
-            ${
-              b.image
-                ? `<img src="${escapeHtml(
-                    b.image
-                  )}" style="width:110px;border-radius:10px;object-fit:cover;">`
-                : ""
-            }
-            <div>
-              <h3 style="margin:0 0 .3rem;font-size:.98rem;color:#e5e7eb;">
-                ${escapeHtml(b.title || "")}
-              </h3>
-              <p style="margin:0 0 .5rem;font-size:.82rem;color:#9ca3af;">
-                ${escapeHtml(b.text || "")}
-              </p>
+          <section class="block block-product block-motion-${motion}">
+            <div class="product-card">
               ${
-                b.url
-                  ? `<a href="${escapeHtml(b.url)}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style="
-                          display:inline-block;
-                          margin-top:0.2rem;
-                          padding:0.45rem 1.4rem;
-                          border-radius:999px;
-                          background:#22c55e;
-                          color:#022c22;
-                          font-size:.8rem;
-                          font-weight:600;
-                          text-decoration:none;">
-                       Buy on Amazon
-                     </a>`
+                b.image
+                  ? `<img src="${escapeHtml(
+                      b.image
+                    )}" alt="" class="product-card-image">`
                   : ""
               }
+              <div class="product-card-body">
+                <h3 class="product-card-title">${escapeHtml(
+                  b.title || ""
+                )}</h3>
+                <p class="product-card-text">${escapeHtml(b.text || "")}</p>
+                ${
+                  b.url
+                    ? `<a class="product-card-link" href="${escapeHtml(
+                        b.url
+                      )}" target="_blank" rel="noopener noreferrer">
+                         Buy on Amazon
+                       </a>`
+                    : ""
+                }
+              </div>
             </div>
-          </div>
+          </section>
         `;
-      } else if (type === "podcast" && b.embed) {
+      } else if (b.type === "podcast" && b.embed) {
         html += `
-          <div class="block block-podcast" style="margin:1.2rem 0;">
-            <h3 style="margin:0 0 .3rem;color:#e5e7eb;">
-              ${escapeHtml(b.title || "")}
-            </h3>
-            <iframe src="${escapeHtml(b.embed)}"
-                    style="width:100%;height:150px;border:none;border-radius:10px;background:#0f172a;"
-                    allow="autoplay"></iframe>
-          </div>
+          <section class="block block-podcast block-motion-${motion}">
+            ${
+              b.title
+                ? `<h3 class="block-podcast-title">${escapeHtml(
+                    b.title
+                  )}</h3>`
+                : ""
+            }
+            <iframe src="${escapeHtml(
+              b.embed
+            )}" style="width:100%;height:150px;border:none;border-radius:12px;background:#0f172a;" allow="autoplay"></iframe>
+          </section>
         `;
-      } else if (type === "youtube" && b.videoId) {
-        let id = (b.videoId || "").trim();
+      } else if (b.type === "youtube" && b.videoId) {
+        let id = b.videoId.trim();
         const m = id.match(/v=([^&]+)/);
         if (m) id = m[1];
         html += `
-          <div class="block block-youtube" style="margin:1.2rem 0;">
-            <h3 style="margin:0 0 .3rem;color:#e5e7eb;">
-              ${escapeHtml(b.title || "")}
-            </h3>
-            <div style="position:relative;padding-bottom:56.25%;height:0;border-radius:12px;overflow:hidden;">
-              <iframe src="https://www.youtube.com/embed/${escapeHtml(id)}"
-                      style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"
-                      allowfullscreen></iframe>
+          <section class="block block-youtube block-motion-${motion}">
+            ${
+              b.title
+                ? `<h3 class="block-youtube-title">${escapeHtml(
+                    b.title
+                  )}</h3>`
+                : ""
+            }
+            <div class="youtube-frame">
+              <iframe src="https://www.youtube.com/embed/${escapeHtml(
+                id
+              )}" allowfullscreen frameborder="0"></iframe>
             </div>
-          </div>
+          </section>
         `;
       }
     });
@@ -469,17 +437,23 @@
     container.innerHTML = html;
   }
 
-  /* ============================
-     UTIL
-  ============================ */
+  /* =========================
+     INIT
+  ========================== */
+  document.addEventListener("DOMContentLoaded", async () => {
+    await loadSiteData();
+    const slug = getCurrentSlug();
+    const pages = Array.isArray(site.pages) ? site.pages : [];
+    const currentPage =
+      pages.find((p) => p.slug === slug) || pages[0] || null;
 
-  function escapeHtml(str) {
-    return String(str || "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;");
-  }
+    applyTheme(currentPage);
+    buildMenus(slug);
+    renderHero(currentPage);
+    renderBlocks(currentPage);
+  });
 })();
+
 
 
 
