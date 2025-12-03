@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1296,4 +1297,655 @@ document.querySelectorAll(".inspect-tab").forEach(tab=>{
     });
     renderInspectorTab();
     if (panelBehavior === "auto" || panelBehavior === "pinned" || panelBehavior === "smart"){
+      openPanel("auto");
+    }
+  });
+});
+
+function renderInspectorTab(){
+  const body = document.getElementById("inspectorBody");
+  if (!current && activeInspectorTab!=="site" && activeInspectorTab!=="menu"){
+    body.innerHTML = `<p style="color:#9ca3af;">Select a page on the left to edit.</p>`;
+    return;
+  }
+  if (activeInspectorTab === "page"){
+    body.innerHTML = renderPageTabHtml(current);
+  } else if (activeInspectorTab === "hero"){
+    body.innerHTML = renderHeroTabHtml(current);
+  } else if (activeInspectorTab === "blocks"){
+    body.innerHTML = renderBlocksTabHtml(current);
+  } else if (activeInspectorTab === "menu"){
+    body.innerHTML = renderMenuTabHtml();
+  } else {
+    body.innerHTML = renderSiteTabHtml();
+    wirePanelBehaviorRadios();
+  }
+}
+
+/* PAGE TAB */
+function renderPageTabHtml(c){
+  const themeLight = c.theme === "light";
+  return `
+    <div class="section">
+      <div class="field-group">
+        <div class="field-label">Title</div>
+        <input type="text" value="${c.title || ''}"
+          onchange="current.title=this.value;markDirty();renderPages();updatePreviewHeader();">
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Slug</div>
+        <input type="text" value="${c.slug || ''}"
+          placeholder="home, about, podcast..."
+          onchange="current.slug=this.value;markDirty();renderPages();updatePreviewHeader();">
+        <div class="field-hint">
+          Used by <code>data-page="slug"</code> in your HTML &lt;body&gt;.
+        </div>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Theme</div>
+        <label class="inline">
+          <input type="radio" name="themeRadio" value="light" ${themeLight?'checked':''}
+            onchange="current.theme='light';markDirty();">
+          Light
+        </label>
+        <label class="inline">
+          <input type="radio" name="themeRadio" value="dark" ${!themeLight?'checked':''}
+            onchange="current.theme='dark';markDirty();">
+          Dark
+        </label>
+      </div>
+    </div>
+  `;
+}
+
+/* HERO TAB */
+function renderHeroTabHtml(c){
+  const h = c.hero || {};
+  const size = h.size || "full";
+  const behavior = h.behavior || "still";
+
+  return `
+    <div class="section">
+      <div class="field-group">
+        <div class="field-label">Background image URL</div>
+        <input type="url" value="${h.bg || ''}" placeholder="https://..."
+          onchange="current.hero.bg=this.value;markDirty();renderPreview();">
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Main title</div>
+        <input type="text" value="${h.overlay || ''}" placeholder="Main hero title"
+          onchange="current.hero.overlay=this.value;markDirty();renderPreview();">
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Subtitle</div>
+        <input type="text" value="${h.sub || ''}" placeholder="Optional subtitle"
+          onchange="current.hero.sub=this.value;markDirty();renderPreview();">
+      </div>
+
+      <div class="field-group">
+        <label class="inline">
+          <input type="checkbox" ${h.transparentMenu ? "checked" : "" }
+            onchange="current.hero.transparentMenu=this.checked;markDirty();">
+          Transparent header on this page
+        </label>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Hero behavior</div>
+        <select onchange="current.hero.behavior=this.value;markDirty();">
+          <option value="still" ${behavior==='still'?'selected':''}>Still image</option>
+          <option value="parallax-slow" ${behavior==='parallax-slow'?'selected':''}>Parallax – slow</option>
+          <option value="parallax-medium" ${behavior==='parallax-medium'?'selected':''}>Parallax – medium</option>
+          <option value="float-up" ${behavior==='float-up'?'selected':''}>Float up</option>
+        </select>
+      </div>
+
+      <div class="field-group">
+        <div class="field-label">Hero height</div>
+        <label class="inline">
+          <input type="radio" name="heroSize" value="small" ${size==="small"?'checked':''}
+            onchange="setHeroSize('small')">
+          Small (≈40vh)
+        </label><br>
+        <label class="inline">
+          <input type="radio" name="heroSize" value="medium" ${size==="medium"?'checked':''}
+            onchange="setHeroSize('medium')">
+          Medium (≈60vh)
+        </label><br>
+        <label class="inline">
+          <input type="radio" name="heroSize" value="large" ${size==="large"?'checked':''}
+            onchange="setHeroSize('large')">
+          Large (≈80vh)
+        </label><br>
+        <label class="inline">
+          <input type="radio" name="heroSize" value="full" ${size==="full"?'checked':''}
+            onchange="setHeroSize('full')">
+          Fullscreen (100vh)
+        </label><br>
+        <label class="inline">
+          <input type="radio" name="heroSize" value="custom" ${size==="custom"?'checked':''}
+            onchange="setHeroSize('custom')">
+          Custom:
+        </label>
+        <input type="text" value="${h.customHeight || ''}" placeholder="e.g. 520px or 80vh"
+          onchange="setHeroCustom(this.value)">
+        <div class="field-hint">Custom height lets you match Podbean-style heroes exactly.</div>
+      </div>
+    </div>
+  `;
+}
+
+function setHeroSize(size){
+  if (!current.hero) current.hero = {};
+  current.hero.size = size;
+  markDirty();
+  renderPreview();
+}
+function setHeroCustom(val){
+  if (!current.hero) current.hero = {};
+  current.hero.size = "custom";
+  current.hero.customHeight = val.trim();
+  markDirty();
+  renderPreview();
+}
+
+/* BLOCKS TAB */
+function renderBlocksTabHtml(c){
+  const blocks = c.blocks || [];
+  let html = `
+    <div class="panelSection">
+      <div class="panelLabel">Add blocks</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        <button class="btn secondary" type="button" onclick="addBlock('heading')">+ Heading</button>
+        <button class="btn secondary" type="button" onclick="addBlock('paragraph')">+ Paragraph</button>
+        <button class="btn secondary" type="button" onclick="addBlock('image')">+ Image</button>
+        <button class="btn secondary" type="button" onclick="addBlock('button')">+ Button</button>
+        <button class="btn secondary" type="button" onclick="addBlock('product')">+ Amazon product</button>
+        <button class="btn secondary" type="button" onclick="addBlock('podcast')">+ Podcast</button>
+        <button class="btn secondary" type="button" onclick="addBlock('youtube')">+ YouTube</button>
+      </div>
+    </div>
+    <div class="panelSection">
+  `;
+  blocks.forEach((b,i)=>{
+    const motion = b.motion || "fade";
+    html += `
+      <div class="block">
+        <div class="block-header-line">
+          <span class="block-type">${b.type.toUpperCase()}</span>
+          <span>
+            Motion:
+            <select class="motion-select"
+              onchange="current.blocks[${i}].motion=this.value;markDirty();renderPreview();">
+              <option value="none"  ${motion==='none'?'selected':''}>None</option>
+              <option value="fade"  ${motion==='fade'?'selected':''}>Fade</option>
+              <option value="float" ${motion==='float'?'selected':''}>Float</option>
+              <option value="slide" ${motion==='slide'?'selected':''}>Slide</option>
+            </select>
+          </span>
+        </div>
+        ${renderBlockFields(b,i)}
+        <div class="tools">
+          <button onclick="moveBlock(${i},-1)">↑</button>
+          <button onclick="moveBlock(${i},1)">↓</button>
+          <button onclick="removeBlock(${i})">×</button>
+        </div>
+      </div>
+    `;
+  });
+  html += `</div>`;
+  return html;
+}
+
+function renderBlockFields(b,i){
+  if (b.type==="heading"){
+    return `
+      <div class="field-group">
+        <div class="field-label">Text</div>
+        <input type="text" value="${b.content || ''}"
+          onchange="current.blocks[${i}].content=this.value;markDirty();renderPreview();">
+      </div>
+    `;
+  }
+  if (b.type==="paragraph"){
+    return `
+      <div class="field-group">
+        <div class="field-label">Text</div>
+        <textarea rows="4"
+          onchange="current.blocks[${i}].content=this.value;markDirty();renderPreview();">${b.content || ''}</textarea>
+      </div>
+    `;
+  }
+  if (b.type==="image"){
+    const mode = b.mode==="upload" ? "upload" : "url";
+    return `
+      <div class="field-group">
+        <div class="field-label">Image source</div>
+        <select onchange="current.blocks[${i}].mode=this.value;markDirty();renderInspectorTab();">
+          <option value="url" ${mode==='url'?'selected':''}>URL</option>
+          <option value="upload" ${mode==='upload'?'selected':''}>Upload</option>
+        </select>
+      </div>
+      ${
+        mode==="upload"
+        ? `<input type="file" accept="image/*" onchange="handleImageUpload(event,${i})">`
+        : `
+          <div class="field-group">
+            <div class="field-label">Image URL</div>
+            <input type="url" value="${b.content || ''}"
+              onchange="current.blocks[${i}].content=this.value;markDirty();renderPreview();">
+          </div>`
+      }
+    `;
+  }
+  if (b.type==="button"){
+    return `
+      <div class="field-group">
+        <div class="field-label">Button text</div>
+        <input type="text" value="${b.text || ''}"
+          onchange="current.blocks[${i}].text=this.value;markDirty();renderPreview();">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Button URL</div>
+        <input type="url" value="${b.url || ''}"
+          onchange="current.blocks[${i}].url=this.value;markDirty();renderPreview();">
+      </div>
+    `;
+  }
+  if (b.type==="product"){
+    return `
+      <div class="field-group">
+        <div class="field-label">Product title</div>
+        <input type="text" value="${b.title || ''}"
+          onchange="current.blocks[${i}].title=this.value;markDirty();renderPreview();">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Description</div>
+        <textarea rows="3"
+          onchange="current.blocks[${i}].text=this.value;markDirty();renderPreview();">${b.text || ''}</textarea>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Image URL</div>
+        <input type="url" value="${b.image || ''}"
+          onchange="current.blocks[${i}].image=this.value;markDirty();renderPreview();">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Amazon affiliate URL</div>
+        <input type="url" value="${b.url || ''}"
+          onchange="current.blocks[${i}].url=this.value;markDirty();renderPreview();">
+      </div>
+    `;
+  }
+  if (b.type==="podcast"){
+    return `
+      <div class="field-group">
+        <div class="field-label">Episode title</div>
+        <input type="text" value="${b.title || ''}"
+          onchange="current.blocks[${i}].title=this.value;markDirty();renderPreview();">
+      </div>
+      <div class="field-group">
+        <div class="field-label">Podbean embed URL or iframe src</div>
+        <textarea rows="3"
+          onchange="current.blocks[${i}].embed=this.value;markDirty();renderPreview();">${b.embed || ''}</textarea>
+      </div>
+    `;
+  }
+  if (b.type==="youtube"){
+    return `
+      <div class="field-group">
+        <div class="field-label">Video title</div>
+        <input type="text" value="${b.title || ''}"
+          onchange="current.blocks[${i}].title=this.value;markDirty();renderPreview();">
+      </div>
+      <div class="field-group">
+        <div class="field-label">YouTube URL or ID</div>
+        <input type="text" value="${b.videoId || ''}"
+          onchange="current.blocks[${i}].videoId=this.value;markDirty();renderPreview();">
+      </div>
+    `;
+  }
+  return "";
+}
+
+function addBlock(type){
+  if (!current.blocks) current.blocks = [];
+  const b = {type, motion:"fade"};
+  if(type==="heading")   b.content="New heading";
+  if(type==="paragraph") b.content="Your text here...";
+  if(type==="image"){    b.mode="url"; b.content=""; }
+  if(type==="button"){   b.text="Learn more"; b.url="#"; }
+  if(type==="product"){  b.title="Product title"; b.text="Short description"; b.image=""; b.url=""; }
+  if(type==="podcast"){  b.title="Episode title"; b.embed=""; }
+  if(type==="youtube"){  b.title="Video title";   b.videoId=""; }
+  current.blocks.push(b);
+  markDirty();
+  renderInspectorTab();
+  renderPreview();
+}
+
+function moveBlock(i,d){
+  const arr = current.blocks;
+  const item = arr.splice(i,1)[0];
+  let newIndex = i + d;
+  if (newIndex < 0) newIndex = 0;
+  if (newIndex > arr.length) newIndex = arr.length;
+  arr.splice(newIndex,0,item);
+  markDirty();
+  renderInspectorTab();
+  renderPreview();
+}
+function removeBlock(i){
+  current.blocks.splice(i,1);
+  markDirty();
+  renderInspectorTab();
+  renderPreview();
+}
+
+function handleImageUpload(e,index){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    current.blocks[index].content = reader.result;
+    markDirty();
+    renderPreview();
+  };
+  reader.readAsDataURL(file);
+}
+
+/* =======================
+   MENU TAB HTML
+======================= */
+function renderMenuTabHtml(){
+  ensureMenuArray();
+  const menu = site.menu;
+  let html = `
+    <div class="panelSection">
+      <div class="panelLabel">Main navigation</div>
+      <p class="field-hint">
+        Desktop header + mobile menu. Use <strong>Mega</strong> type for wide dropdown.
+      </p>
+      <button class="btn secondary" type="button" onclick="addMenuItem()">+ Add menu item</button>
+    </div>
+    <div class="panelSection">
+  `;
+
+  if (!menu.length){
+    html += `<p class="field-hint">No menu items yet. Click “Add menu item” to get started.</p>`;
+  }
+
+  menu.forEach((item,i)=>{
+    const type   = item.type   || "link";
+    const showOn = item.showOn || "both";
+    const label  = escapeHtml(item.label || item.title || "");
+    const url    = escapeHtml(item.url || "");
+    html += `
+      <div class="block">
+        <div class="block-header-line">
+          <span class="block-type">ITEM ${i+1}</span>
+          <span>
+            Type:
+            <select class="motion-select"
+              onchange="changeMenuType(${i}, this.value)">
+              <option value="link" ${type==='link'?'selected':''}>Link</option>
+              <option value="mega" ${type==='mega'?'selected':''}>Mega</option>
+            </select>
+          </span>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">Label</div>
+          <input type="text" value="${label}"
+            onchange="updateMenuField(${i}, 'label', this.value)">
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">URL</div>
+          <input type="text" value="${url}"
+            onchange="updateMenuField(${i}, 'url', this.value)">
+          <div class="field-hint">
+            Example: <code>index.html</code>, <code>podcast.html</code>, <code>#</code>, or full URL.
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="field-label">Show on</div>
+          <select onchange="updateMenuField(${i}, 'showOn', this.value)">
+            <option value="both" ${showOn==='both'?'selected':''}>Desktop + mobile</option>
+            <option value="desktop" ${showOn==='desktop'?'selected':''}>Desktop only</option>
+            <option value="mobile" ${showOn==='mobile'?'selected':''}>Mobile only</option>
+          </select>
+        </div>
+
+        <div class="tools">
+          <button onclick="moveMenuItem(${i},-1)">↑</button>
+          <button onclick="moveMenuItem(${i},1)">↓</button>
+          <button onclick="removeMenuItem(${i})">×</button>
+        </div>
+    `;
+
+    if (type === "mega"){
+      const subs = Array.isArray(item.subItems) ? item.subItems : [];
+      html += `
+        <div class="section">
+          <div class="panelLabel">Mega links</div>
+          <p class="field-hint">
+            Shown in the wide dropdown panel on desktop. Stacked on mobile.
+          </p>
+          <button class="btn secondary" type="button" onclick="addSubItem(${i})">+ Add mega link</button>
+      `;
+      subs.forEach((s,j)=>{
+        const sLabel = escapeHtml(s.label || s.title || "");
+        const sUrl   = escapeHtml(s.url || "");
+        const sDesc  = escapeHtml(s.description || "");
+        html += `
+          <div class="block" style="margin-top:8px;">
+            <div class="block-header-line">
+              <span class="block-type">LINK ${j+1}</span>
+              <button class="page-delete-btn" title="Remove link"
+                onclick="removeSubItem(${i},${j});return false;">
+                <i class="fa-regular fa-trash-can"></i>
+              </button>
+            </div>
+            <div class="field-group">
+              <div class="field-label">Label</div>
+              <input type="text" value="${sLabel}"
+                onchange="updateSubItemField(${i},${j},'label',this.value)">
+            </div>
+            <div class="field-group">
+              <div class="field-label">URL</div>
+              <input type="text" value="${sUrl}"
+                onchange="updateSubItemField(${i},${j},'url',this.value)">
+            </div>
+            <div class="field-group">
+              <div class="field-label">Description (optional)</div>
+              <textarea rows="2"
+                onchange="updateSubItemField(${i},${j},'description',this.value)">${sDesc}</textarea>
+            </div>
+          </div>
+        `;
+      });
+      html += `</div>`;
+    }
+
+    html += `</div>`;
+  });
+
+  html += `</div>`;
+  return html;
+}
+
+/* =======================
+   UTIL
+======================= */
+function escapeHtml(str){
+  return String(str || "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;");
+}
+
+/* =======================
+   DRAFT SAVE
+======================= */
+function saveDraft(){
+  try{
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(site));
+    markSavedLocal(); // reuse pill style
+  } catch(e){
+    alert("Could not save draft locally.");
+  }
+}
+function restoreDraftIfAny(){
+  try{
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if(!raw) return;
+    const parsed = JSON.parse(raw);
+    if(parsed && typeof parsed === "object") {
+      site = Object.assign({}, site, parsed);
+    }
+  } catch(e){
+    console.warn("No valid draft to restore");
+  }
+}
+
+/* =======================
+   DOWNLOAD / BACKUP
+======================= */
+function downloadJson(){
+  const blob = new Blob([JSON.stringify(site,null,2)],{type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "site-data.json";
+  a.click();
+}
+
+async function backupAll(){
+  const zip = new JSZip();
+  zip.file("site-data.json", JSON.stringify(site,null,2));
+
+  const files = [
+    "index.html",
+    "podcast.html",
+    "shop.html",
+    "contact.html",
+    "support.html",
+    "admin.html",
+    "dashboard.html",
+    "assets/js/live.js"
+  ];
+
+  for(const f of files){
+    try{
+      const res = await fetch(f,{cache:"no-store"});
+      if(res.ok){
+        const text = await res.text();
+        zip.file(f,text);
+      }
+    }catch(e){
+      console.warn("Could not add to backup:", f);
+    }
+  }
+
+  const blob = await zip.generateAsync({type:"blob"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "honest-news-full-backup.zip";
+  a.click();
+}
+
+/* =======================
+   PUBLISH (Render → GitHub)
+======================= */
+document.getElementById("publishBtn").addEventListener("click", saveToCloud);
+
+async function saveToCloud(){
+  if(!confirm("Publish your changes to GitHub?")) return;
+
+  try{
+    const res = await fetch(SAVE_ENDPOINT,{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body:JSON.stringify(site)
+    });
+
+    const data = await res.json().catch(()=> ({}));
+
+    if(!res.ok || !data.ok){
+      throw new Error(data.error || ("HTTP " + res.status));
+    }
+
+    markSavedLocal();
+    alert("✔ Published.\nRender → GitHub site-data.json updated.");
+
+  }catch(e){
+    console.error(e);
+    alert("❌ Publish failed.\n" + e.message);
+  }
+}
+
+/* mirror backup buttons */
+document.getElementById("saveDraftBtn2").addEventListener("click", saveDraft);
+document.getElementById("downloadBtn2").addEventListener("click", downloadJson);
+document.getElementById("backupBtn2").addEventListener("click", backupAll);
+
+/* =======================
+   SITE TAB (PANEL BEHAVIOR)
+======================= */
+function renderSiteTabHtml(){
+  return `
+    <div class="panelSection">
+      <div class="panelLabel">Panel behavior</div>
+      <label class="inline" style="margin-bottom:4px;display:flex;">
+        <input type="radio" name="panelBehavior" value="auto" ${panelBehavior==='auto'?'checked':''}>
+        <span>Auto-open when editing</span>
+      </label><br>
+      <label class="inline" style="margin-bottom:4px;display:flex;">
+        <input type="radio" name="panelBehavior" value="manual" ${panelBehavior==='manual'?'checked':''}>
+        <span>Manual (use handle / Shift+P)</span>
+      </label><br>
+      <label class="inline" style="margin-bottom:4px;display:flex;">
+        <input type="radio" name="panelBehavior" value="pinned" ${panelBehavior==='pinned'?'checked':''}>
+        <span>Pinned open</span>
+      </label><br>
+      <label class="inline" style="margin-bottom:4px;display:flex;">
+        <input type="radio" name="panelBehavior" value="smart" ${panelBehavior==='smart'?'checked':''}>
+        <span>Smart (auto like Webflow)</span>
+      </label>
+      <p class="field-hint" style="margin-top:6px;">
+        Your choice is saved per browser. “Smart” behaves like auto-open for now,
+        but we can later hook it to more advanced logic.
+      </p>
+    </div>
+    <div class="panelSection">
+      <div class="panelLabel">Data & safety</div>
+      <p class="field-hint">
+        • “Publish” sends <code>site-data.json</code> to your Honest-News repo via Render (GitHub API).<br>
+        • Drafts stay only in this browser’s local storage.<br>
+        • Use GitHub Desktop to Commit & Push when you’re ready to go fully live.
+      </p>
+    </div>
+  `;
+}
+
+function wirePanelBehaviorRadios(){
+  document.querySelectorAll('input[name="panelBehavior"]').forEach(r=>{
+    r.addEventListener("change", ()=>{
+      panelBehavior = r.value;
+      localStorage.setItem("hn_panel_behavior", panelBehavior);
+      applyPanelBehavior();
+    });
+  });
+}
+
+/* initial inspector content */
+renderInspectorTab();
+</script>
+</body>
+</html>
 
