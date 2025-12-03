@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Honest Honest News – Mega Menu Test (Home)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+:root{
+  --bg: #020617;
+  --accent: #0ea5e9;
+  --accent-soft: #0369a1;
+  --text-main: #e5e7eb;
+  --text-soft: #9ca3af;
+  --radius-pill: 999px;
+}
+
+*{box-sizing:border-box;}
+
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;
+  background:radial-gradient(circle at top,#1f2937 0,#020617 48%,#000 100%);
+  color:var(--text-main);
+}
+
+/* HEADER */
+.hn-header{
+  position:sticky;
+  top:0;
+  z-index:50;
+  backdrop-filter:blur(18px);
+  background:linear-gradient(to bottom,rgba(15,23,42,.92),rgba(15,23,42,.86),rgba(15,23,42,.82),transparent);
+  border-bottom:1px solid rgba(148,163,184,.35);
+}
+.hn-header-inner{
+  max-width:1120px;
+  margin:0 auto;
+  padding:10px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+}
+.hn-logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:600;
+  color:var(--text-main);
+}
+.hn-logo-mark{
+  width:28px;
+  height:28px;
+  border-radius:12px;
+  background:radial-gradient(circle at 20% 0,#38bdf8,transparent 55%),
+             radial-gradient(circle at 80% 120%,#22c55e,transparent 55%),
+             #020617;
+  border:1px solid rgba(148,163,184,.6);
+  box-shadow:0 0 0 1px rgba(15,23,42,1),0 10px 25px rgba(0,0,0,.7);
+}
+
+/* DESKTOP NAV */
+.hn-nav{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.hn-nav ul{
+  list-style:none;
+  display:flex;
+  align-items:center;
+  gap:2px;
+  margin:0;
+  padding:0;
+}
+.hn-nav a,
+.hn-nav button{
+  border:none;
+  background:transparent;
+  color:var(--text-soft);
+  font-size:.86rem;
+  padding:8px 10px;
+  border-radius:999px;
+  text-decoration:none;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  cursor:pointer;
+}
+.hn-nav a:hover,
+.hn-nav button:hover{
+  color:#e5e7eb;
+  background:rgba(15,23,42,.85);
+}
+.hn-nav .is-active > a{
+  color:#e5e7eb;
+  background:rgba(15,23,42,.92);
+  box-shadow:0 0 0 1px rgba(148,163,184,.6);
+}
+
+/* “Mega” chip */
+.hn-chip{
+  font-size:.65rem;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  padding:2px 6px;
+  border-radius:999px;
+  background:rgba(8,47,73,.9);
+  color:#bae6fd;
+}
+
+/* CTA */
+.hn-cta{
+  padding:7px 14px;
+  border-radius:var(--radius-pill);
+  background:var(--accent);
+  color:#0b1120 !important;
+  font-size:.86rem;
+  font-weight:600;
+  border:1px solid var(--accent-soft);
+}
+.hn-cta:hover{
+  background:var(--accent-soft);
+}
+
+/* MEGA MENU DESKTOP */
+.hn-mega-backdrop{
+  position:absolute;
+  left:0;
+  right:0;
+  top:100%;
+  padding-top:8px;
+  pointer-events:none;
+  opacity:0;
+  transform:translateY(-4px);
+  transition:opacity .16s ease, transform .16s ease;
+}
+.hn-mega-backdrop.visible{
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:auto;
+}
+.hn-mega-inner{
+  max-width:1120px;
+  margin:0 auto;
+  padding:12px 16px 14px;
+  border-radius:18px;
+  border:1px solid rgba(148,163,184,.45);
+  background:radial-gradient(circle at 0 -50%,rgba(56,189,248,.24),transparent 55%),
+             radial-gradient(circle at 120% 110%,rgba(34,197,94,.18),transparent 55%),
+             rgba(15,23,42,.98);
+  box-shadow:0 24px 60px rgba(0,0,0,.95);
+}
+.hn-mega-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+}
+.hn-mega-item{
+  padding:8px 9px;
+  border-radius:12px;
+  border:1px solid transparent;
+  cursor:pointer;
+}
+.hn-mega-item:hover{
+  border-color:rgba(148,163,184,.7);
+  background:rgba(15,23,42,.9);
+}
+.hn-mega-item-title{
+  font-size:.86rem;
+  font-weight:600;
+  margin-bottom:2px;
+}
+.hn-mega-item-desc{
+  font-size:.78rem;
+  color:var(--text-soft);
+}
+
+/* MOBILE */
+.hn-burger{
+  display:none;
+  border:none;
+  background:rgba(15,23,42,.9);
+  border-radius:999px;
+  padding:7px 10px;
+  color:var(--text-main);
+  cursor:pointer;
+}
+.hn-mobile{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(15,23,42,.98);
+  z-index:40;
+  padding:70px 18px 20px;
+}
+.hn-mobile.open{
+  display:block;
+}
+.hn-mobile ul{
+  list-style:none;
+  margin:0;
+  padding:0;
+}
+.hn-mobile a{
+  display:block;
+  padding:10px 4px;
+  font-size:1rem;
+  text-decoration:none;
+  color:var(--text-main);
+}
+
+/* Mobile mega accordion */
+.hn-mobile-mega{
+  border-radius:12px;
+  border:1px solid rgba(51,65,85,.9);
+  margin-bottom:8px;
+  background:#020617;
+}
+.hn-mobile-mega-toggle{
+  width:100%;
+  border:none;
+  background:transparent;
+  color:var(--text-main);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 8px;
+  cursor:pointer;
+  font-size:1rem;
+}
+.hn-mobile-mega-toggle span{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.hn-mobile-mega-toggle small{
+  font-size:.7rem;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  color:#38bdf8;
+}
+.hn-mobile-mega-chevron{
+  transition:transform .16s ease;
+  font-size:.8rem;
+}
+.hn-mobile-mega.open .hn-mobile-mega-chevron{
+  transform:rotate(90deg);
+}
+.hn-mobile-mega-panel{
+  display:none;
+  border-top:1px solid rgba(51,65,85,.9);
+  padding:6px 8px 8px;
+}
+.hn-mobile-mega.open .hn-mobile-mega-panel{
+  display:block;
+}
+.hn-mobile-mega-panel a{
+  padding:6px 4px;
+  font-size:.9rem;
+  color:var(--text-soft);
+}
+.hn-mobile-mega-panel a strong{
+  color:var(--text-main);
+  display:block;
+}
+
+/* HIDE DESKTOP MEGA ON MOBILE */
+@media (max-width:768px){
+  .hn-nav{display:none;}
+  .hn-burger{display:inline-flex;}
+  .hn-mega-backdrop{display:none !important;}
+}
+
+/* MAIN PAGE CONTENT */
+main{
+  max-width:1120px;
+  margin:40px auto 80px;
+  padding:0 18px;
+}
+.hero{
+  padding:60px 0 40px;
+}
+.hero h1{
+  font-size:2rem;
+  margin:0 0 10px;
+}
+.hero p{
+  margin:0;
+  color:var(--text-soft);
+}
+section{
+  margin-top:40px;
+}
+section h2{
+  font-size:1.3rem;
+  margin-bottom:6px;
+}
+section p{
+  color:var(--text-soft);
+  max-width:700px;
+}
+</style>
+</head>
+<body>
+
+<header class="hn-header">
+  <div class="hn-header-inner">
+    <div class="hn-logo">
+      <div class="hn-logo-mark"></div>
+      <div>
+        <div style="font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;color:#9ca3af;">Honest News</div>
+        <div style="font-size:.9rem;">Biblical Truth · Zero Build</div>
+      </div>
+    </div>
+
+    <nav class="hn-nav" aria-label="Main">
+      <ul id="hnDesktopNav"></ul>
+      <a href="#" class="hn-cta">Get Started</a>
+    </nav>
+
+    <button class="hn-burger" id="hnBurger" aria-label="Toggle menu">
+      ☰
+    </button>
+  </div>
+
+  <!-- Desktop mega panel -->
+  <div class="hn-mega-backdrop" id="hnMegaBackdrop">
+    <div class="hn-mega-inner">
+      <div class="hn-mega-grid" id="hnMegaGrid"></div>
+    </div>
+  </div>
+
+  <!-- Mobile panel -->
+  <div class="hn-mobile" id="hnMobile">
+    <ul id="hnMobileNav"></ul>
+  </div>
+</header>
+
+<main>
+  <div class="hero">
+    <h1>Home page – Mega menu test</h1>
+    <p>
+      Hover <strong>“Resources (Mega)”</strong> on desktop, or open the burger on mobile
+      and tap it to see the mega links expand.
+    </p>
+  </div>
+
+  <section>
+    <h2>About this sample</h2>
+    <p>
+      This is a standalone test header. Once you’re happy with the behavior, you can
+      copy the <code>&lt;header&gt;</code> + the <code>&lt;script&gt;</code> block into
+      your real templates.
+    </p>
+  </section>
+</main>
+
+<script>
+// Simple in-page menu model (matches what the CMS will output)
+const MENU = [
+  { label: "Home", url: "index.html", type: "link", showOn: "both" },
+  { label: "Podcast", url: "podcast.html", type: "link", showOn: "both" },
+  {
+    label: "Resources",
+    url: "#",
+    type: "mega",
+    showOn: "desktop",
+    subItems: [
+      {
+        label: "About Honest News",
+        url: "about.html",
+        description: "Who we are and what Biblical Truth means in practice."
+      },
+      {
+        label: "Study Resources",
+        url: "#",
+        description: "Books, study guides, and tools that deepen your walk."
+      },
+      {
+        label: "For Pastors",
+        url: "#",
+        description: "Workflows to preach, record, and publish your messages."
+      }
+    ]
+  },
+  { label: "Shop", url: "shop.html", type: "link", showOn: "both" },
+  { label: "Contact", url: "contact.html", type: "link", showOn: "both" }
+];
+
+const desktopNav = document.getElementById("hnDesktopNav");
+const megaBackdrop = document.getElementById("hnMegaBackdrop");
+const megaGrid = document.getElementById("hnMegaGrid");
+const mobileNav = document.getElementById("hnMobileNav");
+const burger = document.getElementById("hnBurger");
+const mobilePanel = document.getElementById("hnMobile");
+
+const currentPath = location.pathname.split("/").pop() || "index.html";
+
+/* DESKTOP RENDER + MEGA */
+function buildDesktopNav(){
+  desktopNav.innerHTML = "";
+  MENU.forEach(item => {
+    if (item.showOn === "mobile") return;
+    const li = document.createElement("li");
+    const isMega = item.type === "mega";
+    const isActive = currentPath === (item.url || "").replace(/^\//,"");
+
+    if (isMega){
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.innerHTML = `
+        <span>${item.label}</span>
+        <span class="hn-chip">Mega</span>
+      `;
+      btn.addEventListener("mouseenter", () => showMega(item));
+      btn.addEventListener("focus", () => showMega(item));
+      li.appendChild(btn);
+    } else {
+      const a = document.createElement("a");
+      a.href = item.url || "#";
+      a.textContent = item.label;
+      if (isActive) li.classList.add("is-active");
+      li.appendChild(a);
+      li.addEventListener("mouseenter", hideMega);
+    }
+
+    desktopNav.appendChild(li);
+  });
+
+  desktopNav.addEventListener("mouseleave", hideMega);
+  megaBackdrop.addEventListener("mouseenter", () => {
+    megaBackdrop.classList.add("visible");
+  });
+  megaBackdrop.addEventListener("mouseleave", hideMega);
+}
+
+function showMega(item){
+  if (!item.subItems || !item.subItems.length){
+    hideMega();
+    return;
+  }
+  megaGrid.innerHTML = "";
+  item.subItems.forEach(sub=>{
+    const div = document.createElement("a");
+    div.href = sub.url || "#";
+    div.className = "hn-mega-item";
+    div.innerHTML = `
+      <div class="hn-mega-item-title">${sub.label}</div>
+      <div class="hn-mega-item-desc">${sub.description || ""}</div>
+    `;
+    megaGrid.appendChild(div);
+  });
+  megaBackdrop.classList.add("visible");
+}
+
+function hideMega(){
+  megaBackdrop.classList.remove("visible");
+}
+
+/* MOBILE RENDER + MEGA ACCORDION */
+function buildMobileNav(){
+  mobileNav.innerHTML = "";
+  MENU.forEach(item=>{
+    if (item.showOn === "desktop") return;
+    const isMega = item.type === "mega";
+
+    if (!isMega){
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      a.href = item.url || "#";
+      a.textContent = item.label;
+      li.appendChild(a);
+      mobileNav.appendChild(li);
+      return;
+    }
+
+    // mega → accordion
+    const li = document.createElement("li");
+    li.className = "hn-mobile-mega";
+
+    const toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "hn-mobile-mega-toggle";
+    toggle.innerHTML = `
+      <span>
+        <span>${item.label}</span>
+        <small>MEGA</small>
+      </span>
+      <span class="hn-mobile-mega-chevron">›</span>
+    `;
+
+    const panel = document.createElement("div");
+    panel.className = "hn-mobile-mega-panel";
+
+    (item.subItems || []).forEach(sub=>{
+      const link = document.createElement("a");
+      link.href = sub.url || "#";
+      link.innerHTML = `
+        <strong>${sub.label}</strong>
+        ${sub.description ? `<span>${sub.description}</span>` : ""}
+      `;
+      panel.appendChild(link);
+    });
+
+    toggle.addEventListener("click", ()=>{
+      const isOpen = li.classList.contains("open");
+      document.querySelectorAll(".hn-mobile-mega.open")
+              .forEach(el=>el.classList.remove("open"));
+      if (!isOpen){
+        li.classList.add("open");
+      }
+    });
+
+    li.appendChild(toggle);
+    li.appendChild(panel);
+    mobileNav.appendChild(li);
+  });
+}
+
+/* BURGER */
+burger.addEventListener("click", ()=>{
+  const isOpen = mobilePanel.classList.contains("open");
+  if (isOpen){
+    mobilePanel.classList.remove("open");
+  } else {
+    mobilePanel.classList.add("open");
+  }
+});
+
+/* Close mobile on nav click */
+mobileNav.addEventListener("click",(e)=>{
+  if (e.target.tagName === "A"){
+    mobilePanel.classList.remove("open");
+  }
+});
+
+buildDesktopNav();
+buildMobileNav();
+</script>
+</body>
+</html>
