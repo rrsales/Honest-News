@@ -4,102 +4,33 @@
   <meta charset="UTF-8">
   <title>Honest News – Admin Login</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: #020617;
-      font-family: system-ui, sans-serif;
-      color: #e5e7eb;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    #adminLogin {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: #0b1120;
-      border-radius: 18px;
-      box-shadow: 0 6px 32px #000a;
-      padding: 36px 32px 28px;
-      min-width: 300px;
-      max-width: 95vw;
-    }
-    #adminLogin h1 {
-      font-size: 1.3rem;
-      margin-bottom: 22px;
-      color: #0ea5e9;
-      letter-spacing: .06em;
-      font-weight: 700;
-      text-align: center;
-    }
-    label {
-      font-size: 1rem;
-      margin-bottom: 6px;
-      font-weight: 500;
-      letter-spacing: .03em;
-    }
-    input[type="password"] {
-      margin-bottom: 14px;
-      padding: 8px 12px;
-      border-radius: 10px;
-      border: 1px solid #334155;
-      background: #111827;
-      color: #e5e7eb;
-      font-size: 1rem;
-      width: 220px;
-      transition: border .18s;
-    }
-    input[type="password"]:focus {
-      outline: none;
-      border-color: #0ea5e9;
-    }
-    button {
-      padding: 9px 22px;
-      border-radius: 999px;
-      background: #0ea5e9;
-      color: #0b1120;
-      font-weight: 700;
-      border: none;
-      font-size: 1rem;
-      cursor: pointer;
-      margin-bottom: 10px;
-      transition: background .18s;
-    }
-    button:hover {
-      background: #0369a1;
-      color: #fff;
-    }
-    #loginMsg {
-      min-height: 1.6em;
-      color: #f43f5e;
-      font-size: 0.97em;
-      margin-top: 8px;
-      text-align: center;
-    }
-  </style>
+
   <!-- If already logged in, go straight to dashboard -->
   <script>
     if (localStorage.getItem("hn_logged") === "yes") {
       location.href = "dashboard.html";
     }
   </script>
+
+  <!-- Login / admin styles -->
+  <link rel="stylesheet" href="assets/css/admin.css">
 </head>
 <body>
 
   <!-- LOGIN PANEL -->
   <div id="adminLogin">
     <h1>Honest News · Admin</h1>
+
     <label for="adminPassword">Password</label>
     <input type="password" id="adminPassword" placeholder="Enter password">
+
     <button id="loginBtn">Log In</button>
+
     <div id="loginMsg"></div>
   </div>
 
   <script>
-    // CHANGE THIS TO YOUR PASSWORD
+    // CHANGE THIS TO WHATEVER PASSWORD YOU WANT
     const ADMIN_PASSWORD = "jo5765";
 
     const passwordInput = document.getElementById("adminPassword");
@@ -125,6 +56,19 @@
 
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
