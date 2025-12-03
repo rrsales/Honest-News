@@ -53,7 +53,7 @@
     {
       "title": "About",
       "slug": "about",
-      "theme": "dark",
+      "theme": "light",
       "hero": {
         "bg": "https://pixabay.com/get/g6499357e45518e4865e51bf17d0a02772fe3d6eaa38457db0ed63794250d31b9bdb827ac1924beddd8fc561a11e504c6.jpg",
         "overlay": "About Us",
