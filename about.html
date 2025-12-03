@@ -1,76 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Honest News – About</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<header class="hn-header">
+  <div class="hn-header-inner">
+    <a href="index.html" class="hn-logo">
+      Honest News
+    </a>
 
-  <style>
-    body {
-      margin:0;
-      font-family:system-ui,-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;
-      background:#020617;
-      color:#e5e7eb;
-    }
-    header {
-      position:sticky;
-      top:0;
-      z-index:50;
-      background:rgba(15,23,42,0.94);
-      backdrop-filter:blur(12px);
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:10px 20px;
-      border-bottom:1px solid rgba(148,163,184,0.35);
-    }
-    .logo { font-weight:700; letter-spacing:.16em; font-size:.9rem; color:#0ea5e9; }
-    .nav { display:flex; gap:18px; position:relative; }
-    .nav a { text-decoration:none; color:#cbd5f5; padding:4px 2px; border-radius:8px; transition: background .18s; }
-    .nav a:hover { background:#111827; color:#e5e7eb; }
+    <nav class="hn-nav">
+      <a href="index.html" class="hn-nav-link">Home</a>
 
-    /* Mega Menu */
-    .mega-backdrop {
-      position:absolute; top:56px; left:0; right:0; display:none; justify-content:center; pointer-events:none;
-    }
-    .mega-backdrop.show { display:flex; pointer-events:auto; }
-    .mega-panel {
-      margin-top:4px; background:#020617; border-radius:16px; border:1px solid rgba(148,163,184,.4);
-      box-shadow:0 25px 60px rgba(0,0,0,.85); max-width:900px; width:100%; padding:16px 18px;
-    }
-    .mega-title { font-size:.8rem; text-transform:uppercase; color:#9ca3af; margin-bottom:10px; }
-    .mega-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
-    .mega-link { display:block; padding:10px; border-radius:12px; text-decoration:none; background:#020617; border:1px solid rgba(31,41,55,.9); color:#e5e7eb; }
-    .mega-link-title { font-weight:600; margin-bottom:4px; }
-    .mega-link-desc { font-size:.78rem; color:#9ca3af; }
-    .mega-link:hover { border-color:#0ea5e9; box-shadow:0 0 0 1px rgba(56,189,248,.4); }
+      <!-- ABOUT + MEGA MENU -->
+      <div class="hn-nav-item hn-has-mega">
+        <a href="about.html" class="hn-nav-link">
+          About
+        </a>
 
-    .burger { display:none; border:none; background:transparent; font-size:1.2rem; cursor:pointer; }
-    .mobile-nav { display:none; flex-direction:column; background:#020617; border-top:1px solid rgba(31,41,55,.9); }
-    .mobile-nav a { padding:10px 18px; text-decoration:none; color:#e5e7eb; border-bottom:1px solid rgba(31,41,55,.9); }
+        <!-- MEGA MENU DROPDOWN -->
+        <div class="hn-mega">
+          <div class="hn-mega-row">
+            <div class="hn-mega-col">
+              <h4>About the Ministry</h4>
+              <a href="about.html#mission">Our Mission</a>
+              <a href="about.html#beliefs">What We Believe</a>
+              <a href="about.html#team">Leadership</a>
+            </div>
 
-    @media(max-width:768px){
-      .nav { display:none; }
-      .burger { display:block; }
-      .mega-backdrop { display:none !important; }
-    }
+            <div class="hn-mega-col">
+              <h4>Media</h4>
+              <a href="podcast.html">Podcasts</a>
+              <a href="books.html">Books</a>
+              <a href="videos.html">Video Library</a>
+            </div>
 
-    main { padding:60px 20px; max-width:800px; margin:0 auto; }
-    h1 { font-size:2rem; margin-top:0; margin-bottom:.7rem; }
-    p { color:#9ca3af; line-height:1.6; }
-    a.btn-back{
-      display:inline-block;
-      margin-top:1.2rem;
-      padding:0.6rem 1.6rem;
-      border-radius:999px;
-      background:#0ea5e9;
-      color:#0b1120;
-      text-decoration:none;
-      font-weight:600;
-      font-size:.9rem;
-    }
-  </style>
-</head>
+            <div class="hn-mega-col">
+              <h4>Get Connected</h4>
+              <a href="contact.html">Contact</a>
+              <a href="newsletter.html">Email Updates</a>
+              <a href="give.html">Support the Work</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <a href="podcast.html" class="hn-nav-link">Podcast</a>
+      <a href="contact.html" class="hn-nav-link">Contact</a>
+    </nav>
+  </div>
+</header>
+
 <body>
 
 <header>
