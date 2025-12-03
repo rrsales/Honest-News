@@ -58,6 +58,17 @@
     main { padding:60px 20px; max-width:800px; margin:0 auto; }
     h1 { font-size:2rem; margin-top:0; margin-bottom:.7rem; }
     p { color:#9ca3af; line-height:1.6; }
+    a.btn-back{
+      display:inline-block;
+      margin-top:1.2rem;
+      padding:0.6rem 1.6rem;
+      border-radius:999px;
+      background:#0ea5e9;
+      color:#0b1120;
+      text-decoration:none;
+      font-weight:600;
+      font-size:.9rem;
+    }
   </style>
 </head>
 <body>
@@ -78,8 +89,12 @@
 <div class="mobile-nav" id="mobileNav"></div>
 
 <main>
-  <h1>Welcome to Honest News Network</h1>
-  <p>This is a demo page for testing navigation and mega menu functionality.</p>
+  <h1>About Honest News Network</h1>
+  <p>
+    This is the About page. It uses the same navigation and mega menu logic as your
+    homepage, pulling data from <code>site-data.json</code>.
+  </p>
+  <a class="btn-back" href="index.html">Back to Home</a>
 </main>
 
 <script>
@@ -108,7 +123,6 @@ function buildMenu() {
     const url = item.url || "#";
     const type = item.type || "link";
 
-    // Desktop link
     const a = document.createElement("a");
     a.textContent = label;
     a.href = url;
@@ -119,7 +133,6 @@ function buildMenu() {
     }
     nav.appendChild(a);
 
-    // Mobile link
     const m = document.createElement("a");
     m.textContent = label;
     m.href = url;
@@ -131,7 +144,6 @@ function buildMenu() {
   });
   document.getElementById("megaPanel").addEventListener("mouseleave", closeMega);
 
-  // Burger toggle
   const burger = document.getElementById("burgerBtn");
   if(burger){
     burger.addEventListener("click", ()=>{
@@ -179,4 +191,5 @@ loadMenu();
 </script>
 </body>
 </html>
+
 
