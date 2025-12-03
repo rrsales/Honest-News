@@ -21,6 +21,7 @@
     .mega-link { display: block; padding: 5px 0 5px 8px; color: #e5e7eb; text-decoration: none; border-radius: 8px; transition: background .13s;}
     .mega-link:hover { background: #0ea5e9; color: #0b1120;}
     main { padding: 44px 24px; }
+    .error-msg { color: #f87171; background: #1e293b; padding: 14px; border-radius: 12px; margin: 20px 0;}
     @media (max-width:600px){
       .nav { flex-direction: column; align-items: flex-start; }
       .nav-links { flex-direction: column; gap: 0; width:100%;}
@@ -40,19 +41,29 @@
 </header>
 <main>
   <h1>Mega Menu Demo</h1>
+  <div id="errorMsg"></div>
   <p>This is a dummy page for testing your menu. Use the admin/dashboard to edit the menu and test live updates.</p>
   <p>Make sure to add a few mega menu items and sub-links in your dashboard for full testing!</p>
 </main>
 <script>
 async function loadMenu() {
   let menu = [];
+  const navLinks = document.getElementById('navLinks');
+  const errorMsg = document.getElementById('errorMsg');
   try {
     const res = await fetch('site-data.json?cache='+Date.now());
+    if (!res.ok) throw new Error("site-data.json not found");
     const data = await res.json();
     menu = data.menu || [];
-  } catch(e){}
+    if (!Array.isArray(menu) || !menu.length) {
+      errorMsg.innerHTML = '<div class="error-msg">No menu data found in site-data.json</div>';
+      return;
+    }
+  } catch(e){
+    errorMsg.innerHTML = `<div class="error-msg">Error loading menu: ${e.message}</div>`;
+    return;
+  }
 
-  const navLinks = document.getElementById('navLinks');
   navLinks.innerHTML = '';
   menu.forEach(item => {
     // Mega menu (type: mega)
@@ -107,4 +118,5 @@ loadMenu();
 </script>
 </body>
 </html>
+
 
