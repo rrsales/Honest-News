@@ -2,321 +2,109 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Honest News – Home</title>
+  <title>Honest News – Mega Menu Demo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Optional: your main stylesheet if you want to keep your existing styles -->
-  <!-- <link rel="stylesheet" href="assets/css/main.css"> -->
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    /* Simple demo styles – won't replace your main.css */
-    body{
-      margin:0;
-      font-family:system-ui,-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;
-      background:#020617;
-      color:#e5e7eb;
-      min-height:100vh;
-      display:flex;
-      flex-direction:column;
-    }
-
-    .hn-header{
-      position:sticky;
-      top:0;
-      z-index:50;
-      background:rgba(15,23,42,0.94);
-      backdrop-filter:blur(12px);
-      border-bottom:1px solid rgba(148,163,184,0.35);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      padding:10px 20px;
-    }
-    .hn-logo{
-      font-weight:700;
-      letter-spacing:.16em;
-      text-transform:uppercase;
-      font-size:.8rem;
-      color:#e5e7eb;
-    }
-
-    .hn-nav{
-      display:flex;
-      gap:18px;
-      align-items:center;
-    }
-    .hn-nav a{
-      text-decoration:none;
-      font-size:.9rem;
-      color:#cbd5f5;
-      padding:4px 2px;
-      border-bottom:2px solid transparent;
-    }
-    .hn-nav a:hover{
-      color:#fff;
-      border-bottom-color:#0ea5e9;
-    }
-
-    /* Mega menu container */
-    .hn-mega-backdrop{
-      position:absolute;
-      left:0;
-      right:0;
-      top:56px; /* just under header */
-      display:none;
-      justify-content:center;
-      pointer-events:none;
-    }
-    .hn-mega-backdrop.show{
-      display:flex;
-      pointer-events:auto;
-    }
-    .hn-mega{
-      margin-top:4px;
-      background:#020617;
-      border-radius:16px;
-      border:1px solid rgba(148,163,184,0.4);
-      box-shadow:0 25px 60px rgba(0,0,0,.85);
-      max-width:900px;
-      width:100%;
-      padding:16px 18px;
-    }
-    .hn-mega-title{
-      font-size:.8rem;
-      text-transform:uppercase;
-      letter-spacing:.16em;
-      color:#9ca3af;
-      margin-bottom:10px;
-    }
-    .hn-mega-grid{
-      display:grid;
-      grid-template-columns:repeat(3,minmax(0,1fr));
-      gap:12px;
-    }
-    .hn-mega-link{
-      display:block;
-      padding:10px;
-      border-radius:12px;
-      text-decoration:none;
-      background:#020617;
-      border:1px solid rgba(31,41,55,.9);
-      color:#e5e7eb;
-    }
-    .hn-mega-link-title{
-      font-size:.9rem;
-      font-weight:600;
-      margin-bottom:4px;
-    }
-    .hn-mega-link-desc{
-      font-size:.78rem;
-      color:#9ca3af;
-    }
-    .hn-mega-link:hover{
-      border-color:#0ea5e9;
-      box-shadow:0 0 0 1px rgba(56,189,248,.4);
-    }
-
-    /* Mobile */
-    .hn-burger{
-      display:none;
-      border:none;
-      background:transparent;
-      color:#e5e7eb;
-      font-size:1.2rem;
-      cursor:pointer;
-    }
-    .hn-mobile{
-      display:none;
-      flex-direction:column;
-      background:#020617;
-      border-top:1px solid rgba(31,41,55,.9);
-    }
-    .hn-mobile a{
-      padding:10px 18px;
-      text-decoration:none;
-      font-size:.95rem;
-      color:#e5e7eb;
-      border-bottom:1px solid rgba(31,41,55,.9);
-    }
-
-    @media (max-width:768px){
-      .hn-nav{display:none;}
-      .hn-burger{display:block;}
-      .hn-mega-backdrop{display:none !important;} /* mega on desktop only */
-    }
-
-    .hero{
-      flex:1;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:60px 20px;
-      text-align:center;
-      background:
-        radial-gradient(circle at top,#1e293b 0,#020617 48%,#000 100%);
-    }
-    .hero h1{
-      font-size:2.3rem;
-      margin:0 0 .6rem;
-    }
-    .hero p{
-      max-width:600px;
-      margin:0 auto;
-      font-size:1rem;
-      color:#9ca3af;
-    }
-    .hero a{
-      display:inline-block;
-      margin-top:1.2rem;
-      padding:0.7rem 1.8rem;
-      border-radius:999px;
-      text-decoration:none;
-      background:#0ea5e9;
-      color:#0b1120;
-      font-weight:600;
-      font-size:.9rem;
+    body { margin:0; font-family: system-ui, sans-serif; background:#020617; color: #e5e7eb;}
+    header { background: #0b1120; box-shadow: 0 4px 24px #000a; }
+    .nav { display: flex; align-items: center; padding: 0 24px; min-height: 56px; }
+    .nav-logo { font-weight: 700; font-size: 1.4rem; color: #0ea5e9; margin-right: 32px; letter-spacing: .05em;}
+    .nav-links { display: flex; gap: 14px; position: relative;}
+    .nav-link { position:relative; padding: 8px 18px; color: #e5e7eb; text-decoration: none; border-radius: 999px; transition: background .18s;}
+    .nav-link:hover, .nav-link.active { background: #111827;}
+    .nav-link[data-has-mega]:after { content: " ▼"; font-size: .7em; }
+    .mega-menu { display: none; position: absolute; top: 44px; left:0; background: #1e293b; color: #e5e7eb; padding: 18px 30px 18px 18px; border-radius: 18px; min-width: 300px; box-shadow: 0 16px 40px #000b; z-index: 99;}
+    .nav-link:hover .mega-menu, .nav-link:focus-within .mega-menu { display: block; }
+    .mega-title { font-weight: 600; margin-bottom: 8px; font-size: 1.05em; color: #0ea5e9;}
+    .mega-group { margin-bottom: 16px;}
+    .mega-link { display: block; padding: 5px 0 5px 8px; color: #e5e7eb; text-decoration: none; border-radius: 8px; transition: background .13s;}
+    .mega-link:hover { background: #0ea5e9; color: #0b1120;}
+    main { padding: 44px 24px; }
+    @media (max-width:600px){
+      .nav { flex-direction: column; align-items: flex-start; }
+      .nav-links { flex-direction: column; gap: 0; width:100%;}
+      .nav-link { width:100%; }
+      .mega-menu { left:0; right:0; min-width:unset; }
     }
   </style>
 </head>
-<body data-page="home">
-
-<header class="hn-header">
-  <div class="hn-logo">HONEST NEWS</div>
-
-  <nav class="hn-nav" id="hnNav"></nav>
-
-  <button class="hn-burger" id="hnBurger" aria-label="Toggle menu">☰</button>
+<body>
+<header>
+  <nav class="nav">
+    <span class="nav-logo">Honest News</span>
+    <div class="nav-links" id="navLinks">
+      <!-- Navigation will be loaded here -->
+    </div>
+  </nav>
 </header>
-
-<!-- Mega menu overlay -->
-<div class="hn-mega-backdrop" id="hnMegaBackdrop">
-  <div class="hn-mega" id="hnMegaPanel">
-    <div class="hn-mega-title" id="hnMegaTitle">Explore</div>
-    <div class="hn-mega-grid" id="hnMegaInner"></div>
-  </div>
-</div>
-
-<div class="hn-mobile" id="hnMobileNav"></div>
-
-<main class="hero">
-  <div>
-    <h1>Home page (index.html)</h1>
-    <p>
-      This is a simple test page wired to <code>site-data.json</code>.
-      Use the dashboard to edit the menu and mega menu and then click “Publish”.
-    </p>
-    <a href="about.html">Go to About page</a>
-  </div>
+<main>
+  <h1>Mega Menu Demo</h1>
+  <p>This is a dummy page for testing your menu. Use the admin/dashboard to edit the menu and test live updates.</p>
+  <p>Make sure to add a few mega menu items and sub-links in your dashboard for full testing!</p>
 </main>
-
 <script>
-  let site = { menu: [] };
+async function loadMenu() {
+  let menu = [];
+  try {
+    const res = await fetch('site-data.json?cache='+Date.now());
+    const data = await res.json();
+    menu = data.menu || [];
+  } catch(e){}
 
-  async function loadSiteData(){
-    try{
-      const res = await fetch("site-data.json?cache-bust=" + Date.now());
-      if(res.ok){
-        const data = await res.json();
-        if (data && Array.isArray(data.menu)){
-          site.menu = data.menu;
+  const navLinks = document.getElementById('navLinks');
+  navLinks.innerHTML = '';
+  menu.forEach(item => {
+    // Mega menu (type: mega)
+    if(item.type === 'mega' && Array.isArray(item.subItems) && item.subItems.length > 0){
+      const wrap = document.createElement('div');
+      wrap.className = 'nav-link';
+      wrap.tabIndex = 0;
+      wrap.setAttribute('data-has-mega','true');
+      wrap.innerHTML = `${item.label || item.title}`;
+      // Mega Menu Container
+      const mega = document.createElement('div');
+      mega.className = 'mega-menu';
+      // Each subitem (can group by category if you want)
+      item.subItems.forEach(sub=>{
+        const group = document.createElement('div');
+        group.className = 'mega-group';
+        if(sub.label){
+          const title = document.createElement('div');
+          title.className = 'mega-title';
+          title.textContent = sub.label;
+          group.appendChild(title);
         }
-      }
-    }catch(e){
-      console.warn("Could not load site-data.json", e);
+        if(sub.description){
+          const desc = document.createElement('div');
+          desc.style = 'color:#9ca3af;font-size:.89em;margin-bottom:2px;';
+          desc.textContent = sub.description;
+          group.appendChild(desc);
+        }
+        if(sub.url){
+          const link = document.createElement('a');
+          link.className = 'mega-link';
+          link.href = sub.url;
+          link.textContent = sub.url.replace(/^https?:\/\//,'');
+          group.appendChild(link);
+        }
+        mega.appendChild(group);
+      });
+      wrap.appendChild(mega);
+      navLinks.appendChild(wrap);
     }
-    buildNav();
-  }
-
-  function buildNav(){
-    const nav = document.getElementById("hnNav");
-    const mobile = document.getElementById("hnMobileNav");
-    if(!nav || !mobile) return;
-
-    nav.innerHTML = "";
-    mobile.innerHTML = "";
-
-    (site.menu || []).forEach((item,index)=>{
-      const label = item.label || item.title || "Item";
-      const url = item.url || "#";
-      const type = item.type || "link";
-
-      // Desktop link
-      const a = document.createElement("a");
-      a.textContent = label;
-      a.href = url;
-      a.dataset.type = type;
-      a.dataset.index = index;
-
-      if (type === "mega"){
-        a.addEventListener("mouseenter", ()=>openMega(index));
-      } else {
-        a.addEventListener("mouseenter", closeMega);
-      }
-      nav.appendChild(a);
-
-      // Mobile link (no mega UI, just a list)
-      const m = document.createElement("a");
-      m.textContent = label;
-      m.href = url;
-      mobile.appendChild(m);
-    });
-
-    // If you move mouse off header/mega, close it
-    document.querySelector(".hn-header").addEventListener("mouseleave", (e)=>{
-      if (!e.relatedTarget || !e.relatedTarget.closest("#hnMegaPanel")){
-        closeMega();
-      }
-    });
-    document.getElementById("hnMegaPanel").addEventListener("mouseleave", closeMega);
-  }
-
-  function openMega(index){
-    const item = (site.menu || [])[index];
-    if (!item || item.type !== "mega") return;
-    const subs = Array.isArray(item.subItems) ? item.subItems : [];
-    const inner = document.getElementById("hnMegaInner");
-    const title = document.getElementById("hnMegaTitle");
-    const backdrop = document.getElementById("hnMegaBackdrop");
-    if (!inner || !title || !backdrop) return;
-
-    title.textContent = item.label || "Explore";
-    inner.innerHTML = subs.map(s=>{
-      const l = (s.label || s.title || "Link");
-      const u = (s.url || "#");
-      const d = (s.description || "");
-      return `
-        <a class="hn-mega-link" href="${u}">
-          <div class="hn-mega-link-title">${escapeHtml(l)}</div>
-          <div class="hn-mega-link-desc">${escapeHtml(d)}</div>
-        </a>
-      `;
-    }).join("");
-
-    backdrop.classList.add("show");
-  }
-
-  function closeMega(){
-    const backdrop = document.getElementById("hnMegaBackdrop");
-    if(backdrop) backdrop.classList.remove("show");
-  }
-
-  function escapeHtml(str){
-    return String(str || "")
-      .replace(/&/g,"&amp;")
-      .replace(/</g,"&lt;")
-      .replace(/>/g,"&gt;")
-      .replace(/"/g,"&quot;");
-  }
-
-  // Mobile toggle
-  const burger = document.getElementById("hnBurger");
-  const mobile = document.getElementById("hnMobileNav");
-  if (burger && mobile){
-    burger.addEventListener("click", ()=>{
-      mobile.style.display = mobile.style.display === "flex" ? "none" : "flex";
-    });
-  }
-
-  loadSiteData();
+    // Simple link
+    else {
+      const link = document.createElement('a');
+      link.className = 'nav-link';
+      link.href = item.url || "#";
+      link.textContent = item.label || item.title || 'Item';
+      navLinks.appendChild(link);
+    }
+  });
+}
+loadMenu();
 </script>
 </body>
 </html>
+
