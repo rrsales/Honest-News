@@ -11,7 +11,7 @@
     {
       "id": "about",
       "label": "About",
-      "url": "#about.html",
+      "url": "about.html",
       "type": "link",
       "showOn": "both",
       "subItems": []
