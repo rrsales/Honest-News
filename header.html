@@ -1,5 +1,5 @@
-h<!-- ================================
-     GLOBAL HEADER (FULL OVERWRITE)
+<!-- ================================
+     GLOBAL HEADER
      ================================ -->
 <header id="siteHeader" class="site-header">
   <div class="header-inner">
@@ -7,9 +7,10 @@ h<!-- ================================
     <!-- Logo -->
     <a href="index.html" class="logo">Honest News</a>
 
-    <!-- Desktop Navigation -->
-    <nav class="desktop-nav">
-      <ul id="nav-menu"></ul>
+    <!-- Desktop Navigation (wired to live.js) -->
+    <nav class="desktop-nav" aria-label="Main">
+      <!-- live.js will inject the full menu + mega menu here -->
+      <ul id="menuList"></ul>
     </nav>
 
     <!-- Mobile Hamburger -->
@@ -26,5 +27,10 @@ h<!-- ================================
     <span id="mobileMenuClose">✕</span>
     <h2>Menu</h2>
   </div>
-  <nav id="mobileMenuList"></nav>
+
+  <!-- Mobile nav container wired to live.js -->
+  <nav class="mobile-menu-nav">
+    <ul id="mobileNavMenu"></ul>
+  </nav>
 </div>
+
