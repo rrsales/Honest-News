@@ -1,147 +1,185 @@
 // modules/menu.js
-// Handles the site navigation + mega menu editor
+// Connected to dataService.js to manage site menu + mega menu items
+
+import { getMenu, updateMenu } from "./dataService.js";
 
 const menuPanel = document.getElementById("menuPanel");
-
-let menuData = {
-  regular: [
-    { label: "Home", link: "index.html" },
-    { label: "About Us", link: "about.html" },
-    { label: "Contact", link: "contact.html" }
-  ],
-  mega: [
-    {
-      label: "Resources",
-      columns: [
-        ["Podcasts", "Books"],
-        ["Articles", "News"]
-      ]
-    }
-  ]
-};
+let menuData = [];
 
 // ---------- RENDER ----------
-export function renderMenuPanel() {
+export function renderMenuPanel(data = null) {
+  menuData = data || getMenu();
+
   menuPanel.innerHTML = `
     <div class="panelHeader">
       <h2>Menu</h2>
       <button id="addMenuItem"><i class="fa fa-plus"></i></button>
     </div>
 
-    <h3>Regular Menu</h3>
-    <ul id="regularMenuList">
-      ${menuData.regular
+    <ul id="menuList">
+      ${menuData
         .map(
           (item, i) => `
-          <li data-type="regular" data-index="${i}">
-            <span class="menuLabel">${item.label}</span>
-            <div class="actions">
-              <button class="editItem"><i class="fa fa-pen"></i></button>
-              <button class="deleteItem"><i class="fa fa-trash"></i></button>
-            </div>
-          </li>`
-        )
-        .join("")}
-    </ul>
+        <li data-index="${i}">
+          <div class="menuLabel">
+            <strong>${item.label}</strong>
+            <span class="type">${item.type}</span>
+          </div>
+          <div class="actions">
+            <button class="editItem"><i class="fa fa-pen"></i></button>
+            <button class="deleteItem"><i class="fa fa-trash"></i></button>
+          </div>
 
-    <h3>Mega Menu</h3>
-    <ul id="megaMenuList">
-      ${menuData.mega
-        .map(
-          (item, i) => `
-          <li data-type="mega" data-index="${i}">
-            <span class="menuLabel">${item.label}</span>
-            <div class="actions">
-              <button class="editItem"><i class="fa fa-pen"></i></button>
-              <button class="deleteItem"><i class="fa fa-trash"></i></button>
-            </div>
-          </li>`
+          ${
+            item.type === "mega"
+              ? `
+            <ul class="subList">
+              ${item.subItems
+                .map(
+                  (sub, j) => `
+                <li data-parent="${i}" data-subindex="${j}">
+                  <span>${sub.label}</span>
+                  <div class="actions">
+                    <button class="editSub"><i class="fa fa-pen"></i></button>
+                    <button class="deleteSub"><i class="fa fa-trash"></i></button>
+                  </div>
+                </li>`
+                )
+                .join("")}
+              <li class="addSub" data-parent="${i}">
+                <button><i class="fa fa-plus"></i> Add Sub-Item</button>
+              </li>
+            </ul>`
+              : ""
+          }
+        </li>`
         )
         .join("")}
     </ul>
   `;
+
   attachMenuListeners();
 }
 
 // ---------- EVENT HANDLERS ----------
 function attachMenuListeners() {
-  menuPanel.querySelector("#addMenuItem").onclick = () => addRegularItem();
+  const addBtn = document.getElementById("addMenuItem");
+  if (addBtn) addBtn.onclick = () => addMenuItem();
 
+  // Main items
   menuPanel.querySelectorAll(".editItem").forEach(btn => {
     btn.onclick = e => {
       const li = e.target.closest("li");
-      const type = li.dataset.type;
-      const index = parseInt(li.dataset.index);
-      if (type === "regular") editRegularItem(index);
-      else editMegaItem(index);
+      const i = parseInt(li.dataset.index);
+      editMenuItem(i);
     };
   });
 
   menuPanel.querySelectorAll(".deleteItem").forEach(btn => {
     btn.onclick = e => {
       const li = e.target.closest("li");
-      const type = li.dataset.type;
-      const index = parseInt(li.dataset.index);
-      if (confirm("Delete this item?")) deleteMenuItem(type, index);
+      const i = parseInt(li.dataset.index);
+      if (confirm("Delete this menu item?")) deleteMenuItem(i);
+    };
+  });
+
+  // Sub items
+  menuPanel.querySelectorAll(".editSub").forEach(btn => {
+    btn.onclick = e => {
+      const li = e.target.closest("li");
+      const parent = parseInt(li.dataset.parent);
+      const subindex = parseInt(li.dataset.subindex);
+      editSubItem(parent, subindex);
+    };
+  });
+
+  menuPanel.querySelectorAll(".deleteSub").forEach(btn => {
+    btn.onclick = e => {
+      const li = e.target.closest("li");
+      const parent = parseInt(li.dataset.parent);
+      const subindex = parseInt(li.dataset.subindex);
+      if (confirm("Delete this sub-item?")) deleteSubItem(parent, subindex);
+    };
+  });
+
+  menuPanel.querySelectorAll(".addSub button").forEach(btn => {
+    btn.onclick = e => {
+      const parent = parseInt(e.target.closest(".addSub").dataset.parent);
+      addSubItem(parent);
     };
   });
 }
 
 // ---------- CRUD ----------
-function addRegularItem() {
-  const label = prompt("Label:");
-  const link = prompt("Link (e.g., about.html):");
-  if (!label || !link) return;
-  menuData.regular.push({ label, link });
-  saveMenu();
-  renderMenuPanel();
+function addMenuItem() {
+  const label = prompt("Label for new menu item:");
+  if (!label) return;
+  const type = prompt("Type: link or mega?", "link");
+
+  if (type === "mega") {
+    menuData.push({ label, type: "mega", subItems: [] });
+  } else {
+    const url = prompt("Enter link URL (e.g. about.html):");
+    menuData.push({ label, url, type: "link" });
+  }
+
+  updateMenu(menuData);
+  renderMenuPanel(menuData);
 }
 
-function editRegularItem(index) {
-  const item = menuData.regular[index];
-  const label = prompt("Edit Label:", item.label);
-  const link = prompt("Edit Link:", item.link);
-  if (!label || !link) return;
-  menuData.regular[index] = { label, link };
-  saveMenu();
-  renderMenuPanel();
+function editMenuItem(index) {
+  const item = menuData[index];
+  const newLabel = prompt("Edit label:", item.label);
+  if (!newLabel) return;
+
+  if (item.type === "link") {
+    const newUrl = prompt("Edit URL:", item.url);
+    menuData[index] = { ...item, label: newLabel, url: newUrl };
+  } else {
+    menuData[index].label = newLabel;
+  }
+
+  updateMenu(menuData);
+  renderMenuPanel(menuData);
 }
 
-function editMegaItem(index) {
-  const item = menuData.mega[index];
-  const label = prompt("Mega menu title:", item.label || "Mega Menu");
-  let columnsText = item.columns.map(col => col.join(", ")).join(" | ");
-  const newCols = prompt(
-    "Edit columns (use commas between items, | between columns):",
-    columnsText
-  );
-  if (!newCols) return;
-  const columns = newCols.split("|").map(c => c.split(",").map(s => s.trim()));
-  menuData.mega[index] = { label, columns };
-  saveMenu();
-  renderMenuPanel();
+function deleteMenuItem(index) {
+  menuData.splice(index, 1);
+  updateMenu(menuData);
+  renderMenuPanel(menuData);
 }
 
-function deleteMenuItem(type, index) {
-  menuData[type].splice(index, 1);
-  saveMenu();
-  renderMenuPanel();
+// ---------- SubItem functions ----------
+function addSubItem(parent) {
+  const label = prompt("Sub-item label:");
+  const url = prompt("Sub-item URL:");
+  if (!label || !url) return;
+
+  menuData[parent].subItems.push({ label, url });
+  updateMenu(menuData);
+  renderMenuPanel(menuData);
 }
 
-// ---------- STORAGE ----------
-function saveMenu() {
-  localStorage.setItem("hn_menu", JSON.stringify(menuData));
+function editSubItem(parent, subindex) {
+  const sub = menuData[parent].subItems[subindex];
+  const newLabel = prompt("Edit sub-item label:", sub.label);
+  const newUrl = prompt("Edit sub-item URL:", sub.url);
+  if (!newLabel || !newUrl) return;
+
+  menuData[parent].subItems[subindex] = { label: newLabel, url: newUrl };
+  updateMenu(menuData);
+  renderMenuPanel(menuData);
 }
 
-function loadMenu() {
-  const saved = localStorage.getItem("hn_menu");
-  if (saved) menuData = JSON.parse(saved);
+function deleteSubItem(parent, subindex) {
+  menuData[parent].subItems.splice(subindex, 1);
+  updateMenu(menuData);
+  renderMenuPanel(menuData);
 }
 
 // ---------- INIT ----------
 window.addEventListener("load", () => {
-  loadMenu();
-  renderMenuPanel();
+  renderMenuPanel(getMenu());
 });
 
 // ---------- STYLES ----------
@@ -150,11 +188,16 @@ style.textContent = `
 #menuPanel {padding:1rem;}
 #menuPanel .panelHeader {display:flex;align-items:center;justify-content:space-between;margin-bottom:.5rem;}
 #menuPanel h2 {font-size:1rem;margin:0;color:var(--accent);}
-#menuPanel h3 {font-size:.9rem;color:var(--text);margin:.6rem 0 .2rem;}
 #menuPanel ul {list-style:none;padding:0;margin:0;}
-#menuPanel li {display:flex;align-items:center;justify-content:space-between;padding:.35rem .25rem;border-radius:.5rem;transition:background .2s;}
-#menuPanel li:hover {background:rgba(255,255,255,0.05);}
-#menuPanel .menuLabel {cursor:pointer;}
-#menuPanel .actions button {margin-left:.3rem;background:none;border:none;color:var(--text);cursor:pointer;font-size:.9rem;}
+#menuPanel > ul > li {margin-bottom:.4rem;padding:.3rem;border-radius:.4rem;transition:background .2s;}
+#menuPanel > ul > li:hover {background:rgba(255,255,255,0.05);}
+#menuPanel .menuLabel {display:flex;align-items:center;justify-content:space-between;}
+#menuPanel .type {font-size:.75rem;opacity:.6;margin-left:.5rem;}
+#menuPanel .actions button {background:none;border:none;color:var(--text);cursor:pointer;margin-left:.3rem;}
+#menuPanel .subList {margin-left:1rem;margin-top:.4rem;border-left:1px solid var(--border);padding-left:.6rem;}
+#menuPanel .subList li {display:flex;align-items:center;justify-content:space-between;padding:.2rem 0;}
+#menuPanel .subList .actions button {font-size:.8rem;}
+#menuPanel .addSub button {background:none;border:1px solid var(--border);border-radius:.4rem;padding:.2rem .5rem;color:var(--text);cursor:pointer;}
 `;
 document.head.appendChild(style);
+
