@@ -55,7 +55,7 @@
       "slug": "about",
       "theme": "dark",
       "hero": {
-        "bg": "",
+        "bg": "https://pixabay.com/get/gbcd8d21402e4086f9c6dfe1e297666fbef1621b377a965ce00b6dbf9e2fd602a604ee400f7c61c4b7a5ff832991bb280.jpg",
         "overlay": "About",
         "sub": "",
         "transparentMenu": false,
