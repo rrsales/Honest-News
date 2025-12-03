@@ -26,8 +26,8 @@
     },
     {
       "id": "test2",
-      "label": "test2",
-      "url": "test2.html",
+      "label": "#test2",
+      "url": "#test2.html",
       "type": "link",
       "showOn": "both",
       "subItems": []
