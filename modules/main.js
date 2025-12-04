@@ -30,8 +30,11 @@ function injectPublish() {
 }
 
 window.addEventListener("load", init);
-document.getElementById("toggleLeft").onclick = () => document.getElementById("leftPanel").classList.toggle("show");
-document.getElementById("toggleRight").onclick = () => document.getElementById("rightPanel").classList.toggle("show");
+document.getElementById("toggleLeft").onclick = () =>
+  document.getElementById("leftPanel").classList.toggle("show");
+document.getElementById("toggleRight").onclick = () =>
+  document.getElementById("rightPanel").classList.toggle("show");
+
 
 
 
