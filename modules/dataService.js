@@ -1,20 +1,32 @@
-// modules/dataService.js
-let cmsData = { menu: [], pages: [] };
+// modules/canvas.js
+const canvas = document.getElementById("canvasContent");
 
-export async function loadCMSData() {
-  try {
-    const res = await fetch("./data.json?cb=" + Date.now());
-    cmsData = await res.json();
-    console.log("✅ CMS data loaded", cmsData);
-  } catch (err) {
-    console.error("❌ Failed to load data.json:", err);
+export function renderCanvas(page = null) {
+  if (!page) {
+    canvas.innerHTML = `<p>No page selected.</p>`;
+    return;
   }
+
+  const theme = page.theme || "light";
+  const transparent =
+    page.hero && page.hero.transparentMenu ? "On" : "Off";
+
+  canvas.innerHTML = `
+    <div class="canvasPreview">
+      <h2>${escapeHtml(page.title || "")}</h2>
+      <p>Theme: <strong>${theme}</strong></p>
+      <p>Transparent Menu: <strong>${transparent}</strong></p>
+    </div>
+  `;
 }
 
-export function getMenu() { return cmsData.menu || []; }
-export function getPages() { return cmsData.pages || []; }
-export function updateMenu(m) { cmsData.menu = m; }
-export function updatePages(p) { cmsData.pages = p; }
-export function exportData() { return JSON.stringify(cmsData, null, 2); }
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, (s) => {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[s];
+  });
+}
 
+window.addEventListener("pageSelected", e => renderCanvas(e.detail));
+window.addEventListener("pageUpdated", e => renderCanvas(e.detail));
+window.addEventListener("load", () => renderCanvas(null));
 
