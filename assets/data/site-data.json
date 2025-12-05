@@ -7,8 +7,8 @@
   "menu": [
     { "label": "Home", "url": "index.html", "type": "link", "showOn": "both" },
     { "label": "About", "url": "about.html", "type": "link", "showOn": "both" },
-    { "label": "Podcast", "url": "podcast.html", "type": "link", "showOn": "both" }
-    // ...more menu items
+    { "label": "Podcast", "url": "podcast.html", "type": "link", "showOn": "both" },
+    { "label": "Contact", "url": "contact.html", "type": "link", "showOn": "both" }
   ],
   "pages": [
     {
@@ -31,7 +31,7 @@
         },
         {
           "type": "paragraph",
-          "content": "Easily manage your website content. Static, fast, and secure."
+          "content": "Easily manage your website content. Static, fast, and secure. No hosting lock-in."
         },
         {
           "type": "button",
@@ -39,8 +39,69 @@
           "url": "admin.html"
         }
       ]
+    },
+    {
+      "slug": "about",
+      "title": "About 0Builder",
+      "theme": "dark",
+      "hero": {
+        "bg": "",
+        "overlay": "About This Platform",
+        "sub": "Discover the story behind 0Builder.LLC and our commitment to static web simplicity.",
+        "transparentMenu": false,
+        "behavior": "still",
+        "size": "medium",
+        "customHeight": ""
+      },
+      "blocks": [
+        {
+          "type": "paragraph",
+          "content": "0Builder CMS Platform was built to empower anyone to manage their website easily, with a focus on speed, security, and flexibility."
+        }
+      ]
+    },
+    {
+      "slug": "podcast",
+      "title": "The 0Builder Podcast",
+      "theme": "dark",
+      "hero": {
+        "bg": "",
+        "overlay": "0Builder Podcast",
+        "sub": "Listen to the latest on web trends, static sites, and more.",
+        "transparentMenu": false,
+        "behavior": "still",
+        "size": "medium",
+        "customHeight": ""
+      },
+      "blocks": [
+        {
+          "type": "podcast",
+          "title": "Episode 1: Welcome to 0Builder",
+          "embed": "https://www.podbean.com/player-v2/?i=exampleid&share=1&download=1&rtl=0"
+        }
+      ]
+    },
+    {
+      "slug": "contact",
+      "title": "Contact Us",
+      "theme": "dark",
+      "hero": {
+        "bg": "",
+        "overlay": "Contact 0Builder",
+        "sub": "Get in touch with the 0Builder team.",
+        "transparentMenu": false,
+        "behavior": "still",
+        "size": "medium",
+        "customHeight": ""
+      },
+      "blocks": [
+        {
+          "type": "paragraph",
+          "content": "For questions or support, email us at info@0builder.com."
+        }
+      ]
     }
-    // ...more pages (about, podcast, etc.)
   ]
 }
+
 
