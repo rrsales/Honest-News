@@ -1,44 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>0Builder CMS Platform 1.0 – 0Builder.LLC</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Protect dashboard -->
-  <script>
-    if (localStorage.getItem("hn_logged") !== "yes") {
-      location.href = "admin.html";
-    }
-  </script>
-  <!-- CSS: You can inline, link, or use external -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
-  <style>
-    /* ... your CSS here ... */
-  </style>
-</head>
-<body>
-  <!-- Header, panels, preview, footer, all markup goes here -->
-  <div class="top-welcome"> ... </div>
-  <div class="main">
-    <aside class="sidebar"> ... </aside>
-    <section class="content"> ... </section>
-  </div>
-  <div id="panelHandle">◂</div>
-  <div id="inspectorPanel"> ... </div>
-  <footer>
-    &copy; 2025 0Builder.LLC &bull; 0Builder CMS Platform 1.0
-  </footer>
+<meta charset="UTF-8">
+<title>0Builder CMS Platform 1.0 – 0Builder.LLC</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- MODULE IMPORTS (order: core first, rest can be in any order) -->
-    <!-- MODULE IMPORTS -->
-  <script type="module" src="modules/core.js"></script>
-  <script type="module" src="modules/left-panel.js"></script>
-  <script type="module" src="modules/right-panel.js"></script>
-  <script type="module" src="modules/preview.js"></script>
-  <script type="module" src="modules/menu.js"></script>
-  <script type="module" src="modules/text-editor.js"></script>
-  <script type="module" src="modules/tools.js"></script>
-  <script type="module" src="modules/pages.js"></script>
+<!-- Protect dashboard -->
+<script>
+  if (localStorage.getItem("hn_logged") !== "yes") {
+    location.href = "admin.html";
+  }
+</script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+body { margin:0; font-family:system-ui,-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif; background:#020617; color:#e5e7eb; display:flex; flex-direction:column; height:100vh;}
+.main { display:flex; flex:1; }
+aside#leftPanel { width:200px; background:#111827; padding:1em; overflow:auto; }
+section#canvas { flex:1; padding:1em; overflow:auto; background:#1f2937; }
+aside#inspectorPanel { width:250px; background:#111827; padding:1em; display:flex; flex-direction:column; }
+#panelHandle { width:20px; cursor:pointer; background:#0ea5e9; color:#fff; display:flex; align-items:center; justify-content:center; }
+footer { padding:1em; text-align:center; background:#111827; }
+</style>
+</head>
+
+<body>
+
+<div class="top-welcome">0Builder CMS Platform 1.0</div>
+
+<div class="main">
+  <!-- LEFT PANEL -->
+  <aside id="leftPanel">
+    <b>Pages</b>
+    <ul>
+      <li>Home</li>
+      <li>About</li>
+    </ul>
+  </aside>
+
+  <!-- CANVAS -->
+  <section id="canvas">
+    <h2>Home</h2>
+    <p>Welcome to 0Builder CMS.</p>
+  </section>
+
+  <!-- RIGHT PANEL -->
+  <aside id="inspectorPanel">
+    <b>Inspector</b>
+    <div id="inspectorContent">Select a block to edit.</div>
+
+    <b>Text Editor</b>
+    <textarea id="editorBox" style="width:100%;height:90px;"></textarea>
+    <button id="saveBtn">Save & Preview</button>
+    <span id="saveStatus"></span>
+  </aside>
+</div>
+
+<div id="panelHandle">◂</div>
+
+<footer>
+&copy; 2025 0Builder.LLC &bull; 0Builder CMS Platform 1.0
+</footer>
+
+<!-- MODULE IMPORTS -->
+<script type="module" src="modules/core.js"></script>
+<script type="module" src="modules/left-panel.js"></script>
+<script type="module" src="modules/right-panel.js"></script>
+<script type="module" src="modules/preview.js"></script>
+<script type="module" src="modules/menu.js"></script>
+<script type="module" src="modules/text-editor.js"></script>
+<script type="module" src="modules/tools.js"></script>
+<script type="module" src="modules/pages.js"></script>
+
 </body>
 </html>
+
