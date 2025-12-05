@@ -1,69 +1,322 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>0Builder CMS Platform 1.0 – 0Builder.LLC</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <title>0Builder CMS Platform 1.0 – 0Builder.LLC</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <!-- Protect dashboard -->
+  <script>
+    if (localStorage.getItem("hn_logged") !== "yes") {
+      location.href = "admin.html";
+    }
+  </script>
+  
+  <!-- CSS: You can inline, link, or use external -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  
+  <style>
+    :root{
+      --bg: #02040a;
+      --card-bg: #05070c;
+      --border: #1f2937;
+      --shadow-soft: 0 20px 45px rgba(0,0,0,0.75);
+      --accent: #0ea5e9;
+      --accent-soft: #0369a1;
+      --accent-soft-bg: rgba(14,165,233,.12);
+      --text-main: #e5e7eb;
+      --text-soft: #9ca3af;
+      --radius-lg: 20px;
+      --radius-md: 12px;
+      --radius-pill: 999px;
+    }
 
-<!-- Protect dashboard -->
-<script>
-  if (localStorage.getItem("hn_logged") !== "yes") {
-    location.href = "admin.html";
-  }
-</script>
+    *{box-sizing:border-box;}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif;
+      background: radial-gradient(circle at top, #1e293b 0, #020617 48%, #000 100%);
+      color:var(--text-main);
+      height:100vh;
+      display:flex;
+      flex-direction:column;
+      -webkit-font-smoothing: antialiased;
+      overflow:hidden;
+    }
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    .top-welcome{
+      background: radial-gradient(circle at 10% -40%, #4b5563 0, transparent 55%), linear-gradient(to bottom, #020617, #040712);
+      color:white;
+      padding:14px 24px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      border-bottom:1px solid rgba(148,163,184,0.35);
+      box-shadow:0 18px 40px rgba(0,0,0,.8);
+      z-index: 1000;
+      position: relative;
+    }
+    .top-left{display:flex;flex-direction:column;gap:2px;}
+    .top-welcome span.label{letter-spacing:.14em;text-transform:uppercase;font-size:.65rem;color:rgba(148,163,184,0.9);}
+    .top-welcome span.title{font-size:.95rem;}
+    .top-actions{display:flex;align-items:center;gap:10px;}
+    .pill-badge{font-size:.7rem;padding:3px 9px;border-radius:999px;border:1px solid rgba(148,163,184,.5);color:#e5e7eb;background:rgba(15,23,42,.9);display:inline-flex;align-items:center;gap:6px;}
+    .btn{border:none;border-radius:var(--radius-pill);cursor:pointer;padding:7px 15px;font-size:.8rem;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:6px;background:#111827;color:#e5e7eb;}
+    .btn.secondary{background:#111827;color:#e5e7eb;border:1px solid #1f2937;}
+    .btn.secondary:hover{background:#020617;}
+    .btn.ghost{background:transparent;color:#9ca3af;border:1px solid rgba(148,163,184,.25);}
+    .btn.ghost:hover{color:#e5e7eb;border-color:#e5e7eb;}
+    .btn.primary{background:var(--accent);color:#0b1120;border:1px solid var(--accent-soft);}
+    .btn.primary:hover{background:var(--accent-soft);}
+    .logout-btn{border:none;border-radius:var(--radius-pill);padding:7px 16px;cursor:pointer;font-weight:600;background:rgba(15,23,42,.4);color:#e5e7eb;border:1px solid rgba(148,163,184,.4);display:inline-flex;align-items:center;gap:6px;}
+    .logout-btn:hover{background:rgba(15,23,42,.75);}
 
-<style>
-body { margin:0; font-family:system-ui,-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",sans-serif; background:#020617; color:#e5e7eb; display:flex; flex-direction:column; height:100vh;}
-.main { display:flex; flex:1; }
-aside#leftPanel { width:200px; background:#111827; padding:1em; overflow:auto; }
-section#canvas { flex:1; padding:1em; overflow:auto; background:#1f2937; }
-aside#inspectorPanel { width:250px; background:#111827; padding:1em; display:flex; flex-direction:column; }
-#panelHandle { width:20px; cursor:pointer; background:#0ea5e9; color:#fff; display:flex; align-items:center; justify-content:center; }
-footer { padding:1em; text-align:center; background:#111827; }
-</style>
+    .main{
+      flex:1;
+      display:flex;
+      padding:16px;
+      gap:16px;
+      min-height:0;
+      position:relative;
+      overflow:hidden;
+    }
+
+    /* LEFT SLIDING PANEL – HIDDEN BY DEFAULT, MATCHES RIGHT */
+    #leftPanelHandle{
+      position:fixed;
+      top:50%;
+      left:0;
+      width:18px;
+      height:70px;
+      background:var(--accent);
+      color:white;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:0 6px 6px 0;
+      z-index:10000;
+      font-size:.85rem;
+      font-weight:600;
+      box-shadow:4px 0 18px rgba(0,0,0,.8);
+      transform:translateY(-50%);
+    }
+    .sidebar{
+      position:fixed;
+      top:54px;
+      left:-300px;
+      width:300px;
+      height:calc(100vh - 54px);
+      background:rgba(3,7,18,0.98);
+      border-right:1px solid rgba(148,163,184,.55);
+      box-shadow:12px 0 35px rgba(0,0,0,.9);
+      padding:16px 14px;
+      z-index:9999;
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+      transition:left .28s cubic-bezier(.19,1,.22,1);
+      overflow:hidden;
+    }
+    .sidebar.open{left:0;}
+    .main.has-left-open .content{margin-left:300px;transition:margin-left .28s cubic-bezier(.19,1,.22,1);}
+
+    /* PREVIEW CONTENT */
+    .content{flex:1;display:flex;flex-direction:column;min-width:0;transition:margin-left .28s cubic-bezier(.19,1,.22,1);}
+    #previewCard{flex:1;background:rgba(3,7,18,0.98);border-radius:var(--radius-lg);padding:12px 14px 18px;border:1px solid rgba(148,163,184,0.4);box-shadow:var(--shadow-soft);display:flex;flex-direction:column;min-height:0;}
+    #previewToolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;font-size:.8rem;color:var(--text-soft);}
+    #previewTitle{display:flex;align-items:center;gap:8px;}
+    #previewTitle span.slug{padding:2px 7px;border-radius:var(--radius-pill);border:1px solid rgba(148,163,184,.35);font-size:.7rem;}
+    .device-toggle-group{display:inline-flex;align-items:center;background:#020617;border-radius:999px;border:1px solid rgba(148,163,184,.5);overflow:hidden;}
+    .device-btn{border:none;background:transparent;color:#9ca3af;font-size:.78rem;padding:4px 9px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:4px;}
+    .device-btn.active{background:var(--accent);color:#e5e7eb;}
+    #previewInnerWrap{flex:1;display:flex;justify-content:center;align-items:stretch;min-height:0;}
+    #previewFrame{width:100%;max-width:1200px;transition:max-width .25s ease, border-radius .25s ease, box-shadow .25s ease;}
+    #previewFrame.desktop{max-width:1200px;}
+    #previewFrame.tablet{max-width:900px;}
+    #previewFrame.mobile{max-width:430px;border-radius:28px;overflow:hidden;box-shadow:0 0 0 1px rgba(148,163,184,.4),0 25px 60px rgba(0,0,0,.9);}
+    .preview-wrap{border-radius:var(--radius-md);border:1px solid rgba(31,41,55,.9);overflow:hidden;background:#020617;}
+    #heroPreview{position:relative;background-size:cover;background-position:center;}
+    #heroPreviewOverlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(15,23,42,.35),rgba(15,23,42,.9));}
+    #heroPreviewInner{position:relative;color:#fff;text-align:center;padding-top:110px;padding-bottom:40px;padding-left:18px;padding-right:18px;}
+    #heroPreviewInner h1{margin:0;font-size:2.1rem;}
+    #heroPreviewInner p{margin-top:.6rem;font-size:.96rem;opacity:.9;}
+    #blockPreview{padding:18px;background:#020617;}
+
+    /* RIGHT PANEL – UNCHANGED */
+    #panelHandle{position:fixed;top:50%;right:0;width:18px;height:70px;background:var(--accent);color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:6px 0 0 6px;z-index:10000;font-size:.85rem;font-weight:600;box-shadow:-4px 0 18px rgba(0,0,0,.8);transform:translateY(-50%);}
+    #inspectorPanel{position:fixed;top:54px;right:-360px;width:360px;height:calc(100vh - 54px);background:#020617;color:#e5e7eb;border-left:1px solid rgba(148,163,184,.55);box-shadow:-12px 0 35px rgba(0,0,0,.9);padding:12px 12px 16px;z-index:9999;display:flex;flex-direction:column;transition:right .28s cubic-bezier(.19,1,.22,1);}
+    #inspectorPanel.open{right:0;}
+    #panelHeader{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;}
+    #panelHeaderLeft{display:flex;flex-direction:column;gap:3px;}
+    #panelHeaderLeft span.title{font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:#9ca3af;}
+    #panelHeaderLeft span.sub{font-size:.8rem;color:#e5e7eb;}
+    #panelHeaderRight{display:flex;align-items:center;gap:6px;}
+    #closePanelBtn{border:none;background:#111827;color:#e5e7eb;padding:5px 8px;font-size:.9rem;cursor:pointer;border-radius:8px;}
+    .pill{padding:3px 10px;border-radius:var(--radius-pill);background:#111827;color:#e5e7eb;font-size:.72rem;}
+    .pill.dirty{background:#b91c1c;color:#fee2e2;}
+    .pill.saved{background:#16a34a;color:#022c22;}
+    #inspectorTabs{display:flex;gap:4px;margin-bottom:8px;border-bottom:1px solid rgba(31,41,55,.9);padding-bottom:4px;}
+    .inspect-tab{flex:1;text-align:center;padding:5px 0;border-radius:999px;font-size:.76rem;cursor:pointer;color:#9ca3af;background:transparent;border:none;}
+    .inspect-tab.active{background:var(--accent-soft-bg);color:#e5e7eb;box-shadow:0 0 0 1px rgba(56,189,248,.55);}
+    #inspectorBody{flex:1;overflow-y:auto;padding-right:4px;font-size:.8rem;}
+    .field-group{margin:6px 0;}
+    .field-label{font-size:.78rem;font-weight:600;color:#e5e7eb;margin-bottom:2px;}
+    input,select,textarea{font-family:inherit;}
+    input[type="text"],input[type="url"],textarea,select{width:100%;padding:8px 9px;border-radius:var(--radius-md);border:1px solid rgba(55,65,81,.9);background:#020617;color:#e5e7eb;font-size:.8rem;}
+    textarea{resize:vertical;min-height:70px;}
+    label.inline{display:inline-flex;align-items:center;gap:4px;margin-right:10px;font-size:.78rem;color:#e5e7eb;}
+    .section{border-top:1px solid rgba(31,41,55,.9);margin-top:10px;padding-top:8px;}
+    .section:first-of-type{border-top:none;margin-top:2px;}
+    .panelSection{margin:8px 0;}
+    .panelLabel{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:#9ca3af;margin-bottom:4px;}
+    .block{margin:10px 0;padding:10px;background:#020617;border-radius:var(--radius-md);border:1px dashed rgba(75,85,99,.9);position:relative;}
+    .block-header-line{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;font-size:.75rem;color:#9ca3af;}
+    .block-type{font-weight:600;text-transform:uppercase;letter-spacing:.06em;font-size:.7rem;}
+    .tools{position:absolute;right:6px;top:6px;display:flex;gap:4px;}
+    .tools button{border:none;background:#0f172a;color:#e5e7eb;border-radius:999px;padding:2px 6px;font-size:.7rem;cursor:pointer;}
+    .motion-select{width:auto;font-size:.72rem;padding:3px 6px;border-radius:999px;border:1px solid rgba(55,65,81,.9);background:#020617;color:#e5e7eb;}
+
+    @media (max-width:900px){
+      .main{flex-direction:column;}
+      .sidebar{width:280px;left:-280px;}
+      .main.has-left-open .content{margin-left:280px;}
+      #leftPanelHandle{top:auto;bottom:90px;transform:none;}
+      #panelHandle{top:auto;bottom:90px;}
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="top-welcome">0Builder CMS Platform 1.0</div>
-
-<div class="main">
-  <!-- LEFT PANEL -->
-  <aside id="leftPanel">
-    <b>Pages</b>
-    <ul>
-      <li>Home</li>
-      <li>About</li>
-    </ul>
-  </aside>
-
-  <!-- CANVAS -->
-  <section id="canvas">
-    <h2>Home</h2>
-    <p>Welcome to 0Builder CMS.</p>
-  </section>
-
-  <!-- RIGHT PANEL -->
-  <aside id="inspectorPanel">
-    <b>Inspector</b>
-    <div id="inspectorContent">Select a block to edit.</div>
-
-    <b>Text Editor</b>
-    <textarea id="editorBox" style="width:100%;height:90px;"></textarea>
-    <button id="saveBtn">Save & Preview</button>
-    <span id="saveStatus"></span>
-  </aside>
+<div class="top-welcome">
+  <div class="top-left">
+    <span class="label">0Builder CMS Platform 1.0</span>
+    <span class="title">Welcome back, Joseph</span>
+  </div>
+  <div class="top-actions">
+    <span class="pill-badge">
+      <i class="fa-regular fa-circle-dot"></i>
+      Unlimited Builds – $20/month
+    </span>
+    <button class="logout-btn" onclick="localStorage.removeItem('hn_logged');location.href='admin.html'">
+      <i class="fa-solid fa-right-from-bracket"></i> Log Out
+    </button>
+  </div>
 </div>
 
-<div id="panelHandle">◂</div>
+<div class="main" id="main">
+  <!-- LEFT PANEL HANDLE -->
+  <div id="leftPanelHandle" onclick="toggleLeftPanel()">▸</div>
 
-<footer>
-&copy; 2025 0Builder.LLC &bull; 0Builder CMS Platform 1.0
+  <!-- LEFT PANEL – HIDDEN BY DEFAULT -->
+  <aside class="sidebar" id="leftSidebar">
+    <div class="sidebar-section">
+      <button class="sidebar-section-header" type="button" onclick="toggleSidebarSection('pages')">
+        <span class="label">Pages</span>
+        <i class="fa-solid fa-chevron-right sidebar-chevron" id="pagesChevron"></i>
+      </button>
+      <div class="sidebar-section-body closed" id="pagesSection">
+        <div class="sidebar-inner" id="pages"></div>
+        <button class="btn secondary" style="width:100%;margin-top:8px;" onclick="newPage()">+ New Page</button>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <button class="sidebar-section-header" type="button" onclick="toggleSidebarSection('nav')">
+        <span class="label">Navigation</span>
+        <i class="fa-solid fa-chevron-right sidebar-chevron" id="navChevron"></i>
+      </button>
+      <div class="sidebar-section-body closed" id="navSection">
+        <p class="field-hint" style="margin-top:4px;">
+          One per line: <code>Title | URL</code>
+        </p>
+        <textarea id="menuRaw" class="textarea-small" oninput="menuFromRaw(this.value)"></textarea>
+      </div>
+    </div>
+  </aside>
+
+  <!-- PREVIEW SECTION -->
+  <section class="content">
+    <div id="previewCard">
+      <div id="previewToolbar">
+        <div id="previewTitle">
+          <span id="previewPageTitle">No page selected</span>
+          <span class="slug" id="previewPageSlug"></span>
+        </div>
+        <div class="device-toggle-group">
+          <button class="device-btn active" data-device="desktop"><i class="fa-solid fa-desktop"></i></button>
+          <button class="device-btn" data-device="tablet"><i class="fa-solid fa-tablet"></i></button>
+          <button class="device-btn" data-device="mobile"><i class="fa-solid fa-mobile"></i></button>
+        </div>
+      </div>
+
+      <div id="previewInnerWrap">
+        <div id="previewFrame" class="desktop">
+          <div class="preview-wrap">
+            <div id="heroPreview">
+              <div id="heroPreviewOverlay"></div>
+              <div id="heroPreviewInner">
+                <h1>Pick a page on the left</h1>
+                <p>Edit with the inspector on the right</p>
+              </div>
+            </div>
+            <div id="blockPreview"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- RIGHT PANEL HANDLE + INSPECTOR -->
+<div id="panelHandle" title="Open inspector">◂</div>
+<div id="inspectorPanel">
+  <div id="panelHeader">
+    <div id="panelHeaderLeft">
+      <span class="title">Inspector</span>
+      <span class="sub" id="panelPageLabel">No page selected</span>
+    </div>
+    <div id="panelHeaderRight">
+      <span id="saveStatusRight" class="pill">Clean</span>
+      <button id="closePanelBtn">×</button>
+    </div>
+  </div>
+
+  <div id="inspectorTabs">
+    <button class="inspect-tab active" data-inspect="page">Page</button>
+    <button class="inspect-tab" data-inspect="hero">Hero</button>
+    <button class="inspect-tab" data-inspect="blocks">Blocks</button>
+    <button class="inspect-tab" data-inspect="menu">Menu</button>
+    <button class="inspect-tab" data-inspect="site">Site</button>
+  </div>
+
+  <div id="inspectorBody"></div>
+
+  <div style="margin-top:10px;">
+    <button id="publishBtn" class="btn primary" style="width:100%;margin-bottom:6px;">
+      <i class="fa-solid fa-cloud-arrow-up"></i> Publish to GitHub
+    </button>
+    <button id="saveDraftBtn2" class="btn secondary" style="width:100%;margin-bottom:4px;">
+      Save Draft (local)
+    </button>
+    <button id="downloadBtn2" class="btn ghost" style="width:100%;margin-bottom:4px;">
+      Download JSON
+    </button>
+    <button id="backupBtn2" class="btn ghost" style="width:100%;margin-bottom:4px;">
+      Full Backup (.zip)
+    </button>
+    <a href="index.html" target="_blank" class="btn ghost" style="width:100%;text-decoration:none;justify-content:center;">
+      View Live Site ↗
+    </a>
+  </div>
+</div>
+
+<footer style="padding:20px;text-align:center;color:var(--text-soft);font-size:.75rem;border-top:1px solid var(--border);">
+  &copy; 2025 0Builder.LLC • 0Builder CMS Platform 1.0
 </footer>
 
-<!-- MODULE IMPORTS -->
+<!-- MODULE IMPORTS (order: core first) -->
 <script type="module" src="modules/core.js"></script>
 <script type="module" src="modules/left-panel.js"></script>
 <script type="module" src="modules/right-panel.js"></script>
@@ -72,7 +325,6 @@ footer { padding:1em; text-align:center; background:#111827; }
 <script type="module" src="modules/text-editor.js"></script>
 <script type="module" src="modules/tools.js"></script>
 <script type="module" src="modules/pages.js"></script>
-
 </body>
 </html>
 
