@@ -1,20 +1,11 @@
 // menu.js
 // 0Builder CMS Platform 1.0
-// (c) 2025 0Builder.LLC
 
-/*
-  MENU: Visual menu/mega menu editor (menu tab in right panel)
-*/
+import { publish } from "./core.js";
 
-import { site, markDirty, escapeHtml, publish } from "./core.js";
+let menu = [];
 
-// Render menu tab HTML (as a function for right panel)
-export function renderMenuTabHtml() {
-  // ... (same code from before—see previous messages)
-  // For brevity, use the last working menu.js content here
-  // (this code would be 80+ lines and is unchanged except for imports)
-}
-window._obuilder_renderMenuTabHtml = renderMenuTabHtml;
+function setMenu(data) { menu = data; publish("menuUpdated", menu); }
+function addMenuItem(item) { menu.push(item); publish("menuUpdated", menu); }
 
-// Utility and editor functions
-// ... (include your menu add/remove/change functions from your current menu.js, but update imports and window exports as needed)
+export { setMenu, addMenuItem };
