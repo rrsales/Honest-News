@@ -1,78 +1,46 @@
 {
-  "site": {
-    "title": "Honest News – Biblical Truth",
-    "tagline": "Biblical Truth · Podcast · Resources",
-    "theme": "dark",
-    "menu": [
-      { "id": "home",    "label": "Home",    "href": "index.html" },
-      { "id": "podcast", "label": "Podcast", "href": "podcast.html" },
-      { "id": "shop",    "label": "Shop",    "href": "shop.html" },
-      { "id": "support", "label": "Support", "href": "support.html" }
-    ]
+  "brand": {
+    "title": "0Builder CMS Platform",
+    "sub": "Static Site Engine by 0Builder.LLC",
+    "footer": "0Builder CMS Platform 1.0 — 0Builder.LLC"
   },
-  "pages": {
-    "home": {
-      "id": "home",
-      "title": "Honest News",
-      "slug": "index",
+  "menu": [
+    { "label": "Home", "url": "index.html", "type": "link", "showOn": "both" },
+    { "label": "About", "url": "about.html", "type": "link", "showOn": "both" },
+    { "label": "Podcast", "url": "podcast.html", "type": "link", "showOn": "both" }
+    // ...more menu items
+  ],
+  "pages": [
+    {
+      "slug": "home",
+      "title": "Welcome to 0Builder!",
+      "theme": "dark",
       "hero": {
-        "eyebrow": "Honest News",
-        "title": "Honest News. Biblical Truth.",
-        "subtitle": "Clarity and courage in a world drowning in spin.",
-        "style": "apple",
-        "transparentHeader": true,
-        "backgroundImage": "assets/images/hero-home.jpg"
+        "bg": "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=facearea&w=1200&q=80",
+        "overlay": "Your Static Site, Simplified",
+        "sub": "Build, edit, and launch beautiful sites. No server. No database.",
+        "transparentMenu": true,
+        "behavior": "still",
+        "size": "full",
+        "customHeight": ""
       },
       "blocks": [
         {
-          "type": "text",
-          "id": "home-intro",
-          "heading": "Welcome to Honest News",
-          "body": "This block is managed from the Dashboard. Use it to introduce your mission, latest series, or key resources."
+          "type": "heading",
+          "content": "Why 0Builder?"
+        },
+        {
+          "type": "paragraph",
+          "content": "Easily manage your website content. Static, fast, and secure."
+        },
+        {
+          "type": "button",
+          "text": "Get Started",
+          "url": "admin.html"
         }
       ]
-    },
-    "podcast": {
-      "id": "podcast",
-      "title": "Podcast",
-      "slug": "podcast",
-      "hero": {
-        "eyebrow": "Podcast",
-        "title": "Honest News Podcast",
-        "subtitle": "Conversations grounded in Scripture and truth.",
-        "style": "simple",
-        "transparentHeader": false,
-        "backgroundImage": ""
-      },
-      "blocks": []
-    },
-    "shop": {
-      "id": "shop",
-      "title": "Shop",
-      "slug": "shop",
-      "hero": {
-        "eyebrow": "Resources",
-        "title": "Shop Honest Resources",
-        "subtitle": "Books, materials, and tools to equip believers.",
-        "style": "simple",
-        "transparentHeader": false,
-        "backgroundImage": ""
-      },
-      "blocks": []
-    },
-    "support": {
-      "id": "support",
-      "title": "Support",
-      "slug": "support",
-      "hero": {
-        "eyebrow": "Support",
-        "title": "Support Honest News",
-        "subtitle": "Partner with us in prayer and provision.",
-        "style": "simple",
-        "transparentHeader": false,
-        "backgroundImage": ""
-      },
-      "blocks": []
     }
-  }
+    // ...more pages (about, podcast, etc.)
+  ]
 }
+
